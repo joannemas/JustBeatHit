@@ -1,6 +1,6 @@
 "use client"
 
-import { authSignIn, LoginState } from "@/lib/actions/authActions"
+import { login } from "@/app/components/auth/actions";
 import Link from "next/link"
 import { useFormState, useFormStatus } from "react-dom"
 import { z } from "zod";
@@ -11,8 +11,7 @@ const loginForm = z.object({
 })
 
 export default function Page() {
-  const initialState: LoginState = { message: null, errors: {} }
-  const [state, dispatch] = useFormState(authSignIn, initialState)
+  const [state, formAction] = useFormState(login, undefined)
 
   return (
     <div className="form-container">
@@ -20,14 +19,14 @@ export default function Page() {
         <h3>Login</h3>
         <p className="description">Provide email and password to login</p>
       </div>
-      <form action={dispatch}>
+      <form action={formAction}>
         <label htmlFor="email">E-mail :</label>
         <input className=' text-black' type="text" id="email" name="email" placeholder="exemple@email.com" />
-        <span id="email-error" className="form-error" aria-live="polite" aria-atomic="true">{state.errors?.email && state.errors?.email.length > 0 ? state.errors?.email[0] : " "}</span>
+        <span id="email-error" className="form-error" aria-live="polite" aria-atomic="true">{state?.errors?.email && state.errors?.email.length > 0 ? state.errors?.email[0] : " "}</span>
         <label htmlFor="password">Password :</label>
         <input className=' text-black' type="password" id="password" name="password" placeholder="Type your password" />
-        <span id="repeatPassword-error" className="form-error" aria-live="polite" aria-atomic="true">{state.errors?.password && state.errors?.password.length > 0 ? state.errors?.password[0] : " "}</span>
-        <span id="form-error" className="form-error" aria-live="polite" aria-atomic="true">{state.message}</span>
+        <span id="repeatPassword-error" className="form-error" aria-live="polite" aria-atomic="true">{state?.errors?.password && state.errors?.password.length > 0 ? state.errors?.password[0] : " "}</span>
+        <span id="form-error" className="form-error" aria-live="polite" aria-atomic="true">{state?.message}</span>
         <LoginButton />
       </form>
       <Link href="/auth/register" className="link">Don&nbsp;t have an account yet? Sign up here.</Link>

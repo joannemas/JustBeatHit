@@ -4,7 +4,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 
-const Karakaku = dynamic(() => import('../../components/Karakaku/Karakaku'), { ssr: false });
+const Karakaku = dynamic(() => import('@/components/Karakaku/Karakaku'), { ssr: false });
 
 const SongPage: React.FC = () => {
   const params = useParams();
