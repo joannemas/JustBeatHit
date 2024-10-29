@@ -14,11 +14,10 @@
     "zod": "^3.23.8"
   },
   "scripts": {
-    "dev": "npm run next-dev",
-    "server": "npx ampx sandbox",
-    "next-dev": "next dev",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
