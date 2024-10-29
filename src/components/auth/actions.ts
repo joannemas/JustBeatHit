@@ -61,8 +61,9 @@ export async function register(prevState: AuthState | undefined, formData: FormD
     }
 
     const { username, ...data } = parse.data
+    const avatar_url = `https://api.dicebear.com/9.x/adventurer/png?seed=${username}&radius=50&backgroundColor=b6e3f4,c0aede,d1d4f9&size=128`
 
-    const { data: { user } } = await supabase.auth.signUp({ ...data, options: { data: { username } } })
+    const { data: { user } } = await supabase.auth.signUp({ ...data, options: { data: { username, avatar_url } } })
 
     /** Signup with currently existing email give a fake user without role
      * So we check the role to check if the user already exist or not

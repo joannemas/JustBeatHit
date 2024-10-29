@@ -5,7 +5,7 @@ import Carousel from "@/components/Carrousel";
 import Navbar from "@/components/Navbar";
 
 
-const Page = () => {
+export default function Page() {
   const carouselImages = [
     "/assets/img/Boat.jpg",
     "/assets/img/Carrousel1.png",
@@ -111,5 +111,3 @@ const Page = () => {
     </div>
   );
 };
-
-export default Page;

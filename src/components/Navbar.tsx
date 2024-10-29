@@ -1,8 +1,14 @@
 import Link from 'next/link';
 import '@/stylesheets/navbar.scss';
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/server";
 
-const Navbar = () => {
+export default async function Navbar() {
+    const supabase = createClient()
+
+    const { data } = await supabase.auth.getUser()
+    const { data: { username, avatar_url } } = await supabase.from('profiles').select('*').eq('id', data.user?.id).single()
+
     return (
         <div className="navbar">
             <ul><li><Link href="/">
@@ -23,19 +29,18 @@ const Navbar = () => {
                 <li>à propos</li>
             </ul>
             <ul>
-                <li>Comment ça va <span>AYMAN</span> ?</li>
-                <Image
-                    priority
-                    src={'/assets/img/profil.png'}
-                    alt="Profil"
-                    className="Profil"
-                    width={44}
-                    height={44}
-                />
-
+                <li>Comment ça va <span>{username}</span> ?</li>
+                <a href={`/profile/${username}`}>
+                    <Image
+                        priority
+                        src={avatar_url}
+                        alt="Profil"
+                        className="Profil"
+                        width={44}
+                        height={44}
+                    />
+                </a>
             </ul>
         </div>
     );
 }
-
-export default Navbar;

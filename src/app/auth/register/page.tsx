@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { register } from "@/app/components/auth/actions";
+import { register } from "@/components/auth/actions";
 
 export default function Page() {
   const [state, formAction] = useFormState(register, undefined)

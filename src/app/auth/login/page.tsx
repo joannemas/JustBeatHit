@@ -1,6 +1,6 @@
 "use client"
 
-import { login } from "@/app/components/auth/actions";
+import { login } from "@/components/auth/actions";
 import Link from "next/link"
 import { useFormState, useFormStatus } from "react-dom"
 import { z } from "zod";
