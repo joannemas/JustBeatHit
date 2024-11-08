@@ -1,16 +1,11 @@
-import "../stylesheets/home.scss";
+import "@/stylesheets/home.scss";
 import Link from "next/link";
 import Image from "next/image";
-import KaraokeSvg from "../../public/assets/img/icon/Karaoke.svg"
-import LogoSvg from "../../public/assets/img/Logo.svg"
-import MusicSvg from "../../public/assets/img/icon/music-1.svg"
-import QuestionSvg from "../../public/assets/img/icon/question-mark.svg"
-import SoonLogo from "../../public/assets/img/SoonLogo.svg"
-import Carousel from "./components/Carrousel";
-import Navbar from "./components/Navbar";
+import Carousel from "@/components/Carrousel";
+import Navbar from "@/components/Navbar";
 
 
-const Page = () => {
+export default function Page() {
   const carouselImages = [
     "/assets/img/Boat.jpg",
     "/assets/img/Carrousel1.png",
@@ -33,48 +28,58 @@ const Page = () => {
             <li>accès rapide ·</li>
             <li>
               <Link href="/karakaku">
-                
+
                 <button className="start-button">
-                <Image
-                  priority
-                  src={KaraokeSvg}
-                  alt="Karaoke svg"
-                />
-                karakaku</button>
+                  <Image
+                    priority
+                    src="/assets/img/icon/Karaoke.svg"
+                    alt="Karaoke svg"
+                    width={24}
+                    height={24}
+                  />
+                  karakaku</button>
               </Link>
             </li>
             <li>
-            <Image 
-              priority
-              src={SoonLogo}
-              alt="Soon Logo"
-              className="ComingSoon"
+              <Image
+                priority
+                src="/assets/img/SoonLogo.svg"
+                alt="Soon Logo"
+                className="ComingSoon"
+                width={89}
+                height={44}
               />
               <Link href="">
                 <button className="start-button">
-                <Image
-                  priority
-                  src={QuestionSvg}
-                  alt="Question svg"
-                />
+                  <Image
+                    priority
+                    src="/assets/img/icon/question-mark.svg"
+                    alt="Question svg"
+                    width={24}
+                    height={24}
+                  />
                   Blind Test</button>
               </Link>
             </li>
             <li>
-            <Image 
-              priority
-              src={SoonLogo}
-              alt="Soon Logo"
-              className="ComingSoon"
+              <Image
+                priority
+                src="/assets/img/SoonLogo.svg"
+                alt="Soon Logo"
+                className="ComingSoon"
+                width={89}
+                height={44}
               />
               <Link href="/">
                 <button className="start-button">
-                <Image
-                  priority
-                  src={MusicSvg}
-                  alt="Music svg"
-                />
-                  N'oubliez pas les paroles</button>
+                  <Image
+                    priority
+                    src="/assets/img/icon/music-1.svg"
+                    alt="Music svg"
+                    width={24}
+                    height={24}
+                  />
+                  N&apos;oubliez pas les paroles</button>
               </Link>
             </li>
             <div className="">
@@ -84,19 +89,25 @@ const Page = () => {
         </div>
         <Image
           priority
-          src={LogoSvg}
+          src="/assets/img/Logo.svg"
           alt="Logo"
           className="Logo"
+          width={584}
+          height={756}
         />
       </div>
       <div>
-        <img src="/assets/img/Boat.jpg" alt="Boat" className="BoatImage"/>
+        <Image
+          src="/assets/img/Boat.jpg"
+          alt="Boat"
+          className="BoatImage"
+          width={1792}
+          height={419}
+        />
       </div>
       <div className="desc-jbh-homepage">
-        <h3>Just Beat Hit propose une variété de <br/> mini-jeux rythmés pour tester vos <br/>réflexes et votre sens du tempo</h3>
+        <h3>Just Beat Hit propose une variété de <br /> mini-jeux rythmés pour tester vos <br />réflexes et votre sens du tempo</h3>
       </div>
     </div>
   );
 };
-
-export default Page;

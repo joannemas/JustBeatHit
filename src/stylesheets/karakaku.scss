@@ -29,6 +29,10 @@
     }
 }
 
+audio {
+    display: none;
+}
+
 .karakaku {
     display: flex;
     flex-direction: column;
@@ -36,11 +40,12 @@
     align-items: center;
 }
 
-.btn-list{
+.btn-list {
     display: flex;
     align-items: center;
     gap: 2rem;
 }
+
 .btn-primary {
     @include button($primary-color);
 }
@@ -49,7 +54,8 @@
     @include button($error-color);
 }
 
-.lyrics, .text-input {
+.lyrics,
+.text-input {
     font-size: 2rem;
     font-weight: 300;
     text-align: left;
@@ -94,6 +100,7 @@
     margin: 10px 0;
     color: #FBDEE2;
     transition: all 0.1s ease-in-out;
+
     .text-input {
         color: #FBDEE2;
         caret-color: white;
@@ -114,7 +121,8 @@
     }
 }
 
-.previous, .next {
+.previous,
+.next {
     color: #888;
 }
 
@@ -129,9 +137,12 @@
 }
 
 @keyframes blink {
-    from, to {
+
+    from,
+    to {
         opacity: 1;
     }
+
     50% {
         opacity: 0;
     }

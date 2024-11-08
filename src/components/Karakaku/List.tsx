@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import '../../../stylesheets/karakaku.scss';
+import '@/stylesheets/karakaku.scss';
 
 const List: React.FC = () => {
     const songs = [
@@ -22,12 +22,12 @@ const List: React.FC = () => {
             <p>Sélectionnez votre musique : </p>
             <ul className='song-list'>
                 {songs.map((song) => (
-                <li key={song.name}>
-                    <Link href={`/karakaku/${song.name}`}>
-                        {song.title}
-                    </Link>
-                </li>
-                
+                    <li key={song.name}>
+                        <Link href={`/karakaku/${song.name}`}>
+                            {song.title}
+                        </Link>
+                    </li>
+
                 ))}
             </ul>
         </div>
