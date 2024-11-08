@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject } from 'react';
 import { LyricLine } from '@/utils/LrcParser';
 import { loadLRCFile } from '@/utils/LrcLoader';
 
@@ -20,12 +20,10 @@ export const normalizeString = (str: string): string => {
 export const lyricsDisplayUtils = (
     songName: string,
     charRefs: RefObject<(HTMLSpanElement | null)[][]>,
-    parseLRC: (content: string) => LyricLine[]
+    parseLRC: (content: string) => LyricLine[],
+    setLyrics: (lyrics: LyricLine[]) => void,
+    setTotalLines: (totalLines: number) => void
 ) => {
-    const [lyrics, setLyrics] = useState<LyricLine[]>([]);
-    const [totalLines, setTotalLines] = useState<number>(0);
-
-    useEffect(() => {
         const loadLyrics = async () => {
             try {
                 const lrcContent = await loadLRCFile(`/songs/${songName}/lyrics.lrc`);
@@ -51,7 +49,5 @@ export const lyricsDisplayUtils = (
         };
 
         loadLyrics();
-    }, [songName, parseLRC, charRefs]);
-
-    return { lyrics, totalLines };
+    return;
 };

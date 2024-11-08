@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react';
+import { RefObject } from 'react';
 
 interface UseCaretPositionProps {
     userInput: string;
@@ -9,14 +9,7 @@ interface UseCaretPositionProps {
 }
 
 //Positionne le caret en fonction de la position de l'utilisateur dans les paroles
-export const caretUtils = ({
-                                     userInput,
-                                     currentLyricIndex,
-                                     lyrics,
-                                     charRefs,
-                                     caretRef
-                                 }: UseCaretPositionProps) => {
-    useEffect(() => {
+export const caretUtils = ({userInput, currentLyricIndex, lyrics, charRefs, caretRef}: UseCaretPositionProps) => {
         const updateCaretPosition = () => {
             if (!charRefs.current) return;
 
@@ -46,5 +39,4 @@ export const caretUtils = ({
         };
 
         updateCaretPosition();
-    }, [userInput, currentLyricIndex, lyrics, charRefs, caretRef]);
 };

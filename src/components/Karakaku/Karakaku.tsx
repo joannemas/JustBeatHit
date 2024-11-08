@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
-import { parseLRC } from '@/utils/LrcParser';
+import {LyricLine, parseLRC} from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
 
@@ -34,17 +34,24 @@ const Karakaku: React.FC<KarakakuProps> = ({ songName }) => {
     const [incorrectCharacters, setIncorrectCharacters] = useState<number>(0);
     const [totalCharacters, setTotalCharacters] = useState<number>(0);
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
-    const { lyrics, totalLines } = lyricsDisplayUtils(songName, charRefs, parseLRC);
     const [isMusicFinished, setIsMusicFinished] = useState<boolean>(false);
+    const [lyrics, setLyrics] = useState<LyricLine[]>([]);
+    const [totalLines, setTotalLines] = useState<number>(0);
+
+    useEffect(() => {
+        lyricsDisplayUtils(songName, charRefs, parseLRC, setLyrics, setTotalLines)
+    }, [songName, charRefs]);
 
     //Appel de fonction pour placer le caret
-    caretUtils({
-        userInput,
-        currentLyricIndex,
-        lyrics,
-        charRefs,
-        caretRef
-    });
+    useEffect(() => {
+        caretUtils({
+            userInput,
+            currentLyricIndex,
+            lyrics,
+            charRefs,
+            caretRef
+        });
+    }, [userInput, currentLyricIndex, lyrics, charRefs, caretRef]);
 
     //Appel de fonction pour gérer les actions liées au temps/durée de la chanson
     const handleTimeUpdateWrapper = () => {
@@ -148,7 +155,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songName }) => {
                     <p>Score final: {score}</p>
                     <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
                     <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
-                    <p>Précision d'écriture : {calculateAccuracy(totalCharacters, incorrectCharacters)}%</p>
+                    <p>Précision d&apos;écriture : {calculateAccuracy(totalCharacters, incorrectCharacters)}%</p>
                     <div className="btn-list">
                         <button className="btn-primary" onClick={handleReplay}>Rejouer</button>
                         <Link href="/karakaku">
