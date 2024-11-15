@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 export default async function Navbar() {
     const supabase = createClient()
 
-    const { data } = await supabase.auth.getUser()
-    const { data: { username, avatar_url } } = await supabase.from('profiles').select('*').eq('id', data.user?.id).single()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data } = await supabase.from('profiles').select('*').eq('id', user?.id).single()
 
     return (
         <div className="navbar">
@@ -28,12 +28,13 @@ export default async function Navbar() {
                 <li>Contact</li>
                 <li>à propos</li>
             </ul>
+            {user ? 
             <ul>
-                <li>Comment ça va <span>{username}</span> ?</li>
-                <a href={`/profile/${username}`}>
+                <li>Comment ça va <span>{data.username}</span> ?</li>
+                <a href={`/profile/${data.username}`}>
                     <Image
                         priority
-                        src={avatar_url}
+                        src={data.avatar_url}
                         alt="Profil"
                         className="Profil"
                         width={44}
@@ -41,6 +42,11 @@ export default async function Navbar() {
                     />
                 </a>
             </ul>
+            :
+            <ul>
+                <li>Bienvenue, <a href={`/auth/register`} className='register-link'>inscris toi</a> pour jouer ! </li>
+            </ul>
+            }
         </div>
     );
 }
