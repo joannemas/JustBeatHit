@@ -18,7 +18,7 @@ export const normalizeString = (str: string): string => {
 
 // Récupère les lyrics à partir du fichier LRC
 export const lyricsDisplayUtils = (
-    songName: string,
+    lyricsSrc: string,
     charRefs: RefObject<(HTMLSpanElement | null)[][]>,
     parseLRC: (content: string) => LyricLine[],
     setLyrics: (lyrics: LyricLine[]) => void,
@@ -26,7 +26,7 @@ export const lyricsDisplayUtils = (
 ) => {
         const loadLyrics = async () => {
             try {
-                const lrcContent = await loadLRCFile(`/songs/${songName}/lyrics.lrc`);
+                const lrcContent = await loadLRCFile(lyricsSrc);
                 const parsedLyrics = parseLRC(lrcContent);
                 const cleanedLyrics = parsedLyrics.map(lyric => ({
                     ...lyric,
