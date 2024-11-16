@@ -13,10 +13,11 @@ import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 
 interface KarakakuProps {
-    songName: string;
+    songSrc: string;
+    lyricSrc: string;
 }
 
-const Karakaku: React.FC<KarakakuProps> = ({ songName }) => {
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
     const [userInput, setUserInput] = useState<string>('');
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -39,8 +40,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songName }) => {
     const [totalLines, setTotalLines] = useState<number>(0);
 
     useEffect(() => {
-        lyricsDisplayUtils(songName, charRefs, parseLRC, setLyrics, setTotalLines)
-    }, [songName, charRefs]);
+        lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
+    }, [lyricSrc, charRefs]);
 
     //Appel de fonction pour placer le caret
     useEffect(() => {
@@ -194,7 +195,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songName }) => {
             {!isGameOver && (
                 <>
                     <ReactAudioPlayer
-                        src={`/songs/${songName}/song.mp3`}
+                        src={songSrc}
                         controls
                         onListen={handleTimeUpdateWrapper}
                         ref={audioPlayerRef}

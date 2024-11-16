@@ -7,7 +7,7 @@ export default async function Navbar() {
     const supabase = createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('profiles').select('*').eq('id', user?.id).single()
+    const { data } = await supabase.from('profiles').select('*').eq('id', user?.id!).single()
 
     return (
         <div className="navbar">
@@ -28,7 +28,7 @@ export default async function Navbar() {
                 <li>Contact</li>
                 <li>à propos</li>
             </ul>
-            {user ? 
+            {data ? 
             <ul>
                 <li>Comment ça va <span>{data.username}</span> ?</li>
                 <a href={`/profile/${data.username}`}>
