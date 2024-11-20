@@ -38,6 +38,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [isMusicFinished, setIsMusicFinished] = useState<boolean>(false);
     const [lyrics, setLyrics] = useState<LyricLine[]>([]);
     const [totalLines, setTotalLines] = useState<number>(0);
+    const [countdown, setCountdown] = useState<number>(10);
+    const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -70,7 +72,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             calculatePauseCount,
             setScore,
             setLastScoreChange,
-            setIsMusicFinished
+            setIsMusicFinished,
+            setIsCountdownActive
         );
     };
 
@@ -148,6 +151,46 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         audioPlayerRef.current?.audioEl.current?.load();
     };
 
+    // Compte à rebours si ligne incomplète
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (isCountdownActive) {
+            timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setCountdown(10);
+                        setIsCountdownActive(false);
+
+                        if (currentLyricIndex < lyrics.length - 1) {
+                            setCurrentLyricIndex(currentLyricIndex + 1);
+                            setUserInput('');
+                            setLockedChars('');
+                            setHasErrors(false);
+                            setIsValidated(false);
+
+                            if (audioPlayerRef.current?.audioEl.current?.paused) {
+                                audioPlayerRef.current.audioEl.current.play();
+                            }
+                        } else {
+                            // setIsMusicFinished(true);
+                            setIsGameOver(true);
+                            setIsStarted(false);
+                        }
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else {
+            setCountdown(10);
+        }
+
+        return () => clearInterval(timer);
+    }, [isCountdownActive, currentLyricIndex, lyrics.length, audioPlayerRef]);
+
+
     //Affiche les paroles et le score final
     const renderLyrics = () => {
         if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
@@ -202,7 +245,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         listenInterval={100}
                     />
                     {!isStarted && (
-                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted)}
+                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
                                 className="btn-primary">
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
@@ -210,6 +253,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
+                    {isCountdownActive && <p className="countdown">Compte à rebours : {countdown}</p>}
                 </>
             )}
             <div className="lyrics">

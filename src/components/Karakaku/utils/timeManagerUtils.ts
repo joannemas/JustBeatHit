@@ -1,19 +1,23 @@
 import ReactAudioPlayer from "react-audio-player";
 import React from "react";
 
-
 //Joue ou stop l'audio
 export const handlePlayPauseClick = (
     audioPlayerRef: React.RefObject<any>,
-    setIsStarted: (started: boolean) => void
+    setIsStarted: (started: boolean) => void,
+    setIsCountdownActive: (active: boolean) => void,
+    setCountdown: (value: number) => void
 ) => {
     const audioEl = audioPlayerRef.current?.audioEl.current;
     if (audioEl) {
         if (audioEl.paused) {
             audioEl.play();
             setIsStarted(true);
+            setIsCountdownActive(false);
+            setCountdown(10);
         } else {
             audioEl.pause();
+            setIsCountdownActive(true);
         }
     }
 };
@@ -33,7 +37,8 @@ export const handleTimeUpdate = (
     calculatePauseCount: (prevCount: number) => number,
     setScore: React.Dispatch<React.SetStateAction<number>>,
     setLastScoreChange: React.Dispatch<React.SetStateAction<number>>,
-    setIsMusicFinished: React.Dispatch<React.SetStateAction<boolean>>
+    setIsMusicFinished: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsCountdownActive: (active: boolean) => void
 ) => {
     const audioEl = audioPlayerRef.current?.audioEl.current;
     if (audioEl) {
@@ -43,6 +48,7 @@ export const handleTimeUpdate = (
         if (nextLyricTime && currentTime >= nextLyricTime - 0.05) {
             if (!isValidated) {
                 audioEl.pause();
+                setIsCountdownActive(true);
                 const points = -500;
                 setPauseCount(prevCount => calculatePauseCount(prevCount));
                 setScore(prevScore => {
@@ -56,6 +62,7 @@ export const handleTimeUpdate = (
                 setCurrentLyricIndex(currentLyricIndex + 1);
                 setIsValidated(false);
                 setHasErrors(false);
+                setIsCountdownActive(false);
             }
         }
 
