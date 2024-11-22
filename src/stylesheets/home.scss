@@ -91,3 +91,13 @@
 
   @include button($primary-color);
 }
+
+.feedback {
+  p {
+    padding: 20px 0;
+  }
+
+  .btn-feedback {
+    @include button(#F1203C);
+  }
+}

@@ -23,6 +23,12 @@ export default function Page() {
                 <span>and beat your friends</span>
               </h3>
             </li>
+            <li className="feedback">
+            <p>Aidez-nous à améliorer notre jeu !</p>
+            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfHnAhsBZLp80V5M1mJ4AiTJRpjXfVINfIm87CUIDC758PtSQ/viewform?pli=1">
+              <button className="btn-feedback">Donner son avis</button>
+            </Link>
+            </li>
           </ul>
           <ul>
             <li>accès rapide ·</li>
