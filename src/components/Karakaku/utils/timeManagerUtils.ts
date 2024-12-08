@@ -22,12 +22,14 @@ export const handlePlayPauseClick = (
     }
 };
 
+let isAlreadyOver = false; // Variable de contrôle
 //Actions liées à la durée de la chanson
 export const handleTimeUpdate = (
     audioPlayerRef: React.RefObject<ReactAudioPlayer>,
     lyrics: any[],
     currentLyricIndex: number,
     isValidated: boolean,
+    IsMusicFinished: boolean,
     setUserInput: React.Dispatch<React.SetStateAction<string>>,
     setLockedChars: React.Dispatch<React.SetStateAction<string>>,
     setCurrentLyricIndex: React.Dispatch<React.SetStateAction<number>>,
@@ -45,7 +47,37 @@ export const handleTimeUpdate = (
         const currentTime = audioEl.currentTime;
         const nextLyricTime = lyrics[currentLyricIndex + 1]?.time;
 
-        if (nextLyricTime && currentTime >= nextLyricTime - 0.05) {
+        if (currentLyricIndex === lyrics.length - 1) {
+            const handleAudioEnded = () => {
+                if (isAlreadyOver) return; // Évite l'exécution multiple
+                isAlreadyOver = true;
+
+                if (!isValidated) {
+                    audioEl.pause();
+                    setIsCountdownActive(true);
+                    const points = -500;
+                    setPauseCount(prevCount => calculatePauseCount(prevCount));
+                    setScore(prevScore => {
+                        const newScore = Math.max(prevScore + points, 0);
+                        setLastScoreChange(points);
+                        return newScore;
+                    });
+                } else {
+                    setIsMusicFinished(true);
+                    setIsCountdownActive(false);
+                }
+            };
+
+            // Ajout de l'écouteur `ended`
+            audioEl.addEventListener('ended', handleAudioEnded);
+
+            // Nettoyage de l'écouteur
+            return () => {
+                audioEl.removeEventListener('ended', handleAudioEnded);
+                isAlreadyOver = false;
+            };
+        } else if (nextLyricTime && currentTime >= nextLyricTime - 0.05) {
+            // Logique normale pour les autres lyrics
             if (!isValidated) {
                 audioEl.pause();
                 setIsCountdownActive(true);
@@ -65,14 +97,8 @@ export const handleTimeUpdate = (
                 setIsCountdownActive(false);
             }
         }
-
-        const handleAudioEnded = () => {
-            setIsMusicFinished(true);
-        };
-        audioEl.addEventListener('ended', handleAudioEnded);
-
-        return () => {
-            audioEl.removeEventListener('ended', handleAudioEnded);
-        };
+    }
+    if (!audioEl) {
+        console.error("audioEl non défini");
     }
 };

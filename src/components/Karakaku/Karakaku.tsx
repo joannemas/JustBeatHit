@@ -63,6 +63,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             lyrics,
             currentLyricIndex,
             isValidated,
+            isMusicFinished,
             setUserInput,
             setLockedChars,
             setCurrentLyricIndex,
@@ -164,31 +165,39 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         setIsCountdownActive(false);
 
                         if (currentLyricIndex < lyrics.length - 1) {
-                            setCurrentLyricIndex(currentLyricIndex + 1);
+                            setCurrentLyricIndex((prevIndex) => prevIndex + 1);
                             setUserInput('');
                             setLockedChars('');
                             setHasErrors(false);
                             setIsValidated(false);
 
+                            // Reprend la musique si elle est en pause
                             if (audioPlayerRef.current?.audioEl.current?.paused) {
                                 audioPlayerRef.current.audioEl.current.play();
                             }
-                        } else {
-                            // setIsMusicFinished(true);
-                            setIsGameOver(true);
-                            setIsStarted(false);
+                        } else if (currentLyricIndex === lyrics.length - 1 && !isValidated) {
+                            // Dernière lyric non validée
+                            setIsCountdownActive(false);
+                            audioPlayerRef.current?.audioEl.current?.play();
                         }
-                        return 0;
+                        if (currentLyricIndex === lyrics.length - 1) {
+                            setIsStarted(false);
+                            setIsGameOver(true);
+                            setIsValidated(true);
+                        }
+
+                        return 0; // Réinitialise le compte à rebours
                     }
-                    return prev - 1;
+                    return prev - 1; // Décrémente le compteur
                 });
             }, 1000);
         } else {
-            setCountdown(10);
+            setCountdown(10); // Réinitialise si le compte à rebours est inactif
         }
 
+        // Nettoie l'intervalle pour éviter des fuites
         return () => clearInterval(timer);
-    }, [isCountdownActive, currentLyricIndex, lyrics.length, audioPlayerRef]);
+    }, [isCountdownActive, currentLyricIndex, lyrics, audioPlayerRef, isValidated]);
 
 
     //Affiche les paroles et le score final
