@@ -40,6 +40,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [totalLines, setTotalLines] = useState<number>(0);
     const [countdown, setCountdown] = useState<number>(10);
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
+    const [lineSwitchLocked, setLineSwitchLocked] = useState(false);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -151,21 +152,32 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         setTotalCharacters(0);
         audioPlayerRef.current?.audioEl.current?.load();
     };
+    const isHandlingLineSwitch = useRef(false);
 
     // Compte à rebours si ligne incomplète
     useEffect(() => {
         let timer: NodeJS.Timeout;
 
-        if (isCountdownActive) {
+        if (isCountdownActive && !isHandlingLineSwitch.current) {
+            isHandlingLineSwitch.current = true; // Active le verrou
+            console.log('Compte à rebours démarré');
+
             timer = setInterval(() => {
                 setCountdown((prev) => {
+                    console.log('Compte à rebours actuel:', prev);
+
                     if (prev <= 1) {
                         clearInterval(timer);
                         setCountdown(10);
                         setIsCountdownActive(false);
 
                         if (currentLyricIndex < lyrics.length - 1) {
-                            setCurrentLyricIndex((prevIndex) => prevIndex + 1);
+                            setCurrentLyricIndex((prevIndex) => {
+                                console.log('Passage à la ligne suivante (correct):', prevIndex + 0.5);
+                                return prevIndex + 0.5;
+                            });
+
+                            // Réinitialise l'état des inputs
                             setUserInput('');
                             setLockedChars('');
                             setHasErrors(false);
@@ -173,31 +185,37 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
                             // Reprend la musique si elle est en pause
                             if (audioPlayerRef.current?.audioEl.current?.paused) {
+                                console.log('Reprise de la musique');
                                 audioPlayerRef.current.audioEl.current.play();
                             }
                         } else if (currentLyricIndex === lyrics.length - 1 && !isValidated) {
-                            // Dernière lyric non validée
-                            setIsCountdownActive(false);
+                            console.log('Dernière ligne non validée, reprise de la musique');
                             audioPlayerRef.current?.audioEl.current?.play();
                         }
+
+                        // Gère la fin du jeu
                         if (currentLyricIndex === lyrics.length - 1) {
+                            console.log('Fin du jeu détectée');
                             setIsStarted(false);
                             setIsGameOver(true);
                             setIsValidated(true);
                         }
 
-                        return 0; // Réinitialise le compte à rebours
+                        isHandlingLineSwitch.current = false; // Libère le verrou
+                        return 0;
                     }
+
                     return prev - 1; // Décrémente le compteur
                 });
             }, 1000);
-        } else {
-            setCountdown(10); // Réinitialise si le compte à rebours est inactif
         }
 
-        // Nettoie l'intervalle pour éviter des fuites
-        return () => clearInterval(timer);
-    }, [isCountdownActive, currentLyricIndex, lyrics, audioPlayerRef, isValidated]);
+        return () => {
+            console.log('Nettoyage des timers');
+            clearInterval(timer);
+            isHandlingLineSwitch.current = false; // Libère le verrou
+        };
+    }, [isCountdownActive, lyrics.length, audioPlayerRef, isValidated]);
 
 
     //Affiche les paroles et le score final
