@@ -172,6 +172,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
                         if (currentLyricIndex < lyrics.length - 1) {
                             setCurrentLyricIndex((prevIndex) => {
+                                // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
                                 return prevIndex + 0.5;
                             });
 
