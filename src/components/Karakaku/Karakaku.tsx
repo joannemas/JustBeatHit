@@ -161,11 +161,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         if (isCountdownActive && !isHandlingLineSwitch.current) {
             isHandlingLineSwitch.current = true; // Active le verrou
             setCountdown(10);
-            console.log('Compte à rebours démarré');
 
             timer = setInterval(() => {
                 setCountdown((prev) => {
-                    console.log('Compte à rebours actuel:', prev);
 
                     if (prev <= 1) {
                         clearInterval(timer);
@@ -174,7 +172,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
                         if (currentLyricIndex < lyrics.length - 1) {
                             setCurrentLyricIndex((prevIndex) => {
-                                console.log('Passage à la ligne suivante (correct):', prevIndex + 0.5);
                                 return prevIndex + 0.5;
                             });
 
@@ -186,17 +183,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
                             // Reprend la musique si elle est en pause
                             if (audioPlayerRef.current?.audioEl.current?.paused) {
-                                console.log('Reprise de la musique');
                                 audioPlayerRef.current.audioEl.current.play();
                             }
                         } else if (currentLyricIndex === lyrics.length - 1 && !isValidated) {
-                            console.log('Dernière ligne non validée, reprise de la musique');
                             audioPlayerRef.current?.audioEl.current?.play();
                         }
 
                         // Gère la fin du jeu
                         if (currentLyricIndex === lyrics.length - 1) {
-                            console.log('Fin du jeu détectée');
                             setIsStarted(false);
                             setIsGameOver(true);
                             setIsValidated(true);
@@ -211,7 +205,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         }
 
         return () => {
-            console.log('Nettoyage des timers');
             clearInterval(timer);
             isHandlingLineSwitch.current = false; // Libère le verrou
         };
