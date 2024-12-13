@@ -160,6 +160,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
         if (isCountdownActive && !isHandlingLineSwitch.current) {
             isHandlingLineSwitch.current = true; // Active le verrou
+            setCountdown(10);
             console.log('Compte à rebours démarré');
 
             timer = setInterval(() => {
@@ -200,7 +201,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                             setIsGameOver(true);
                             setIsValidated(true);
                         }
-
                         isHandlingLineSwitch.current = false; // Libère le verrou
                         return 0;
                     }
