@@ -63,6 +63,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             audioPlayerRef,
             lyrics,
             currentLyricIndex,
+            userInput,
             isValidated,
             isMusicFinished,
             setUserInput,
@@ -158,7 +159,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     useEffect(() => {
         let timer: NodeJS.Timeout;
 
-        if (isCountdownActive && !isHandlingLineSwitch.current) {
+        if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated) {
             isHandlingLineSwitch.current = true; // Active le verrou
             setCountdown(10);
 
@@ -203,6 +204,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     return prev - 1; // Décrémente le compteur
                 });
             }, 1000);
+        } else if (currentLyricIndex === lyrics.length - 1 && isValidated && isMusicFinished) {
+            setIsStarted(false);
+            setIsGameOver(true);
+            setIsValidated(true);
         }
 
         return () => {
