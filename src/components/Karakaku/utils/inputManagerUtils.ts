@@ -21,6 +21,7 @@ export const handleInputChange = (
     setIncorrectCharacters: (count: (prevCount: number) => number) => void,
     setHasErrors: (hasError: boolean) => void,
     setIsValidated: (validated: boolean) => void,
+    setCompletedInputs: (inputs: (prevInputs: { [key: number]: string }) => { [key: number]: string }) => void,
     setTotalCharacters: (total: (prevTotal: number) => number) => void,
     audioPlayerRef: React.RefObject<any>,
     setIsStarted: (started: boolean) => void,
@@ -120,6 +121,7 @@ export const handleInputChange = (
     let lineLyricSize = normalizeString(currentLyric.trim()).length;
 
     if (userLyricSize === lineLyricSize) {
+        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInput }));
         setIsValidated(true);
         if (!hasErrors) {
             const points = 500;

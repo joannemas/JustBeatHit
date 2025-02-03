@@ -121,7 +121,17 @@ audio {
     }
 }
 
-.previous,
+.previous{
+    color: #888;
+    .right {
+        color: $primary-color;
+    }
+
+    .wrong {
+        color: $error-color;
+    }
+}
+
 .next {
     color: #888;
 }

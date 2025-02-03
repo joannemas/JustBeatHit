@@ -40,7 +40,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [totalLines, setTotalLines] = useState<number>(0);
     const [countdown, setCountdown] = useState<number>(10);
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
-    const [lineSwitchLocked, setLineSwitchLocked] = useState(false);
+    const [completedInputs, setCompletedInputs] = useState<string[]>([]);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -95,6 +95,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             setIncorrectCharacters,
             setHasErrors,
             setIsValidated,
+            setCompletedInputs,
             setTotalCharacters,
             audioPlayerRef,
             setIsStarted,
@@ -125,6 +126,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         });
     };
 
+    useEffect(() => {
+        console.log('completedInputs', completedInputs);
+    }, [completedInputs]);
+
     //Termine la partie si l'utilisateur a terminé de saisir les paroles et que la chanson est terminée
     useEffect(() => {
         if (currentLyricIndex === lyrics.length - 1 && (isValidated && isMusicFinished)) {
@@ -151,6 +156,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         setEndTime(0);
         setIncorrectCharacters(0);
         setTotalCharacters(0);
+        setCompletedInputs([]);
         audioPlayerRef.current?.audioEl.current?.load();
     };
     const isHandlingLineSwitch = useRef(false);
@@ -177,6 +183,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                                 return prevIndex + 0.5;
                             });
 
+                            console.log(userInput);
+
+                            setCompletedInputs((prev) => ({
+                                ...prev,
+                                [currentLyricIndex]: userInput || "", // Ajoute l'input ou une chaîne vide si rien n'est saisi
+                            }));
                             // Réinitialise l'état des inputs
                             setUserInput('');
                             setLockedChars('');
@@ -238,7 +250,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
         return lyrics.map((lyric, index) => (
             <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
-                {index === currentLyricIndex - 1 && <p className="previous">{lyrics[index].text}</p>}
+                {index === currentLyricIndex - 1 && (
+                    <p className="previous">
+                        {lyrics[index].text.split('').map((char, charIndex) => {
+                            const userInputForLine = completedInputs[index] || ''; // Évite undefined
+                            const userChar = userInputForLine[charIndex] || ''; // Évite undefined
+                            const className = normalizeString(userChar) === normalizeString(char)
+                                ? 'right'
+                                : 'wrong';
+
+                            return <span key={charIndex} className={className}>{char}</span>;
+                        })}
+                    </p>
+                )}
                 {index === currentLyricIndex && (
                     <div className="current-lyric-container">
                         <p className="current-lyric">{getStyledText()}</p>
