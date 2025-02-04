@@ -21,7 +21,7 @@ export const handleInputChange = (
     setIncorrectCharacters: (count: (prevCount: number) => number) => void,
     setHasErrors: (hasError: boolean) => void,
     setIsValidated: (validated: boolean) => void,
-    setCompletedInputs: (inputs: (prevInputs: { [key: number]: string }) => { [key: number]: string }) => void,
+    setCompletedInputs: (value: (((prevState: string[]) => string[]) | string[])) => void,
     setTotalCharacters: (total: (prevTotal: number) => number) => void,
     audioPlayerRef: React.RefObject<any>,
     setIsStarted: (started: boolean) => void,

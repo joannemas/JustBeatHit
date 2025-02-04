@@ -111,8 +111,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         const currentLyric = lyrics[currentLyricIndex]?.text || '';
         return currentLyric.split('').map((char, index) => {
             let className = '';
+            // Si l'utilisateur a écrit jusqu'à ce caractère
             if (index < userInput.length) {
-                className = normalizeString(userInput[index]) === normalizeString(char) ? 'right' : 'wrong';
+                // Vérification de la correspondance
+                className = normalizeString(userInput[index]) === normalizeString(char)
+                    ? 'right'
+                    : 'wrong';
             }
 
             if (!charRefs.current[currentLyricIndex]) {
@@ -187,7 +191,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
 
                             setCompletedInputs((prev) => ({
                                 ...prev,
-                                [currentLyricIndex]: userInput || "", // Ajoute l'input ou une chaîne vide si rien n'est saisi
+                                [currentLyricIndex]: userInput,
                             }));
                             // Réinitialise l'état des inputs
                             setUserInput('');
@@ -256,8 +260,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                             const userInputForLine = completedInputs[index] || ''; // Évite undefined
                             const userChar = userInputForLine[charIndex] || ''; // Évite undefined
                             const className = normalizeString(userChar) === normalizeString(char)
-                                ? 'right'
-                                : 'wrong';
+                                ? 'right'  // Si le caractère saisi est correct
+                                : userChar === ''  // Pas encore saisi
+                                    ? '' // Pas de classe si rien saisi
+                                    : 'wrong'; // Si le caractère est incorrect
 
                             return <span key={charIndex} className={className}>{char}</span>;
                         })}
