@@ -245,41 +245,53 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             );
         }
 
-        return lyrics.map((lyric, index) => (
-            <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
-                {index === currentLyricIndex - 1 && (
-                    <p className="previous">
-                        {lyrics[index].text.split('').map((char, charIndex) => {
-                            const userInputForLine = completedInputs[index] || ''; // Évite undefined
-                            const userChar = userInputForLine[charIndex] || ''; // Évite undefined
-                            const className = normalizeString(userChar) === normalizeString(char)
-                                ? 'right'  // Si le caractère saisi est correct
-                                : userChar === ''  // Pas encore saisi
-                                    ? '' // Pas de classe si rien saisi
-                                    : 'wrong'; // Si le caractère est incorrect
+        return lyrics.map((lyric, index) => {
+            // Vérifie si l'index est dans la plage affichée (5 lignes avant et après)
+            if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
+                return null; // N'affiche pas la ligne si hors de la plage
+            }
 
-                            return <span key={charIndex} className={className}>{char}</span>;
-                        })}
-                    </p>
-                )}
-                {index === currentLyricIndex && (
-                    <div className="current-lyric-container">
-                        <p className="current-lyric">{getStyledText()}</p>
-                        <input
-                            type="text"
-                            value={userInput}
-                            onChange={handleInputChange}
-                            onPaste={handlePaste}
-                            className="text-input"
-                            autoFocus
-                            spellCheck={false}
-                        />
-                        <div ref={caretRef} className="caret"></div>
-                    </div>
-                )}
-                {index === currentLyricIndex + 1 && <p className="next">{lyrics[index].text}</p>}
-            </div>
-        ));
+            return (
+                <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
+                    {/* Lignes précédentes */}
+                    {index < currentLyricIndex && (
+                        <p className="previous">
+                            {lyrics[index].text.split('').map((char, charIndex) => {
+                                const userInputForLine = completedInputs[index] || ''; // Évite undefined
+                                const userChar = userInputForLine[charIndex] || ''; // Évite undefined
+                                const className = normalizeString(userChar) === normalizeString(char)
+                                    ? 'right'  // Si le caractère saisi est correct
+                                    : userChar === ''  // Pas encore saisi
+                                        ? '' // Pas de classe si rien saisi
+                                        : 'wrong'; // Si le caractère est incorrect
+
+                                return <span key={charIndex} className={className}>{char}</span>;
+                            })}
+                        </p>
+                    )}
+
+                    {/* Ligne actuelle */}
+                    {index === currentLyricIndex && (
+                        <div className="current-lyric-container">
+                            <p className="current-lyric">{getStyledText()}</p>
+                            <input
+                                type="text"
+                                value={userInput}
+                                onChange={handleInputChange}
+                                onPaste={handlePaste}
+                                className="text-input"
+                                autoFocus
+                                spellCheck={false}
+                            />
+                            <div ref={caretRef} className="caret"></div>
+                        </div>
+                    )}
+
+                    {/* Lignes suivantes */}
+                    {index > currentLyricIndex && <p className="next">{lyrics[index].text}</p>}
+                </div>
+            );
+        });
     };
 
     return (
