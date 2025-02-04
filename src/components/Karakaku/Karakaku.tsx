@@ -130,10 +130,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         });
     };
 
-    useEffect(() => {
-        console.log('completedInputs', completedInputs);
-    }, [completedInputs]);
-
     //Termine la partie si l'utilisateur a terminé de saisir les paroles et que la chanson est terminée
     useEffect(() => {
         if (currentLyricIndex === lyrics.length - 1 && (isValidated && isMusicFinished)) {
@@ -141,7 +137,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             setIsGameOver(true);
         }
     }, [currentLyricIndex, isValidated, lyrics.length, isMusicFinished]);
-
 
     //Relance la partie
     const handleReplay = () => {
@@ -186,8 +181,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                                 // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
                                 return prevIndex + 0.5;
                             });
-
-                            console.log(userInput);
 
                             setCompletedInputs((prev) => ({
                                 ...prev,
