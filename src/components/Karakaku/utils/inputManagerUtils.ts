@@ -121,7 +121,7 @@ export const handleInputChange = (
     let lineLyricSize = normalizeString(currentLyric.trim()).length;
 
     if (userLyricSize === lineLyricSize) {
-        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInput }));
+        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
         if (!hasErrors) {
             const points = 500;
