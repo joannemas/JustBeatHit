@@ -58,12 +58,6 @@ export const handleTimeUpdate = (
                 if (userInput.length !== currentLyric.length) {
                         // Démarrer le compte à rebours uniquement si ce n'est pas déjà fait
                         setIsCountdownActive(true);
-                        const points = -500;
-                        setScore(prevScore => {
-                            const newScore = Math.max(prevScore + points, 0);
-                            setLastScoreChange(points);
-                            return newScore;
-                        });
                 } else {
                     setIsMusicFinished(true);
                     setIsCountdownActive(false);
@@ -83,12 +77,6 @@ export const handleTimeUpdate = (
             if (!isValidated) {
                 audioEl.pause();
                 setIsCountdownActive(true);
-                const points = -500;
-                setScore(prevScore => {
-                    const newScore = Math.max(prevScore + points, 0);
-                    setLastScoreChange(points);
-                    return newScore;
-                });
             } else {
                 setUserInput('');
                 setLockedChars('');
