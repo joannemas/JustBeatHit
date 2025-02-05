@@ -19,8 +19,6 @@ export const calculateAccuracy = (completedInputs: Record<number, string>, lyric
     let totalCorrect = 0;
     let totalCharacters = 0;
 
-    console.log(completedInputs);
-    console.log(lyrics);
     Object.keys(completedInputs).forEach(index => {
         const completedLine = completedInputs[Number(index)].toLowerCase();
         const lyricLine = lyrics[Number(index)].text.toLowerCase();
@@ -36,6 +34,25 @@ export const calculateAccuracy = (completedInputs: Record<number, string>, lyric
 
     const accuracy = (totalCorrect / totalCharacters) * 100;
     return Math.round(accuracy);
+};
+
+export const calculateErrorsAndTotal = (completedInputs: Record<number, string>, lyrics: Array<{ text: string }>) => {
+    let totalErrors = 0;
+    let totalChars = 0;
+
+    Object.keys(completedInputs).forEach(index => {
+        const completedLine = completedInputs[Number(index)].toLowerCase();
+        const lyricLine = lyrics[Number(index)].text.toLowerCase();
+
+        // Calculer le nombre total de caractères (sans espaces) pour cette ligne
+        totalChars += lyricLine.replace(/\s/g, '').length;
+
+        // Calculer le nombre d'erreurs pour la ligne
+        const incorrectChars = completedLine.split('').filter((char, i) => char !== lyricLine[i]).length;
+        totalErrors += incorrectChars;
+    });
+
+    return { totalErrors, totalChars };
 };
 
 

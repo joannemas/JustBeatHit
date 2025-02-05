@@ -8,7 +8,12 @@ import Link from 'next/link';
 
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
-import { calculateWPM, calculateAccuracy, calculatePauseCount } from './utils/scoreUtils';
+import {
+    calculateWPM,
+    calculateAccuracy,
+    calculatePauseCount,
+    calculateErrorsAndTotal
+} from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 
@@ -41,6 +46,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [countdown, setCountdown] = useState<number>(10);
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
+    const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -240,6 +246,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
                     <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
                     <p>Précision d&apos;écriture : {calculateAccuracy(completedInputs, lyrics)}%</p>
+                    <p>Nombre de fautes : {totalErrors} / Caractères : {totalChars}</p>
                     <div className="btn-list">
                         <button className="btn-primary" onClick={handleReplay}>Rejouer</button>
                         <Link href="/karakaku">
