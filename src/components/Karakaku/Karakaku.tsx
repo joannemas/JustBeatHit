@@ -169,6 +169,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated) {
             isHandlingLineSwitch.current = true; // Active le verrou
             setCountdown(10);
+            setPauseCount(prevCount => calculatePauseCount(prevCount));
 
             timer = setInterval(() => {
                 setCountdown((prev) => {

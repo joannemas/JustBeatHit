@@ -59,7 +59,6 @@ export const handleTimeUpdate = (
                         // Démarrer le compte à rebours uniquement si ce n'est pas déjà fait
                         setIsCountdownActive(true);
                         const points = -500;
-                        setPauseCount(prevCount => calculatePauseCount(prevCount));
                         setScore(prevScore => {
                             const newScore = Math.max(prevScore + points, 0);
                             setLastScoreChange(points);
@@ -85,7 +84,6 @@ export const handleTimeUpdate = (
                 audioEl.pause();
                 setIsCountdownActive(true);
                 const points = -500;
-                setPauseCount(prevCount => calculatePauseCount(prevCount));
                 setScore(prevScore => {
                     const newScore = Math.max(prevScore + points, 0);
                     setLastScoreChange(points);
