@@ -158,6 +158,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         setIncorrectCharacters(0);
         setTotalCharacters(0);
         setCompletedInputs([]);
+        setIsCountdownActive(false);
         audioPlayerRef.current?.audioEl.current?.load();
     };
     const isHandlingLineSwitch = useRef(false);
@@ -238,7 +239,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <p>Score final: {score}</p>
                     <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
                     <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
-                    <p>Précision d&apos;écriture : {calculateAccuracy(totalCharacters, incorrectCharacters)}%</p>
+                    <p>Précision d&apos;écriture : {calculateAccuracy(completedInputs, lyrics)}%</p>
                     <div className="btn-list">
                         <button className="btn-primary" onClick={handleReplay}>Rejouer</button>
                         <Link href="/karakaku">

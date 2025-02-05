@@ -15,13 +15,29 @@ export const calculateWPM = (startTime: number, endTime: number, lyrics: Lyric[]
 };
 
 //Calcule la précision d'écriture
-export const calculateAccuracy = (totalCharacters: number, incorrectCharacters: number): number => {
-    if (!totalCharacters || totalCharacters === 0) {
+export const calculateAccuracy = (completedInputs: Record<number, string>, lyrics: Array<{ text: string }>): number => {
+    let totalCorrect = 0;
+    let totalCharacters = 0;
+
+    console.log(completedInputs);
+    console.log(lyrics);
+    Object.keys(completedInputs).forEach(index => {
+        const completedLine = completedInputs[Number(index)].toLowerCase();
+        const lyricLine = lyrics[Number(index)].text.toLowerCase();
+
+        const correctChars = completedLine.split('').filter((char, i) => char === lyricLine[i]).length;
+        totalCorrect += correctChars;
+        totalCharacters += lyricLine.length;
+    });
+
+    if (totalCharacters === 0) {
         return 0;
     }
-    const accuracy = ((totalCharacters - incorrectCharacters) / totalCharacters) * 100;
+
+    const accuracy = (totalCorrect / totalCharacters) * 100;
     return Math.round(accuracy);
 };
+
 
 //Calcule le score
 export const calculateScore = (prevScore: number, points: number): number => {
