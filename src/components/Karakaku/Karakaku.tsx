@@ -186,6 +186,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                                 ...prev,
                                 [currentLyricIndex]: userInput,
                             }));
+
                             // Réinitialise l'état des inputs
                             setUserInput('');
                             setLockedChars('');
@@ -246,6 +247,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         }
 
         return lyrics.map((lyric, index) => {
+            const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+            const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+            const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+            const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+
             // Vérifie si l'index est dans la plage affichée (5 lignes avant et après)
             if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
                 return null; // N'affiche pas la ligne si hors de la plage
@@ -255,7 +261,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                 <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
                     {/* Lignes précédentes */}
                     {index < currentLyricIndex && (
-                        <p className="previous">
+                        <p
+                            className={`previous 
+                            ${index === currentLyricIndex ? 'current' : ''}
+                            ${isBeforeFirst ? '--before-line' : ''}
+                            ${isFirstLine ? '--first-line' : ''}`
+                            }
+                        >
                             {lyrics[index].text.split('').map((char, charIndex) => {
                                 const userInputForLine = completedInputs[index] || ''; // Évite undefined
                                 const userChar = userInputForLine[charIndex] || ''; // Évite undefined
@@ -288,7 +300,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     )}
 
                     {/* Lignes suivantes */}
-                    {index > currentLyricIndex && <p className="next">{lyrics[index].text}</p>}
+                    {index > currentLyricIndex && (
+                        <p className={`next 
+                            ${isLastLine ? '--last-line' : ''}
+                            ${isBeforeLast ? '--before-line' : ''}`
+                        }>
+                            {lyrics[index].text}
+                        </p>
+                    )}
                 </div>
             );
         });
