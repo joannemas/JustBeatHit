@@ -90,10 +90,10 @@ export const handleInputChange = (
         usedSpecialChar = true;
     }
 
-    const correctPortion = currentLyric.slice(0, userInputUpdated.length);
-    const userTypedPortion = userInputUpdated.slice(0, correctPortion.length);
+    const lastTypedChar = userInputUpdated.slice(-1);
+    const correctChar = currentLyric[userInputUpdated.length - 1];
 
-    if (normalizeString(userTypedPortion) === normalizeString(correctPortion)) {
+    if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
         setLockedChars(userInputUpdated);
         const points = 100;
         if (!usedSpecialChar) {
@@ -124,6 +124,10 @@ export const handleInputChange = (
         setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
         if (!hasErrors) {
+            const points = 1000;
+            setScore(prevScore => calculateScore(prevScore, points));
+            setLastScoreChange(points);
+        } else {
             const points = 500;
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
