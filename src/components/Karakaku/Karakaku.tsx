@@ -94,6 +94,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             setLastScoreChange,
             setIncorrectCharacters,
             setHasErrors,
+            isValidated,
             setIsValidated,
             completedInputs,
             setCompletedInputs,
