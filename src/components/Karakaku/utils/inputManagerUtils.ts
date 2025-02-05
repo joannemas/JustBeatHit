@@ -21,6 +21,7 @@ export const handleInputChange = (
     setIncorrectCharacters: (count: (prevCount: number) => number) => void,
     setHasErrors: (hasError: boolean) => void,
     setIsValidated: (validated: boolean) => void,
+    completedInputs: { [key: number]: string },
     setCompletedInputs: (value: (((prevState: string[]) => string[]) | string[])) => void,
     setTotalCharacters: (total: (prevTotal: number) => number) => void,
     audioPlayerRef: React.RefObject<any>,
@@ -123,12 +124,9 @@ export const handleInputChange = (
     if (userLyricSize === lineLyricSize) {
         setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
-        if (!hasErrors) {
-            const points = 1000;
-            setScore(prevScore => calculateScore(prevScore, points));
-            setLastScoreChange(points);
-        } else {
-            const points = 500;
+
+        if (!completedInputs[currentLyricIndex]){
+            const points = hasErrors ? 500 : 1000;
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
         }
