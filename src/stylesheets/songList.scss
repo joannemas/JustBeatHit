@@ -1,3 +1,9 @@
+.back-btn {
+    position: absolute;
+    left: 4rem;
+    top: 3rem;
+}
+
 .container {
     text-align: center;
     padding: 20px;
@@ -37,7 +43,7 @@
 .song-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px; 
+    gap: 30px;
     padding: 20px;
 }
 
@@ -68,20 +74,20 @@
 
 .song-content {
     position: relative;
-    background-image: url('/assets/img/Vinyl_02.png'); 
-    background-size: cover; 
-    background-position: center; 
+    background-image: url('/assets/img/Vinyl_02.png');
+    background-size: cover;
+    background-position: center;
     border-radius: 50%;
-    width: 200px; 
-    height: 200px; 
+    width: 200px;
+    height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     transition: transform 0.5s ease-in-out;
     cursor: pointer;
-    flex-direction: column; 
-    padding: 20px; 
+    flex-direction: column;
+    padding: 20px;
 }
 
 .inner-disk {
@@ -110,12 +116,14 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
 
-.song-title, .song-singer {
+.song-title,
+.song-singer {
     color: white;
     margin: 5px 0;
 }
@@ -124,10 +132,10 @@
     font-family: var(--font-goia);
 }
 
-.song-title, 
+.song-title,
 .song-singer {
     color: white;
     margin: 5px 0;
-    user-select: none; 
-    pointer-events: none; 
+    user-select: none;
+    pointer-events: none;
 }

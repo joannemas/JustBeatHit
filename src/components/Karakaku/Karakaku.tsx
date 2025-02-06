@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
-import {LyricLine, parseLRC} from '@/utils/LrcParser';
+import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
 
@@ -202,10 +202,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         listenInterval={100}
                     />
                     {!isStarted && (
-                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted)}
+                        <div className="btn-container">
+                            <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted)}
                                 className="btn-primary">
-                            {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
-                        </button>
+                                {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                            </button>
+                            <a href="/karakaku" className="btn-secondary">
+                                Quit
+                            </a>
+                        </div>
                     )}
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
