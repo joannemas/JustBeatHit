@@ -362,6 +362,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         <div className="karakaku">
             {!isGameOver && (
                 <>
+                    <div className="animated-background"></div>
+                    <div className="animated-background --inverse"></div>
+
                     <Image priority
                            src="/assets/img/logo-jbh.png"
                            alt="Logo Just Beat Hit"
@@ -378,8 +381,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     />
                     {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
-                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                                className="btn-primary" style={{opacity: 0}}>
+                        <button
+                            onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                            className="btn-primary" style={{opacity: 0}}>
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
@@ -390,7 +394,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
                     <Image priority
-                           src="/assets/img/vinyl-jbh.png"
+                           src="/assets/img/vinyl-jbh.svg"
                            alt="Vinyl svg"
                            width={1000}
                            height={1000}
