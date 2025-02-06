@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
-import {LyricLine, parseLRC} from '@/utils/LrcParser';
+import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
 
@@ -201,7 +201,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         if (currentLyricIndex < lyrics.length - 1) {
                             setCurrentLyricIndex((prevIndex) => {
                                 // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
-                                return prevIndex + 0.5;
+                                return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
                             });
 
                             setCompletedInputs((prev) => ({
@@ -309,20 +309,20 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     {index === currentLyricIndex && (
                         <div className="current-lyric-container">
                             <Image priority
-                                   src="/assets/img/icon/arrow-right.svg"
-                                   alt="Music svg"
-                                   width={40}
-                                   height={40}
-                                   className="arrow-icon"
+                                src="/assets/img/icon/arrow-right.svg"
+                                alt="Music svg"
+                                width={40}
+                                height={40}
+                                className="arrow-icon"
                             />
                             {isCountdownActive &&
                                 <div className="countdown">
                                     <Image priority
-                                           src="/assets/img/icon/timer.svg"
-                                           alt="Music svg"
-                                           width={40}
-                                           height={40}
-                                           className="countdown__icon"
+                                        src="/assets/img/icon/timer.svg"
+                                        alt="Music svg"
+                                        width={40}
+                                        height={40}
+                                        className="countdown__icon"
                                     />
                                     <span className="highlight">{countdown}&nbsp;</span>
                                     {countdown === 1 ? 'seconde' : 'secondes'}
@@ -366,11 +366,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     <div className="animated-background --inverse"></div>
 
                     <Image priority
-                           src="/assets/img/logo-jbh.png"
-                           alt="Logo Just Beat Hit"
-                           width={1000}
-                           height={1000}
-                           className="logo-jbh"
+                        src="/assets/img/logo-jbh.png"
+                        alt="Logo Just Beat Hit"
+                        width={1000}
+                        height={1000}
+                        className="logo-jbh"
                     />
                     <ReactAudioPlayer
                         src={songSrc}
@@ -383,7 +383,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     {!isStarted && (
                         <button
                             onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                            className="btn-primary" style={{opacity: 0}}>
+                            className="btn-primary" style={{ opacity: 0 }}>
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
@@ -394,11 +394,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
                     <Image priority
-                           src="/assets/img/vinyl-jbh.svg"
-                           alt="Vinyl svg"
-                           width={1000}
-                           height={1000}
-                           className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}
+                        src="/assets/img/vinyl-jbh.svg"
+                        alt="Vinyl svg"
+                        width={1000}
+                        height={1000}
+                        className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}
                     />
                 </>
             )}
