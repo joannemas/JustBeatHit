@@ -22,5 +22,5 @@ export default async function SongPage({ params }: SongPageProps){
     return <div>Loading...</div>;
   }
 
-  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} />;
+  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} />;
 };

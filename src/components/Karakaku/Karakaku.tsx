@@ -21,9 +21,12 @@ import Image from "next/image";
 interface KarakakuProps {
     songSrc: string;
     lyricSrc: string;
+    title?: string;
+    singer?: string;
 }
 
-const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
+
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer }) => {
     const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
     const [userInput, setUserInput] = useState<string>('');
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -48,6 +51,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
+
+    console.log('songSrc' + songSrc);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -357,6 +362,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         <div className="karakaku">
             {!isGameOver && (
                 <>
+                    <Image priority
+                           src="/assets/img/logo-jbh.png"
+                           alt="Logo Just Beat Hit"
+                           width={1000}
+                           height={1000}
+                           className="logo-jbh"
+                    />
                     <ReactAudioPlayer
                         src={songSrc}
                         controls
@@ -370,12 +382,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
+                    <div className="title-song">
+                        <h5>{singer} - {title}</h5>
+                    </div>
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
                     <Image priority
                            src="/assets/img/vinyl-jbh.png"
-                           alt="Music svg"
+                           alt="Vinyl svg"
                            width={1000}
                            height={1000}
                            className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}

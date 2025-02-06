@@ -225,6 +225,27 @@ audio {
     }
 }
 
+.title-song {
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 28px;
+    position: absolute;
+    text-transform: uppercase;
+    color: #FFF6F1;
+    top: 37%;
+    transform: translateY(-50%);
+    left: 3%;
+}
+
+.logo-jbh{
+    position: absolute;
+    width: 6rem;
+    height: auto;
+    left: 3%;
+    top: 3%;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
