@@ -16,6 +16,7 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
+import Image from "next/image";
 
 interface KarakakuProps {
     songSrc: string;
@@ -302,7 +303,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     {/* Ligne actuelle */}
                     {index === currentLyricIndex && (
                         <div className="current-lyric-container">
-                            <p className="current-lyric">{getStyledText()}</p>
+                            <Image priority
+                                   src="/assets/img/icon/arrow-right.svg"
+                                   alt="Music svg"
+                                   width={40}
+                                   height={40}
+                                   className="arrow-icon"
+                            />
+                            <p className="current-lyric">
+                                {getStyledText()}
+                            </p>
                             <input
                                 type="text"
                                 value={userInput}

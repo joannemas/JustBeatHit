@@ -36,8 +36,9 @@ audio {
 .karakaku {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .btn-list {
@@ -54,7 +55,7 @@ audio {
     @include button($error-color);
 }
 
-.lyrics,
+
 .text-input {
     font-size: 1.75rem;
     font-weight: 300;
@@ -63,7 +64,18 @@ audio {
     max-height: 50vh;
     font-family: 'Goia', sans-serif;
     transition: all 0.1s ease-in-out;
+}
 
+.lyrics{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 300;
+    gap: 1rem;
+    position: relative;
 }
 
 .lyric-line {
@@ -74,17 +86,19 @@ audio {
 
     .current-lyric-container {
         position: relative;
+        //height: 100%;
 
         .current-lyric {
             white-space: pre-wrap;
+            margin: 0;
         }
 
         .text-input {
             position: absolute;
             top: -30px;
             left: 0;
-            width: 100%;
-            height: 100%;
+            //width: 100%;
+            //height: 100%;
             background: transparent;
             border: none;
             color: transparent;
@@ -113,22 +127,23 @@ audio {
     }
 
     .right {
-        color: $primary-color;
+        color: #FFAB36;
     }
 
     .wrong {
-        color: $error-color;
+        color: #F1203C;
     }
 }
 
 .previous{
+    margin: 0;
     color: rgba(255, 246, 241, 0.50);
     .right {
-        color: $primary-color;
+        color: #FFAB36;
     }
 
     .wrong {
-        color: $error-color;
+        color: #F1203C;
     }
 
     &.--first-line{
@@ -144,7 +159,7 @@ audio {
 
 .next {
     color: rgba(255, 246, 241, 0.5);
-
+    margin: 0;
     &.--last-line{
         //background: linear-gradient(to bottom, rgba(255, 246, 241, 0.20) 20%, rgba(255, 246, 241, 0.01) 70%);
         //-webkit-background-clip: text;
@@ -165,6 +180,16 @@ audio {
     animation: blink 1s ease-in-out infinite;
     transition: all 0.1s ease-in-out;
     top: 0;
+}
+
+.arrow-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -3rem;
+    //width: 100%;
+    //height: auto;
+    transition: all 0.1s ease-in-out;
 }
 
 @keyframes blink {
