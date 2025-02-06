@@ -310,6 +310,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                                    height={40}
                                    className="arrow-icon"
                             />
+                            {isCountdownActive &&
+                                <div className="countdown">
+                                    <Image priority
+                                           src="/assets/img/icon/timer.svg"
+                                           alt="Music svg"
+                                           width={40}
+                                           height={40}
+                                           className="countdown__icon"
+                                    />
+                                    <span className="highlight">{countdown}&nbsp;</span>
+                                    {countdown === 1 ? 'seconde' : 'secondes'}
+                                </div>
+                            }
                             <p className="current-lyric">
                                 {getStyledText()}
                             </p>
@@ -360,7 +373,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
-                    {isCountdownActive && <p className="countdown">Compte à rebours : {countdown}</p>}
                 </>
             )}
             <div className="lyrics">

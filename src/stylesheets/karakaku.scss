@@ -58,7 +58,7 @@ audio {
 
 .text-input {
     font-size: 1.75rem;
-    font-weight: 300;
+    font-weight: 700;
     text-align: left;
     margin-top: 2rem;
     max-height: 50vh;
@@ -73,7 +73,8 @@ audio {
     align-items: center;
     justify-content: center;
     font-size: 1.75rem;
-    font-weight: 300;
+    font-style: italic;
+    font-weight: 700;
     gap: 1rem;
     position: relative;
 }
@@ -86,7 +87,6 @@ audio {
 
     .current-lyric-container {
         position: relative;
-        //height: 100%;
 
         .current-lyric {
             white-space: pre-wrap;
@@ -97,8 +97,6 @@ audio {
             position: absolute;
             top: -30px;
             left: 0;
-            //width: 100%;
-            //height: 100%;
             background: transparent;
             border: none;
             color: transparent;
@@ -186,14 +184,28 @@ audio {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: -3rem;
-    //width: 100%;
-    //height: auto;
+    right: calc(100% + 1.5rem);
     transition: all 0.1s ease-in-out;
 }
 
-@keyframes blink {
+.countdown{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(100% + 1.5rem);
+    transition: all 0.1s ease-in-out;
+    text-transform: uppercase;
+    font-size: 20px;
+    font-style: italic;
 
+    .highlight {
+        color: #F1203C;
+    }
+}
+
+@keyframes blink {
     from,
     to {
         opacity: 1;
