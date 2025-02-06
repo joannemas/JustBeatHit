@@ -24,6 +24,9 @@ npm install
 
 ### 3. Configure environnement
 Copy the content of the `.env.example` in a new `.env` file
+```bash
+cp .env.example .env
+```
 
 ### 4. Run the server : 
 **Dev mode**
