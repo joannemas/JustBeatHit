@@ -373,6 +373,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
+                    <Image priority
+                           src="/assets/img/vinyl-jbh.png"
+                           alt="Music svg"
+                           width={1000}
+                           height={1000}
+                           className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}
+                    />
                 </>
             )}
             <div className="lyrics">

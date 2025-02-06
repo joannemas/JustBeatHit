@@ -39,6 +39,7 @@ audio {
     align-items: center;
     height: 100vh;
     overflow: hidden;
+    position: relative;
 }
 
 .btn-list {
@@ -202,6 +203,34 @@ audio {
 
     .highlight {
         color: #F1203C;
+    }
+}
+
+.vinyl-player{
+    position: absolute;
+    width: 35vw;
+    height: auto;
+    z-index: -1;
+    bottom: -20%;
+    left: -8%;
+    transition: all 0.2s ease-in-out;
+    animation: spin 4s linear infinite;
+    transform-origin: center;
+    &.--playing{
+        animation-play-state: running;
+    }
+
+    &.--paused{
+        animation-play-state: paused;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 
