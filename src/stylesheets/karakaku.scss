@@ -178,3 +178,54 @@ audio {
         opacity: 0;
     }
 }
+
+.score {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 50px;
+    font-style: italic;
+    text-align: right;
+
+    @keyframes impact-appear {
+        0% {
+            transform: scale(0) translateY(30px);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1) translateY(-10px);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .label {
+        font-size: 2rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .actual-score {
+        font-size: 7rem;
+        font-weight: 700;
+        margin: 0;
+        background: $gradient;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        -moz-background-clip: text;
+        -moz-text-fill-color: transparent;
+    }
+
+    .change-score {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $purple-heart;
+        animation: impact-appear 0.2s ease-out;
+
+    }
+}

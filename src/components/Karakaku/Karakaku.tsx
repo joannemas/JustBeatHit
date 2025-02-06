@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import {LyricLine, parseLRC} from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
@@ -347,14 +347,22 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
-                    <div className="score">
-                        <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
-                    </div>
                     {isCountdownActive && <p className="countdown">Compte à rebours : {countdown}</p>}
                 </>
             )}
             <div className="lyrics">
                 {renderLyrics()}
+            </div>
+
+            <div className="score">
+            <p
+                className='change-score'
+                key={lastScoreChange}
+                style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+            </p>                
+            <p className='actual-score'>{score}</p>
+                <p className='label'>Score</p>
             </div>
         </div>
     );
