@@ -376,9 +376,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         ref={audioPlayerRef}
                         listenInterval={100}
                     />
+                    {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
                         <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                                className="btn-primary">
+                                className="btn-primary" style={{opacity: 0}}>
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
