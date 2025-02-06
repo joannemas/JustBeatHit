@@ -8,7 +8,12 @@ import Link from 'next/link';
 
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
-import { calculateWPM, calculateAccuracy, calculatePauseCount } from './utils/scoreUtils';
+import {
+    calculateWPM,
+    calculateAccuracy,
+    calculatePauseCount,
+    calculateErrorsAndTotal
+} from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 
@@ -38,6 +43,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [isMusicFinished, setIsMusicFinished] = useState<boolean>(false);
     const [lyrics, setLyrics] = useState<LyricLine[]>([]);
     const [totalLines, setTotalLines] = useState<number>(0);
+    const [countdown, setCountdown] = useState<number>(10);
+    const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
+    const [completedInputs, setCompletedInputs] = useState<string[]>([]);
+    const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -60,7 +69,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             audioPlayerRef,
             lyrics,
             currentLyricIndex,
+            userInput,
             isValidated,
+            isMusicFinished,
             setUserInput,
             setLockedChars,
             setCurrentLyricIndex,
@@ -70,7 +81,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             calculatePauseCount,
             setScore,
             setLastScoreChange,
-            setIsMusicFinished
+            setIsMusicFinished,
+            setIsCountdownActive
         );
     };
 
@@ -88,7 +100,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             setLastScoreChange,
             setIncorrectCharacters,
             setHasErrors,
+            isValidated,
             setIsValidated,
+            completedInputs,
+            setCompletedInputs,
             setTotalCharacters,
             audioPlayerRef,
             setIsStarted,
@@ -104,8 +119,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         const currentLyric = lyrics[currentLyricIndex]?.text || '';
         return currentLyric.split('').map((char, index) => {
             let className = '';
+            // Si l'utilisateur a écrit jusqu'à ce caractère
             if (index < userInput.length) {
-                className = normalizeString(userInput[index]) === normalizeString(char) ? 'right' : 'wrong';
+                // Vérification de la correspondance
+                className = normalizeString(userInput[index]) === normalizeString(char)
+                    ? 'right'
+                    : 'wrong';
             }
 
             if (!charRefs.current[currentLyricIndex]) {
@@ -127,7 +146,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         }
     }, [currentLyricIndex, isValidated, lyrics.length, isMusicFinished]);
 
-
     //Relance la partie
     const handleReplay = () => {
         setCurrentLyricIndex(0);
@@ -145,8 +163,85 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         setEndTime(0);
         setIncorrectCharacters(0);
         setTotalCharacters(0);
+        setCompletedInputs([]);
+        setIsCountdownActive(false);
         audioPlayerRef.current?.audioEl.current?.load();
     };
+    const isHandlingLineSwitch = useRef(false);
+
+    // Compte à rebours si ligne incomplète
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated) {
+            isHandlingLineSwitch.current = true; // Active le verrou
+            setCountdown(10);
+            setPauseCount(prevCount => calculatePauseCount(prevCount));
+            const points = -500;
+            setScore(prevScore => {
+                const newScore = Math.max(prevScore + points, 0);
+                setLastScoreChange(points);
+                return newScore;
+            });
+
+            timer = setInterval(() => {
+                setCountdown((prev) => {
+
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setCountdown(10);
+                        setIsCountdownActive(false);
+
+                        if (currentLyricIndex < lyrics.length - 1) {
+                            setCurrentLyricIndex((prevIndex) => {
+                                // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
+                                return prevIndex + 0.5;
+                            });
+
+                            setCompletedInputs((prev) => ({
+                                ...prev,
+                                [currentLyricIndex]: userInput,
+                            }));
+
+                            // Réinitialise l'état des inputs
+                            setUserInput('');
+                            setLockedChars('');
+                            setHasErrors(false);
+                            setIsValidated(false);
+
+                            // Reprend la musique si elle est en pause
+                            if (audioPlayerRef.current?.audioEl.current?.paused) {
+                                audioPlayerRef.current.audioEl.current.play();
+                            }
+                        } else if (currentLyricIndex === lyrics.length - 1 && !isValidated) {
+                            audioPlayerRef.current?.audioEl.current?.play();
+                        }
+
+                        // Gère la fin du jeu
+                        if (currentLyricIndex === lyrics.length - 1) {
+                            setIsStarted(false);
+                            setIsGameOver(true);
+                            setIsValidated(true);
+                        }
+                        isHandlingLineSwitch.current = false; // Libère le verrou
+                        return 0;
+                    }
+
+                    return prev - 1; // Décrémente le compteur
+                });
+            }, 1000);
+        } else if (currentLyricIndex === lyrics.length - 1 && isValidated && isMusicFinished) {
+            setIsStarted(false);
+            setIsGameOver(true);
+            setIsValidated(true);
+        }
+
+        return () => {
+            clearInterval(timer);
+            isHandlingLineSwitch.current = false; // Libère le verrou
+        };
+    }, [isCountdownActive, lyrics.length, audioPlayerRef, isValidated]);
+
 
     //Affiche les paroles et le score final
     const renderLyrics = () => {
@@ -156,7 +251,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <p>Score final: {score}</p>
                     <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
                     <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
-                    <p>Précision d&apos;écriture : {calculateAccuracy(totalCharacters, incorrectCharacters)}%</p>
+                    <p>Précision d&apos;écriture : {calculateAccuracy(completedInputs, lyrics)}%</p>
+                    <p>Nombre de fautes : {totalErrors} / {totalChars}</p>
                     <div className="btn-list">
                         <button className="btn-primary" onClick={handleReplay}>Rejouer</button>
                         <Link href="/karakaku">
@@ -167,27 +263,71 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             );
         }
 
-        return lyrics.map((lyric, index) => (
-            <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
-                {index === currentLyricIndex - 1 && <p className="previous">{lyrics[index].text}</p>}
-                {index === currentLyricIndex && (
-                    <div className="current-lyric-container">
-                        <p className="current-lyric">{getStyledText()}</p>
-                        <input
-                            type="text"
-                            value={userInput}
-                            onChange={handleInputChange}
-                            onPaste={handlePaste}
-                            className="text-input"
-                            autoFocus
-                            spellCheck={false}
-                        />
-                        <div ref={caretRef} className="caret"></div>
-                    </div>
-                )}
-                {index === currentLyricIndex + 1 && <p className="next">{lyrics[index].text}</p>}
-            </div>
-        ));
+        return lyrics.map((lyric, index) => {
+            const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+            const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+            const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+            const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+
+            // Vérifie si l'index est dans la plage affichée (5 lignes avant et après)
+            if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
+                return null; // N'affiche pas la ligne si hors de la plage
+            }
+
+            return (
+                <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
+                    {/* Lignes précédentes */}
+                    {index < currentLyricIndex && (
+                        <p
+                            className={`previous 
+                            ${index === currentLyricIndex ? 'current' : ''}
+                            ${isBeforeFirst ? '--before-line' : ''}
+                            ${isFirstLine ? '--first-line' : ''}`
+                            }
+                        >
+                            {lyrics[index].text.split('').map((char, charIndex) => {
+                                const userInputForLine = completedInputs[index] || ''; // Évite undefined
+                                const userChar = userInputForLine[charIndex] || ''; // Évite undefined
+                                const className = normalizeString(userChar) === normalizeString(char)
+                                    ? 'right'  // Si le caractère saisi est correct
+                                    : userChar === ''  // Pas encore saisi
+                                        ? '' // Pas de classe si rien saisi
+                                        : 'wrong'; // Si le caractère est incorrect
+
+                                return <span key={charIndex} className={className}>{char}</span>;
+                            })}
+                        </p>
+                    )}
+
+                    {/* Ligne actuelle */}
+                    {index === currentLyricIndex && (
+                        <div className="current-lyric-container">
+                            <p className="current-lyric">{getStyledText()}</p>
+                            <input
+                                type="text"
+                                value={userInput}
+                                onChange={handleInputChange}
+                                onPaste={handlePaste}
+                                className="text-input"
+                                autoFocus
+                                spellCheck={false}
+                            />
+                            <div ref={caretRef} className="caret"></div>
+                        </div>
+                    )}
+
+                    {/* Lignes suivantes */}
+                    {index > currentLyricIndex && (
+                        <p className={`next 
+                            ${isLastLine ? '--last-line' : ''}
+                            ${isBeforeLast ? '--before-line' : ''}`
+                        }>
+                            {lyrics[index].text}
+                        </p>
+                    )}
+                </div>
+            );
+        });
     };
 
     return (
@@ -202,7 +342,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         listenInterval={100}
                     />
                     {!isStarted && (
-                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted)}
+                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
                                 className="btn-primary">
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
@@ -210,6 +350,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     <div className="score">
                         <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
+                    {isCountdownActive && <p className="countdown">Compte à rebours : {countdown}</p>}
                 </>
             )}
             <div className="lyrics">

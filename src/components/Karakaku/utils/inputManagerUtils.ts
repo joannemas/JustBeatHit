@@ -20,7 +20,10 @@ export const handleInputChange = (
     setLastScoreChange: (score: number) => void,
     setIncorrectCharacters: (count: (prevCount: number) => number) => void,
     setHasErrors: (hasError: boolean) => void,
+    isValidated: boolean,
     setIsValidated: (validated: boolean) => void,
+    completedInputs: { [key: number]: string },
+    setCompletedInputs: (value: (((prevState: string[]) => string[]) | string[])) => void,
     setTotalCharacters: (total: (prevTotal: number) => number) => void,
     audioPlayerRef: React.RefObject<any>,
     setIsStarted: (started: boolean) => void,
@@ -48,6 +51,10 @@ export const handleInputChange = (
         usedSpecialChar = false;
     }
 
+    // Stocker l'ancien état avant mise à jour
+    const previousInput = userInput;
+    const wasLineValidated = isValidated;
+
     // Cas où l'utilisateur tente d'effacer un caractère validé
     if (inputValue.length < lockedChars.length) {
         // Empêcher l'effacement des caractères validés
@@ -58,6 +65,29 @@ export const handleInputChange = (
     // Permettre l'effacement uniquement des erreurs (caractères non validés)
     if (inputValue.length < userInput.length && inputValue.length >= lockedChars.length) {
         setUserInput(inputValue);  // Mettre à jour avec les erreurs corrigées
+
+        // Détection du caractère supprimé
+        const removedChar = previousInput[previousInput.length - 1];
+        const wasCorrect = normalizeString(removedChar) === normalizeString(currentLyric[previousInput.length - 1]);
+        const isSpecialChar = specialChars.includes(removedChar);
+
+        setScore(prevScore => {
+            if (isSpecialChar) return prevScore;  // Ne change pas le score pour les caractères spéciaux
+            if (prevScore === 0 && !wasCorrect) return prevScore;  // Empêche de récupérer des points si le score est 0
+
+            let scoreChange = wasCorrect ? -100 : 200;  // Si correct -100, sinon +200
+
+            // Si on efface le dernier caractère d'une ligne validée, retirer les points de fin de ligne
+            if (wasLineValidated && inputValue.length === currentLyric.length - 1) {
+                scoreChange -= hasErrors ? 500 : 1000;
+                setIsValidated(false); // Désactiver la validation tant que l'utilisateur n'a pas retapé
+            }
+
+            const newScore = Math.max(prevScore + scoreChange, 0);
+            setLastScoreChange(scoreChange);
+            return newScore;
+        });
+
         return;
     }
 
@@ -89,11 +119,18 @@ export const handleInputChange = (
         usedSpecialChar = true;
     }
 
+    const lastTypedChar = userInputUpdated.slice(-1);
+    const correctChar = currentLyric[userInputUpdated.length - 1];
     const correctPortion = currentLyric.slice(0, userInputUpdated.length);
     const userTypedPortion = userInputUpdated.slice(0, correctPortion.length);
 
     if (normalizeString(userTypedPortion) === normalizeString(correctPortion)) {
         setLockedChars(userInputUpdated);
+    } else {
+        setHasErrors(true);
+    }
+
+    if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
         const points = 100;
         if (!usedSpecialChar) {
             setScore(prevScore => {
@@ -112,15 +149,18 @@ export const handleInputChange = (
             });
         }
         setIncorrectCharacters(prev => prev + 1);
-        setHasErrors(true);
     }
 
     setUserInput(userInputUpdated);
+    let userLyricSize = normalizeString(userInputUpdated.trim()).length;
+    let lineLyricSize = normalizeString(currentLyric.trim()).length;
 
-    if (normalizeString(userInputUpdated.trim()) === normalizeString(currentLyric.trim())) {
+    if (userLyricSize === lineLyricSize) {
+        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
-        if (!hasErrors) {
-            const points = 500;
+
+        if (!completedInputs[currentLyricIndex]){
+            const points = hasErrors ? 500 : 1000;
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
         }
@@ -135,6 +175,14 @@ export const handleInputChange = (
         } else if (audioPlayerRef.current?.audioEl.current && audioPlayerRef.current.audioEl.current.paused) {
             audioPlayerRef.current.audioEl.current.play();
         }
+    }
+
+    // Vérification si la ligne est validée et si on efface puis retape le dernier caractère
+    if (previousInput.length === lineLyricSize - 1 && completedInputs[currentLyricIndex]) {
+        // On a effacé un caractère mais la ligne était validée, réactive les points
+        const points = hasErrors ? 500 : 1000;
+        setScore(prevScore => calculateScore(prevScore, points));
+        setLastScoreChange(points);
     }
 
     if (!isStarted && audioPlayerRef.current?.audioEl.current?.paused) {
