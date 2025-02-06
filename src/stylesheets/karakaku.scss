@@ -228,4 +228,15 @@ audio {
         animation: impact-appear 0.2s ease-out;
 
     }
+
+    .score-line {
+        display: flex;
+
+        .score-decorator {
+            rotate: 40deg;
+            margin-top: -10px;
+            position: absolute;
+            margin-left: 25px;
+        }
+    }
 }

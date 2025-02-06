@@ -5,6 +5,7 @@ import ReactAudioPlayer from 'react-audio-player';
 import {LyricLine, parseLRC} from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
@@ -355,13 +356,17 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
             </div>
 
             <div className="score">
-            <p
-                className='change-score'
-                key={lastScoreChange}
-                style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
-                {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-            </p>                
-            <p className='actual-score'>{score}</p>
+                <p
+                    className='change-score'
+                    key={lastScoreChange}
+                    style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                    {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+                </p>                
+                <div className='score-line'>
+                    <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
+                    <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
+                    <p className='actual-score'>{score}</p>
+                </div>
                 <p className='label'>Score</p>
             </div>
         </div>
