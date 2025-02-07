@@ -41,8 +41,10 @@ audio {
 .karakaku {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
 }
 
 .btn-list {
@@ -59,16 +61,28 @@ audio {
     @include button($error-color);
 }
 
-.lyrics,
+
 .text-input {
-    font-size: 2rem;
-    font-weight: 300;
+    font-size: 1.75rem;
+    font-weight: 700;
     text-align: left;
     margin-top: 2rem;
     max-height: 50vh;
     font-family: 'Goia', sans-serif;
     transition: all 0.1s ease-in-out;
+}
 
+.lyrics{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-style: italic;
+    font-weight: 700;
+    gap: 1rem;
+    position: relative;
 }
 
 .lyric-line {
@@ -82,14 +96,13 @@ audio {
 
         .current-lyric {
             white-space: pre-wrap;
+            margin: 0;
         }
 
         .text-input {
             position: absolute;
             top: -30px;
             left: 0;
-            width: 100%;
-            height: 100%;
             background: transparent;
             border: none;
             color: transparent;
@@ -118,17 +131,49 @@ audio {
     }
 
     .right {
-        color: $primary-color;
+        color: #FFAB36;
     }
 
     .wrong {
-        color: $error-color;
+        color: #F1203C;
     }
 }
 
-.previous,
+.previous{
+    margin: 0;
+    color: rgba(255, 246, 241, 0.50);
+    .right {
+        color: #FFAB36;
+    }
+
+    .wrong {
+        color: #F1203C;
+    }
+
+    &.--first-line{
+        //-webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+        //mask-image: linear-gradient(to top, rgba(29, 29, 29, 0.9), rgba(29, 29, 29, 0.5));
+        opacity: 0.3;
+    }
+
+    &.--before-line{
+        opacity: 0.5;
+    }
+}
+
 .next {
-    color: #888;
+    color: rgba(255, 246, 241, 0.5);
+    margin: 0;
+    &.--last-line{
+        //background: linear-gradient(to bottom, rgba(255, 246, 241, 0.20) 20%, rgba(255, 246, 241, 0.01) 70%);
+        //-webkit-background-clip: text;
+        //-webkit-text-fill-color: transparent;
+        opacity: 0.3;
+    }
+
+    &.--before-line{
+        opacity: 0.5;
+    }
 }
 
 .caret {
@@ -141,8 +186,103 @@ audio {
     top: 0;
 }
 
-@keyframes blink {
+.arrow-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: calc(100% + 1.5rem);
+    transition: all 0.1s ease-in-out;
+}
 
+.countdown{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(100% + 1.5rem);
+    transition: all 0.1s ease-in-out;
+    text-transform: uppercase;
+    font-size: 20px;
+    font-style: italic;
+
+    .highlight {
+        color: #F1203C;
+    }
+}
+
+.vinyl-player{
+    position: absolute;
+    width: 32vw;
+    height: auto;
+    z-index: -1;
+    bottom: -18%;
+    left: -8%;
+    transition: all 0.2s ease-in-out;
+    animation: spin 4s linear infinite;
+    transform-origin: center;
+    &.--playing{
+        animation-play-state: running;
+    }
+
+    &.--paused{
+        animation-play-state: paused;
+    }
+}
+
+.title-song {
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 28px;
+    position: absolute;
+    text-transform: uppercase;
+    color: #FFF6F1;
+    top: 37%;
+    transform: translateY(-50%);
+    left: 3%;
+}
+
+.logo-jbh{
+    position: absolute;
+    width: 6rem;
+    height: auto;
+    left: 3%;
+    top: 3%;
+}
+
+.animated-background {
+    width: 60vw;
+    height: 60vw;
+    z-index: -1;
+    opacity: 0.2;
+    background: linear-gradient(44deg, #8E43AD 3.69%, #AA387D 10.54%, #D63251 16.43%, #F7352D 45.78%, #FA9B4F 76.36%);
+    filter: blur(50px);
+    border-radius: 50%;
+    position: absolute;
+    top: -75%;
+    left: -35%;
+    animation: move 10s ease-in-out infinite, bounce 10s ease-in-out infinite, rotate 30s infinite;
+
+    &.--inverse {
+        top: unset;
+        left: unset;
+        bottom: -75%;
+        right: -35%;
+        animation: move-inverse 12s ease-in-out infinite, bounce 8s ease-in-out infinite, rotate-inverse 25s infinite;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes blink {
     from,
     to {
         opacity: 1;
@@ -150,5 +290,64 @@ audio {
 
     50% {
         opacity: 0;
+    }
+}
+
+@keyframes move {
+    0% {
+        left: -35%;
+        top: -75%;
+    }
+    50% {
+        left: -30%;
+        top: -70%;
+    }
+    100% {
+        left: -35%;
+        top: -75%;
+    }
+}
+
+@keyframes move-inverse {
+    0% {
+        right: -35%;
+        bottom: -75%;
+    }
+    50% {
+        right: -30%;
+        bottom: -70%;
+    }
+    100% {
+        right: -35%;
+        bottom: -75%;
+    }
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotate-inverse {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-360deg);
     }
 }

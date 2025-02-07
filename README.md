@@ -1,13 +1,11 @@
 # Getting Started with Just Beat Hit  
-Just Beat Hit is a web application using Next.js and AWS Amplify for hosting, authentication, and other backend services.
+Just Beat Hit is a web application built with Next.js and Supabase for backend services such as storage, authentication, database...
 
 ## Prerequisites  
 Before you begin, ensure you have the following installed on your machine:
 
 - [Node.js](https://nodejs.org/) (v20 or newer)
-- [npm](https://www.npmjs.com/)
-- [AWS CLI](https://aws.amazon.com/cli/)
-- [Amplify CLI](https://docs.amplify.aws/cli/start/install/)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
 ## Installation
 
@@ -15,7 +13,7 @@ Before you begin, ensure you have the following installed on your machine:
 Clone this repository to your local machine using git:
 ```bash
 git clone https://github.com/joannemas/JustBeatHit.git
-cd your-repo
+cd JustBeatHit
 ```
 
 ### 2. Install Dependencies
@@ -24,23 +22,16 @@ Install the necessary dependencies using npm :
 npm install
 ```
 
-### 3. Configure Amplify
-Initialize AWS to gain access to cloud resources
-```bash
-aws configure
-```
-```bash
-AWS Access Key ID [****************24HS]: 
-AWS Secret Access Key [****************hG7b]:
-Default region name [eu-west-3]:
-Default output format [json]:
-```
+### 3. Configure environnement
+Copy the content of the `.env.example` in a new `.env` file
 
-### 4. Run the server at least once : 
-```bash
-npm run server
-```
-- To run the project after : 
+### 4. Run the server : 
+**Dev mode**
 ```bash
 npm run dev
+```
+**Production mode**
+```bash
+npm run build
+npm run start
 ```
