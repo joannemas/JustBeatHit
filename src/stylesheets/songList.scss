@@ -8,7 +8,7 @@
     text-align: center;
     padding: 20px;
     font-family: 'Gaiadisplay';
-    background: linear-gradient(-135deg, #FF6026, #C1208F);
+    background: #1D1D1D; //linear-gradient(-135deg, #FF6026, #C1208F);
     min-height: 100vh;
     background-attachment: fixed;
     background-position: center;
@@ -74,7 +74,7 @@
 
 .song-content {
     position: relative;
-    background-image: url('/assets/img/Vinyl_02.png');
+    background-image: url('/assets/img/vinyl.png');
     background-size: cover;
     background-position: center;
     border-radius: 50%;
@@ -108,7 +108,7 @@
     align-items: center;
 }
 
-.song-card:hover .song-content-text {
+.song-card:hover .song-content {
     animation: spinText 5s linear infinite;
 }
 
