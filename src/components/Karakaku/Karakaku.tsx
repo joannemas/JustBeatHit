@@ -51,6 +51,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
+    const [progress, setProgress] = useState(0);
 
     console.log('songSrc' + songSrc);
 
@@ -90,6 +91,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             setIsMusicFinished,
             setIsCountdownActive
         );
+
+        // Mise à jour de la barre de progression
+        if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
+            const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
+            const duration = audioPlayerRef.current.audioEl.current.duration;
+            setProgress((currentTime / duration) * 100);
+        }
     };
 
     //Appel de fonction pour gérer les actions liées à la saisie de texte sur l'input
@@ -387,6 +395,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
+                    <div className="progress-bar-background">
+                        <div className="progress-bar" style={{ height: `${progress}%` }}></div>
+                    </div>
+
                     <div className="title-song">
                         <h5>{singer} - {title}</h5>
                     </div>
