@@ -7,7 +7,7 @@
     align-items: center;
     flex-wrap: wrap;
     flex-direction: row;
-    font-family: var(--font-goia);
+    font-family: 'GoiaDisplay', sans-serif;
   
     .leftSide{
       width: 60%;
@@ -30,7 +30,7 @@
           align-items: left;
           flex-direction: column;
           padding: 20px 0;
-          font-family: var(--font-goia);
+          font-family: 'Goia', sans-serif;
           font-style: italic;
           font-weight: 700;
           font-size: 18px;
@@ -49,7 +49,7 @@
       }
   
         h2 {
-          font-family: var(--font-goia);
+          font-family: 'GoiaDisplay', sans-serif;
           font-variation-settings: "wght" 68, "slnt" 100;
           margin-bottom: 10px;
         }
