@@ -1,11 +1,12 @@
 @import './variables';
 
 body {
-    font-family: $font-family-base;
-    color: $text-color;
-    background-color: $background-color;
-    margin: 0;
-    padding: 0;
+  font-family: $font-family-base;
+  color: $text-color;
+  background-color: $background-color;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
 }
 
 .spinner{
