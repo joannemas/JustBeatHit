@@ -28,6 +28,7 @@ export const handleTimeUpdate = (
     audioPlayerRef: React.RefObject<ReactAudioPlayer>,
     lyrics: any[],
     currentLyricIndex: number,
+    userInput: string,
     isValidated: boolean,
     IsMusicFinished: boolean,
     setUserInput: React.Dispatch<React.SetStateAction<string>>,
@@ -46,22 +47,17 @@ export const handleTimeUpdate = (
     if (audioEl) {
         const currentTime = audioEl.currentTime;
         const nextLyricTime = lyrics[currentLyricIndex + 1]?.time;
+        const currentLyric = lyrics[currentLyricIndex]?.text || "";
 
         if (currentLyricIndex === lyrics.length - 1) {
             const handleAudioEnded = () => {
-                if (isAlreadyOver) return; // Évite l'exécution multiple
+                // if (isAlreadyOver) return; // Évite l'exécution multiple (en com parce que bug)
                 isAlreadyOver = true;
-
-                if (!isValidated) {
-                    audioEl.pause();
-                    setIsCountdownActive(true);
-                    const points = -500;
-                    setPauseCount(prevCount => calculatePauseCount(prevCount));
-                    setScore(prevScore => {
-                        const newScore = Math.max(prevScore + points, 0);
-                        setLastScoreChange(points);
-                        return newScore;
-                    });
+                audioEl.pause();
+                setIsMusicFinished(true);
+                if (userInput.length !== currentLyric.length) {
+                        // Démarrer le compte à rebours uniquement si ce n'est pas déjà fait
+                        setIsCountdownActive(true);
                 } else {
                     setIsMusicFinished(true);
                     setIsCountdownActive(false);
@@ -81,13 +77,6 @@ export const handleTimeUpdate = (
             if (!isValidated) {
                 audioEl.pause();
                 setIsCountdownActive(true);
-                const points = -500;
-                setPauseCount(prevCount => calculatePauseCount(prevCount));
-                setScore(prevScore => {
-                    const newScore = Math.max(prevScore + points, 0);
-                    setLastScoreChange(points);
-                    return newScore;
-                });
             } else {
                 setUserInput('');
                 setLockedChars('');
