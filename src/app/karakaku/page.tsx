@@ -7,7 +7,7 @@ export default function KarakakuPage() {
     return (
         <div className="container">
             <a href="/" className="back-btn">
-                <CircleArrowLeft size={52} color="#1D1D1D" />
+                <CircleArrowLeft size={52} color="white" />
             </a>
             <div className="title-container">
                 <h1 className="title">KARAKAKU</h1>
