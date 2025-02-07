@@ -13,12 +13,13 @@
         img {
             width: 100px;
             height: 100px;
+            margin: 15px;
         }
 
         div {
             display: flex;
 
-            button {
+            span {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -27,9 +28,10 @@
                 width: 250px;
                 height: 60px;
                 border-radius: 10000px;
-                font-family: 'Goia', sans-serif;
+                font-family: var(--font-goia);
                 font-style: italic;
-                font-weight: 700;
+                font-weight: 600;
+                font-style: italic;
                 font-size: 18px;
                 line-height: 26px;
                 text-transform: uppercase;
@@ -43,12 +45,12 @@
                 }
             }
 
-            button:nth-child(1) {
+            .loginButton {
                 border: 2px solid #FFF6F1;
                 background: none;
             }
 
-            button:nth-child(2) {
+            .registerButton {
                 border: none;
                 background: #F1203C;
             }
@@ -61,7 +63,7 @@
         align-items: left;
         flex-direction: column;
         padding: 20px 0;
-        font-family: 'Goia', sans-serif;
+        font-family: var(--font-goia);
         font-style: italic;
         font-weight: 700;
         font-size: 18px;
@@ -99,7 +101,7 @@
                     color: white;
                     width: 1200px;
                     margin: 0 auto;
-                    font-family: 'Goia Display';
+                    font-family: var(--font-goia);
                     font-size: 96px;
                     font-style: italic;
                     line-height: 0px;
@@ -144,6 +146,11 @@
                 padding: 16px 32px;
                 gap: 10px;
                 margin: 0 auto;
+                font-size: 18px;
+                color: #FFF6F1;
+                font-family: var(--font-goia);
+                font-weight: 700;
+                font-size: 18px;
 
                 background: linear-gradient(44.04deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
                 border: 2px solid #FFF6F1;

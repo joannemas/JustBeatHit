@@ -6,6 +6,10 @@
   padding: 0 0px;
   overflow-x: hidden;
 
+  a{
+    text-decoration: none;
+  }
+
   li {
     list-style: none;
     text-transform: uppercase;
@@ -125,6 +129,32 @@
   #actualite {
     padding: 20px;
 
+    .newsletterBut
+    {
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 32px;
+gap: 10px;
+
+background: #F1203C;
+border-radius: 10000px;
+color: #FFF6F1;
+font-family: var(--font-goia);
+border: none;
+
+    }
+
+    .newsletter{
+      font-size: 18px;
+      text-align: right;
+    }
+    .newsletter:after{
+      content: "Inscrivez-vous à notre newsletter pour ne rien rater de nos actualités !";
+      font-weight: 700;
+    }
+
     div:nth-child(1) {
       display: flex;
       justify-content: space-between;
@@ -133,7 +163,7 @@
       h2 {
 
 
-        font-family: 'Goia', sans-serif;
+        font-family: var(--font-goia);
         font-style: italic;
         font-weight: 700;
         font-size: 48px;
@@ -171,7 +201,7 @@
 
 
           p {
-            font-family: 'Goia', sans-serif;
+            font-family: var(--font-goia);
             font-style: italic;
             font-weight: 700;
             width: 100%;
@@ -257,7 +287,7 @@
             }
 
             p:nth-child(1) {
-              font-family: 'Goia', sans-serif;
+              font-family: var(--font-goia);
               font-style: italic;
               font-weight: 700;
               font-size: 24px;
@@ -273,7 +303,7 @@
 
 
 
-              font-family: 'Goia', sans-serif;
+              font-family: var(--font-goia);
               font-style: italic;
               font-weight: 700;
               font-size: 48px;
@@ -287,7 +317,7 @@
 
             p:nth-child(3) {
 
-              font-family: 'Goia', sans-serif;
+              font-family: var(--font-goia);
               font-style: normal;
               font-weight: 700;
               font-size: 18px;
@@ -303,8 +333,10 @@
 
           top: 20px;
           right: -15px;
+          left: 25%;
 
-          width: 351px;
+          width: 600px;
+          height: 400px;          
           margin: 0;
         }
 
@@ -456,7 +488,7 @@
     h2 {
 
       padding: 20px;
-      font-family: 'Goia', sans-serif;
+      font-family: var(--font-goia);
       font-style: italic;
       font-weight: 700;
       font-size: 48px;
@@ -479,7 +511,7 @@
         width: 800px;
 
         h3 {
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           font-style: italic;
           font-weight: 700;
           font-size: 48px;
@@ -491,7 +523,7 @@
         }
 
         p {
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           font-style: normal;
           font-weight: 700;
           font-size: 18px;
@@ -536,7 +568,7 @@
 
     h2 {
 
-      font-family: 'Goia', sans-serif;
+      font-family: var(--font-goia);
       font-style: italic;
       font-weight: 700;
       font-size: 48px;
@@ -553,7 +585,7 @@
         align-items: center;
 
         .question {
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           font-style: italic;
           font-weight: 700;
           font-size: 24px;
@@ -586,7 +618,7 @@
 
     h2 {
 
-      font-family: 'Goia', sans-serif;
+      font-family: var(--font-goia);
       font-style: italic;
       font-weight: 700;
       font-size: 48px;
@@ -617,7 +649,7 @@
         height: 600px;
 
         .tarifTier {
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           text-transform: uppercase;
           margin: 0;
           font-size: 32px;
@@ -636,7 +668,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           font-style: italic;
           font-size: 48px;
           text-transform: uppercase;
@@ -652,7 +684,7 @@
         }
 
         .advantages {
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           line-height: 26px;
           margin: 0;
           align-self: flex-start;
@@ -702,7 +734,7 @@
           border: none;
           width: 200px;
           height: 50px;
-          font-family: 'Goia', sans-serif;
+          font-family: var(--font-goia);
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;

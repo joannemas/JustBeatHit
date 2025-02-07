@@ -25,22 +25,22 @@ export default async function Navbar() {
                     {data ? (
                         <>
                             <Link href={`/profile/${data.username}`}>
-                                <button>
+                                <span>
                                     <p>&#129122;</p> {data.username}
-                                </button>
+                                </span>
                             </Link>
                         </>
                     ) : (
                         <>
                             <Link href="/auth/login">
-                                <button>
+                                <span className='loginButton'>
                                     <p>&#129122;</p> se connecter
-                                </button>
+                                </span>
                             </Link>
                             <Link href="/auth/register">
-                                <button>
+                                <span className='registerButton'>
                                     <p>&#129122;</p> s'inscrire
-                                </button>
+                                </span>
                             </Link>
                         </>
                     )}
@@ -68,7 +68,7 @@ export default async function Navbar() {
                             et votre sens du tempo.
                         </p>
                     </div>
-                    <Link href="/games">
+                    <Link href="/karakaku">
                         <button className="playButton">
                             Jouer
                         </button>

@@ -21,8 +21,8 @@ export default function Page() {
           <div>
             <h2>Actualités</h2>
             <div>
-              <p>Envie d’être au courant de toutes les actualités ? Inscris toi à notre newsletter !</p>
-              <button>
+              <p className="newsletter">Envie d’être au courant de toutes les actualités ? <br /></p>
+              <button className="newsletterBut">
                 <p>&#129122;</p> S'inscrire à la Newsletter
               </button>
             </div>
