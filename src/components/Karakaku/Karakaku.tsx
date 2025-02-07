@@ -389,11 +389,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     />
                     {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
-                        <button
-                            onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                            className="btn-primary" style={{ opacity: 0 }}>
-                            {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
-                        </button>
+                        <div className="btn-container">
+                          <button
+                              onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                              className="btn-primary" style={{ opacity: 0 }}>
+                              {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                          </button>
+                          <a href="/karakaku" className="btn-secondary">
+                              Quit
+                          </a>
+                        </div>
                     )}
                     <div className="progress-bar-background">
                         <div className="progress-bar" style={{ height: `${progress}%` }}></div>

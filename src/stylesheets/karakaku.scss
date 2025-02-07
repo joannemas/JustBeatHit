@@ -1,5 +1,10 @@
 @import './mixins.scss';
 
+.btn-container {
+    display: flex;
+    gap: 1rem;
+}
+
 .song-list {
     display: flex;
     flex-wrap: wrap;
