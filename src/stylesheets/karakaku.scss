@@ -76,6 +76,7 @@ audio {
     font-size: 1.75rem;
     font-style: italic;
     font-weight: 700;
+    font-family: 'Goia', sans-serif !important;
     gap: 1rem;
     position: relative;
 }
@@ -226,6 +227,7 @@ audio {
 }
 
 .title-song {
+    font-family: 'GoiaDisplay', sans-serif;
     font-size: 20px;
     font-style: italic;
     font-weight: 700;
@@ -287,6 +289,89 @@ audio {
         opacity: 0;
     }
 }
+
+.score {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 50px;
+    font-style: italic;
+    text-align: right;
+    font-family: 'GoiaDisplay', sans-serif;
+
+    @keyframes impact-appear {
+        0% {
+            transform: scale(0) translateY(30px);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1) translateY(-10px);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .label {
+        font-size: 2rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .actual-score {
+        font-size: 5rem;
+        font-weight: 700;
+        margin: 0;
+        background: $gradient;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        -moz-background-clip: text;
+        -moz-text-fill-color: transparent;
+    }
+
+    .change-score {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $purple-heart;
+        animation: impact-appear 0.2s ease-out;
+
+    }
+
+    .score-line {
+        display: flex;
+
+        .score-decorator {
+            rotate: 40deg;
+            margin-top: -10px;
+            position: absolute;
+            margin-left: 25px;
+        }
+    }
+}
+
+.progress-bar-background {
+    width: 10px; 
+    height: 50%;
+    background-color: $white;
+    border-radius: 10px;
+    position: absolute;
+    right: 0;
+    top: 100px;
+    margin: 0 60px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 0;
+    background-color: $yellow;
+    border-radius: 10px;
+    transition: height 0.5s ease;
+}
+
 
 @keyframes move {
     0% {

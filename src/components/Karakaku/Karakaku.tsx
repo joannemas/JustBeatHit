@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
@@ -16,7 +17,6 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
-import Image from "next/image";
 
 interface KarakakuProps {
     songSrc: string;
@@ -51,6 +51,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
+    const [progress, setProgress] = useState(0);
 
     console.log('songSrc' + songSrc);
 
@@ -90,6 +91,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             setIsMusicFinished,
             setIsCountdownActive
         );
+
+        // Mise à jour de la barre de progression
+        if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
+            const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
+            const duration = audioPlayerRef.current.audioEl.current.duration;
+            setProgress((currentTime / duration) * 100);
+        }
     };
 
     //Appel de fonction pour gérer les actions liées à la saisie de texte sur l'input
@@ -387,11 +395,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
+                    <div className="progress-bar-background">
+                        <div className="progress-bar" style={{ height: `${progress}%` }}></div>
+                    </div>
+
                     <div className="title-song">
                         <h5>{singer} - {title}</h5>
-                    </div>
-                    <div className="score">
-                        <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
                     <Image priority
                         src="/assets/img/vinyl-jbh.svg"
@@ -405,6 +414,23 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             <div className="lyrics">
                 {renderLyrics()}
             </div>
+
+            {!isGameOver && (
+                <div className="score">
+                    <p
+                        className='change-score'
+                        key={lastScoreChange}
+                        style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                        {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+                    </p>                
+                    <div className='score-line'>
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
+                        <p className='actual-score'>{score}</p>
+                    </div>
+                    <p className='label'>Score</p>
+                </div>
+            )}
         </div>
     );
 };

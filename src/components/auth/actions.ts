@@ -40,7 +40,7 @@ export async function login(prevState: AuthState | undefined, formData: FormData
     if (error) {
         console.error(error)
         if(error.code === 'email_not_confirmed'){
-            return { message: error.message + ', please check your emails' }
+            return { message: error.message + ', veuillez vérifier vos emails' }
         }
         return { message: error.message }
     }
@@ -70,7 +70,7 @@ export async function register(prevState: AuthState | undefined, formData: FormD
     const { data } = await supabase.from('profiles').select('username').eq('username', username).single()
     console.info(data)
     if(data){
-        return { message: 'Username already in use' }
+        return { message: 'Nom d\'utilisateur déjà utilisé' }
     }
 
     const { data: { user, session } } = await supabase.auth.signUp({ ...fields, options: { data: { username, avatar_url } } })
@@ -79,7 +79,7 @@ export async function register(prevState: AuthState | undefined, formData: FormD
      * So we check the role to check if the user already exist or not
      */
     if (!user?.role) {
-        return { message: 'Email already exist' }
+        return { message: 'Email déjà existant' }
     }
 
     if(session){

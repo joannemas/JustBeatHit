@@ -1,21 +1,21 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-    email: z.string({ required_error: "Email can't be empty" }).email({ message: "String must be a valid e-mail adress." }),
-    username: z.string({ required_error: "Username can't be empty" }).min(3, "Username must be at least 3 characters."),
-    password: z.string({ required_error: "Password can't be empty" }).min(8, "Password must be at least 8 characters.").regex(/[A-Z]/, "Password must contain at least one uppercase letter.").regex(/[a-z]/, "Password must contain at least one lowercase letter.").regex(/\d/, "Password must contain at least one digit.").regex(/[^A-Za-z0-9]/, "Password must contain at least one special character."),
-    repeatPassword: z.string({ required_error: "Repeat password can't be empty" })
+    email: z.string({ required_error: "L'email ne peut pas être vide" }).email({ message: "L'email doit être une adresse e-mail valide." }),
+    username: z.string({ required_error: "Le nom d'utilisateur ne peut pas être vide" }).min(3, "Le nom d'utilisateur doit comporter au moins 3 caractères."),
+    password: z.string({ required_error: "Le mot de passe ne peut pas être vide" }).min(8, "Le mot de passe doit comporter au moins 8 caractères.").regex(/[A-Z]/, "Le mot de passe doit contenir au moins une lettre majuscule.").regex(/[a-z]/, "Le mot de passe doit contenir au moins une lettre minuscule.").regex(/\d/, "Le mot de passe doit contenir au moins un chiffre.").regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial."),
+    repeatPassword: z.string({ required_error: "La confirmation du mot de passe ne peut pas être vide" })
 }).superRefine(({ repeatPassword, password }, ctx) => {
     if (repeatPassword !== password) {
         ctx.addIssue({
             code: "custom",
-            message: "The passwords did not match",
+            message: "Les mots de passe ne correspondent pas",
             path: ['repeatPassword']
         });
     }
 });
 
 export const loginSchema = z.object({
-    email: z.string().email('Email must be a valid email adress'),
-    password: z.string().min(8, "Password must be at least 8 characters").regex(/[A-Z]/, "Password must contain at least one uppercase letter").regex(/[a-z]/, "Password must contain at least one lowercase letter").regex(/\d/, "Password must contain at least one digit").regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+    email: z.string().email("L'email doit être une adresse e-mail valide"),
+    password: z.string().min(8, "Le mot de passe doit comporter au moins 8 caractères").regex(/[A-Z]/, "Le mot de passe doit contenir au moins une lettre majuscule").regex(/[a-z]/, "Le mot de passe doit contenir au moins une lettre minuscule").regex(/\d/, "Le mot de passe doit contenir au moins un chiffre").regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial"),
 })
