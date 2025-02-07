@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, use } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
-import {LyricLine, parseLRC} from '@/utils/LrcParser';
+import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import '@/stylesheets/karakaku.scss';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,13 +17,17 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
+import Image from "next/image";
 
 interface KarakakuProps {
     songSrc: string;
     lyricSrc: string;
+    title?: string;
+    singer?: string;
 }
 
-const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
+
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer }) => {
     const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
     const [userInput, setUserInput] = useState<string>('');
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -48,6 +52,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
     const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
+
+    console.log('songSrc' + songSrc);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -196,7 +202,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         if (currentLyricIndex < lyrics.length - 1) {
                             setCurrentLyricIndex((prevIndex) => {
                                 // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
-                                return prevIndex + 0.5;
+                                return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
                             });
 
                             setCompletedInputs((prev) => ({
@@ -303,7 +309,29 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                     {/* Ligne actuelle */}
                     {index === currentLyricIndex && (
                         <div className="current-lyric-container">
-                            <p className="current-lyric">{getStyledText()}</p>
+                            <Image priority
+                                src="/assets/img/icon/arrow-right.svg"
+                                alt="Music svg"
+                                width={40}
+                                height={40}
+                                className="arrow-icon"
+                            />
+                            {isCountdownActive &&
+                                <div className="countdown">
+                                    <Image priority
+                                        src="/assets/img/icon/timer.svg"
+                                        alt="Music svg"
+                                        width={40}
+                                        height={40}
+                                        className="countdown__icon"
+                                    />
+                                    <span className="highlight">{countdown}&nbsp;</span>
+                                    {countdown === 1 ? 'seconde' : 'secondes'}
+                                </div>
+                            }
+                            <p className="current-lyric">
+                                {getStyledText()}
+                            </p>
                             <input
                                 type="text"
                                 value={userInput}
@@ -335,6 +363,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
         <div className="karakaku">
             {!isGameOver && (
                 <>
+                    <div className="animated-background"></div>
+                    <div className="animated-background --inverse"></div>
+
+                    <Image priority
+                        src="/assets/img/logo-jbh.png"
+                        alt="Logo Just Beat Hit"
+                        width={1000}
+                        height={1000}
+                        className="logo-jbh"
+                    />
                     <ReactAudioPlayer
                         src={songSrc}
                         controls
@@ -342,13 +380,27 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc }) => {
                         ref={audioPlayerRef}
                         listenInterval={100}
                     />
+                    {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
-                        <button onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                                className="btn-primary">
+                        <button
+                            onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                            className="btn-primary" style={{ opacity: 0 }}>
                             {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                         </button>
                     )}
-                    {isCountdownActive && <p className="countdown">Compte à rebours : {countdown}</p>}
+                    <div className="title-song">
+                        <h5>{singer} - {title}</h5>
+                    </div>
+                    <div className="score">
+                        <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
+                    </div>
+                    <Image priority
+                        src="/assets/img/vinyl-jbh.svg"
+                        alt="Vinyl svg"
+                        width={1000}
+                        height={1000}
+                        className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}
+                    />
                 </>
             )}
             <div className="lyrics">
