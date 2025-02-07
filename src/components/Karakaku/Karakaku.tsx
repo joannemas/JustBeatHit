@@ -403,20 +403,22 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                 {renderLyrics()}
             </div>
 
-            <div className="score">
-                <p
-                    className='change-score'
-                    key={lastScoreChange}
-                    style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
-                    {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-                </p>                
-                <div className='score-line'>
-                    <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                    <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
-                    <p className='actual-score'>{score}</p>
+            {!isGameOver && (
+                <div className="score">
+                    <p
+                        className='change-score'
+                        key={lastScoreChange}
+                        style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                        {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+                    </p>                
+                    <div className='score-line'>
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
+                        <p className='actual-score'>{score}</p>
+                    </div>
+                    <p className='label'>Score</p>
                 </div>
-                <p className='label'>Score</p>
-            </div>
+            )}
         </div>
     );
 };
