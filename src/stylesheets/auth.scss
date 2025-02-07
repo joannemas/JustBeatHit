@@ -1,5 +1,9 @@
 @import './mixins.scss';
 
+body {
+    overflow: hidden;
+}
+
 .auth-container {
     display: flex;
     justify-content: center;
@@ -8,8 +12,8 @@
     height: 100vh;
     margin: 0 auto;
     font-size: 1rem;
-    color: #fffef8;
     font-weight: 400;
+    background-color: $white;
 }
 
 .hidden {
@@ -27,16 +31,16 @@ form {
 }
 
 input {
-    padding: 12px;
-    border-radius: 8px;
-    border: 2px solid #2d2d2d;
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: 2px solid $black;
     margin-bottom: 4px;
     background-color: transparent;
     font-family: var(--font-inter);
     font-weight: 600;
     font-size: 14px;
     transition: box-shadow .5s;
-    color: white;
+    color: $black;
 }
 
 input:focus-visible {
@@ -48,18 +52,19 @@ input:focus-visible {
 label {
     margin-bottom: 8px;
     margin-top: 12px;
-    color: #fffef8;
+    color: $red-violet;
     font-weight: 700;
 }
 
 button {
     font-family: var(--font-goia);
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     margin-top: 12px;
     padding: 12px;
-    background-color: sandybrown;
-    color: #fffef8;
+    background-image: linear-gradient(135deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+    color: $white;
+    border: solid 1px $white;
     text-transform: uppercase;
     letter-spacing: 0.5;
     transition: background-color, color 0.3s;
@@ -72,7 +77,8 @@ button {
 }
 
 button:hover {
-    background-color: rgb(223, 151, 88);
+    box-shadow: 0 0 10px rgba(97, 80, 85, 0.7);
+    border: none;
     color: #fffef8;
 }
 
@@ -93,7 +99,7 @@ button:hover {
     font-family: var(--font-inter);
 
     h3{
-        color: sandybrown;
+        color: $red-ribbon;
         font-size: 2.64rem;
         font-weight: 400;
         font-family: var(--font-goia);
@@ -118,16 +124,29 @@ button:hover {
 .link{
     font-family: var(--font-inter);
     font-weight: 600;
-    color: sandybrown;
+    color: $purple-heart;
     width: 100%;
     transition: color 0.3s;
 }
 
 .link:hover{
-    color: #fffef8;
+    color: $red-violet;
+    transition: color 0.3s;
 }
 
 
 .form-container{
     max-width: 360px;
+}
+
+img {
+    position: absolute;
+}
+
+.vinyl-container {
+    position: absolute;
+    bottom: -200px;
+    left: 0;
+    height: auto;
+    overflow: hidden;
 }
