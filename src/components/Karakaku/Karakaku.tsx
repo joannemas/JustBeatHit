@@ -17,7 +17,6 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
-import Image from "next/image";
 
 interface KarakakuProps {
     songSrc: string;
@@ -390,9 +389,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     )}
                     <div className="title-song">
                         <h5>{singer} - {title}</h5>
-                    </div>
-                    <div className="score">
-                        <p>Score : {score} ({lastScoreChange > 0 ? '+' : ''}{lastScoreChange})</p>
                     </div>
                     <Image priority
                         src="/assets/img/vinyl-jbh.svg"
