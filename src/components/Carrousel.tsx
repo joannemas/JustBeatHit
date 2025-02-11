@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import "@/stylesheets/Carrousel.scss";
+import "@/stylesheets/module.Carrousel.scss";
 
 const Carousel = ({ images }: { images: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -1,5 +1,5 @@
 import SongList from "@/components/Karakaku/List";
-import '@/stylesheets/songList.scss';
+import '@/stylesheets/module.songList.scss';
 import { Circle, CircleArrowLeft } from "lucide-react";
 
 

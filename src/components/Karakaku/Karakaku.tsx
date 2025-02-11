@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import { LyricLine, parseLRC } from '@/utils/LrcParser';
-import '@/stylesheets/karakaku.scss';
+import '@/stylesheets/module.karakaku.scss';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -390,14 +390,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
                         <div className="btn-container">
-                          <button
-                              onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                              className="btn-primary" style={{ opacity: 0 }}>
-                              {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
-                          </button>
-                          <a href="/karakaku" className="btn-secondary">
-                              Quit
-                          </a>
+                            <button
+                                onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                                className="btn-primary" style={{ opacity: 0 }}>
+                                {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                            </button>
+                            <a href="/karakaku" className="btn-secondary">
+                                Quit
+                            </a>
                         </div>
                     )}
                     <div className="progress-bar-background">
@@ -427,10 +427,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         key={lastScoreChange}
                         style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
                         {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-                    </p>                
+                    </p>
                     <div className='score-line'>
                         <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator' />
                         <p className='actual-score'>{score}</p>
                     </div>
                     <p className='label'>Score</p>

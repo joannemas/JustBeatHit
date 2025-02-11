@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import '@/stylesheets/navbar.scss';
+import '@/stylesheets/module.navbar.scss';
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,24 +28,24 @@ export default async function Navbar() {
                 <li>Contact</li>
                 <li>à propos</li>
             </ul>
-            {data ? 
-            <ul>
-                <li>Comment ça va <span>{data.username}</span> ?</li>
-                <a href={`/profile/${data.username}`}>
-                    <Image
-                        priority
-                        src={data.avatar_url}
-                        alt="Profil"
-                        className="Profil"
-                        width={44}
-                        height={44}
-                    />
-                </a>
-            </ul>
-            :
-            <ul>
-                <li>Bienvenue, <a href={`/auth/register`} className='register-link'>inscris toi</a> pour jouer ! </li>
-            </ul>
+            {data ?
+                <ul>
+                    <li>Comment ça va <span>{data.username}</span> ?</li>
+                    <a href={`/profile/${data.username}`}>
+                        <Image
+                            priority
+                            src={data.avatar_url}
+                            alt="Profil"
+                            className="Profil"
+                            width={44}
+                            height={44}
+                        />
+                    </a>
+                </ul>
+                :
+                <ul>
+                    <li>Bienvenue, <a href={`/auth/register`} className='register-link'>inscris toi</a> pour jouer ! </li>
+                </ul>
             }
         </div>
     );
