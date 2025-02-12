@@ -1,10 +1,6 @@
-@import './mixins.scss';
+@import '@/stylesheets/variables.scss';
 
-body {
-    overflow: hidden;
-}
-
-.auth-container {
+.authContainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,14 +9,16 @@ body {
     margin: 0 auto;
     font-size: 1rem;
     font-weight: 400;
-    background-color: $white;
+    background-color: white;
+    overflow: hidden;
+    position: relative;
 }
 
 .hidden {
     display: none;
 }
 
-form {
+.form {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -30,7 +28,7 @@ form {
     font-family: var(--font-inter);
 }
 
-input {
+.input {
     padding: 12px 20px;
     border-radius: 20px;
     border: 2px solid $black;
@@ -43,20 +41,20 @@ input {
     color: $black;
 }
 
-input:focus-visible {
+.input:focus-visible {
     // outline: 2px solid sandybrown;
     outline: none;
     box-shadow: 0 0 6px rgba(244, 163, 96, 0.2);
 }
 
-label {
+.label {
     margin-bottom: 8px;
     margin-top: 12px;
     color: $red-violet;
     font-weight: 700;
 }
 
-button {
+.button {
     font-family: var(--font-goia);
     border: none;
     border-radius: 20px;
@@ -76,13 +74,13 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+.button:hover {
     box-shadow: 0 0 10px rgba(97, 80, 85, 0.7);
     border: none;
     color: #fffef8;
 }
 
-.secondary{
+.secondary {
     margin-top: 8px;
     background-color: #fffef8;
     color: sandybrown;
@@ -94,11 +92,11 @@ button:hover {
     color: sandybrown;
 }
 
-.form-header {
-    margin-bottom: 44px;
+.formHeader {
+    margin-bottom: 24px;
     font-family: var(--font-inter);
 
-    h3{
+    h3 {
         color: $red-ribbon;
         font-size: 2.64rem;
         font-weight: 400;
@@ -112,16 +110,16 @@ button:hover {
     }
 }
 
-.form-error {
+.formError {
     color: #F42D30;
     font-size: 14px;
+
+    #form-error {
+        margin-top: 8px;
+    }
 }
 
-#form-error {
-    margin-top: 8px;
-}
-
-.link{
+.link {
     font-family: var(--font-inter);
     font-weight: 600;
     color: $purple-heart;
@@ -129,24 +127,35 @@ button:hover {
     transition: color 0.3s;
 }
 
-.link:hover{
+.link:hover {
     color: $red-violet;
     transition: color 0.3s;
 }
 
 
-.form-container{
+.formContainer {
     max-width: 360px;
 }
 
-img {
+.logo {
     position: absolute;
+    top: 32px;
+    left: 0
 }
 
-.vinyl-container {
+.vinyl {
     position: absolute;
-    bottom: -200px;
-    left: 0;
+    max-width: 492px;
+    min-width: 244px;
+    bottom: -6%;
+    width: 38%;
+    left: -6%;
     height: auto;
+
     overflow: hidden;
+
+    img {
+        width: 100%;
+        height: auto;
+    }
 }

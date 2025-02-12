@@ -1,18 +1,18 @@
 import SongList from "@/components/Karakaku/List";
-import '@/stylesheets/songList.scss';
+import styles from '@/stylesheets/songList.module.scss';
 import { Circle, CircleArrowLeft } from "lucide-react";
 
 
 export default function KarakakuPage() {
     return (
-        <div className="container">
-            <a href="/" className="back-btn">
+        <div className={styles.container}>
+            <a href="/" className={styles.backBtn}>
                 <CircleArrowLeft size={52} color="white" />
             </a>
-            <div className="title-container">
-                <h1 className="title">KARAKAKU</h1>
+            <div className={styles.titleContainer}>
+                <h1 className={styles.title}>KARAKAKU</h1>
             </div>
-            <p className="subtitle">Sélectionnez votre musique</p>
+            <p className={styles.subtitle}>Sélectionnez votre musique</p>
             <SongList />
         </div>
     );
