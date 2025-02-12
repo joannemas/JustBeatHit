@@ -1,4 +1,4 @@
-.back-btn {
+.backBtn {
     position: absolute;
     left: 4rem;
     top: 3rem;
@@ -14,7 +14,7 @@
     background-size: cover;
 }
 
-.title-container {
+.titleContainer {
     background-color: #1D1D1D;
     padding: 10px;
     border: 3px solid #FFAB36;
@@ -39,14 +39,14 @@
     margin: 30px 0;
 }
 
-.song-grid {
+.songGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
     padding: 20px;
 }
 
-.song-card {
+.songCard {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,21 +57,21 @@
     text-decoration: none;
 }
 
-.song-card:hover {
+.songCard:hover {
     transform: scale(1.05);
 }
 
-.song-title {
+.songTitle {
     font-size: 1.2em;
     font-weight: bold;
 }
 
-.song-singer {
+.songSinger {
     font-size: 0.9em;
     opacity: 0.8;
 }
 
-.song-content {
+.songContent {
     position: relative;
     background-image: url('/assets/img/vinyl.png');
     background-size: cover;
@@ -89,7 +89,7 @@
     padding: 20px;
 }
 
-.inner-disk {
+.innerDisk {
     position: absolute;
     border-radius: 50%;
     width: 100px;
@@ -97,7 +97,7 @@
     z-index: 2;
 }
 
-.song-content-text {
+.songContentText {
     z-index: 3;
     position: relative;
     text-align: center;
@@ -107,7 +107,7 @@
     align-items: center;
 }
 
-.song-card:hover .song-content {
+.songCard:hover .songContent {
     animation: spinText 5s linear infinite;
 }
 
@@ -121,8 +121,8 @@
     }
 }
 
-.song-title,
-.song-singer {
+.songTitle,
+.songSinger {
     color: white;
     margin: 5px 0;
 }
@@ -131,8 +131,8 @@
     font-family: var(--font-goia);
 }
 
-.song-title,
-.song-singer {
+.songTitle,
+.songSinger {
     color: white;
     margin: 5px 0;
     user-select: none;

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import '@/stylesheets/module.navbar.scss';
+import styles from '@/stylesheets/navbar.module.scss';
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,13 +10,13 @@ export default async function Navbar() {
     const { data } = await supabase.from('profiles').select('*').eq('id', user?.id!).single()
 
     return (
-        <div className="navbar">
+        <div className={styles.navbar}>
             <ul><li><Link href="/">
                 <Image
                     priority
                     src="/assets/img/LogoMini.svg"
                     alt="Logo Mini"
-                    className="LogoMini"
+                    className={styles.LogoMini}
                     width={57}
                     height={57}
                 />
@@ -36,7 +36,6 @@ export default async function Navbar() {
                             priority
                             src={data.avatar_url}
                             alt="Profil"
-                            className="Profil"
                             width={44}
                             height={44}
                         />
@@ -44,7 +43,7 @@ export default async function Navbar() {
                 </ul>
                 :
                 <ul>
-                    <li>Bienvenue, <a href={`/auth/register`} className='register-link'>inscris toi</a> pour jouer ! </li>
+                    <li>Bienvenue, <a href={`/auth/register`} className={styles.registerLink}>inscris toi</a> pour jouer ! </li>
                 </ul>
             }
         </div>
