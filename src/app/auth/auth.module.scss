@@ -145,10 +145,17 @@
 
 .vinyl {
     position: absolute;
-    max-width: 540px;
+    max-width: 492px;
     min-width: 244px;
     bottom: -6%;
-    width: 40%;
-    left: -10%;
+    width: 38%;
+    left: -6%;
     height: auto;
+
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: auto;
+    }
 }

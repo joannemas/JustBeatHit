@@ -19,7 +19,7 @@ export default function RootLayout({
         <Image src="/assets/img/Logo.svg" alt="Just Beat Hit" width={200} height={200} aria-hidden="true" className={styles.logo} />
         {children}
         <div className={styles.vinyl}>
-          <Image src="/assets/img/vinyl-jaune.png" alt="" width={652} height={1055} aria-hidden="true" loading="lazy" layout="responsive" />
+          <Image src="/assets/img/vinyl-jaune.png" alt="" width={400} height={400} aria-hidden="true" loading="lazy" />
         </div>
       </div>
     </>
