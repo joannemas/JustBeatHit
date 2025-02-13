@@ -1,7 +1,18 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse  } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+    console.log('middleware', pathname)
+
+    // 🔒 Protection spécifique pour le cron
+    if (pathname.startsWith('/api/cron')) {
+        if (request.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        return NextResponse.next();
+    }
+
     return await updateSession(request)
 }
 
