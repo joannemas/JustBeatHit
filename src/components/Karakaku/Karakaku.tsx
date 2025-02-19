@@ -53,8 +53,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
     const [progress, setProgress] = useState(0);
 
-    console.log('songSrc' + songSrc);
-
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
     }, [lyricSrc, charRefs]);
@@ -211,11 +209,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                                 // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
                                 return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
                             });
-
-                            setCompletedInputs((prev) => ({
-                                ...prev,
-                                [currentLyricIndex]: userInput,
-                            }));
 
                             // Réinitialise l'état des inputs
                             setUserInput('');

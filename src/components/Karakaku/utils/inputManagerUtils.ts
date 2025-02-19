@@ -130,6 +130,8 @@ export const handleInputChange = (
         setHasErrors(true);
     }
 
+    setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
+
     if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
         const points = 100;
         if (!usedSpecialChar) {
@@ -156,7 +158,6 @@ export const handleInputChange = (
     let lineLyricSize = normalizeString(currentLyric.trim()).length;
 
     if (userLyricSize === lineLyricSize) {
-        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
 
         if (!completedInputs[currentLyricIndex]){
