@@ -31,6 +31,8 @@ export const handleInputChange = (
     setEndTime: (time: number) => void,
     isStarted: boolean,
     hasErrors: boolean,
+    multiplier: number,
+    setMultiplier: React.Dispatch<React.SetStateAction<number>>
 ) => {
     let inputValue = e.target.value;
 
@@ -131,15 +133,16 @@ export const handleInputChange = (
     }
 
     setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
-
+    let test = 1;
     if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
-        const points = 100;
+        const points = Math.floor(100 * multiplier);
         if (!usedSpecialChar) {
             setScore(prevScore => {
                 const newScore = prevScore + points;
                 setLastScoreChange(points);
                 return newScore;
             });
+            setMultiplier(prev => parseFloat(Math.min(prev * 1.1, 4).toFixed(1)));
         }
     } else {
         const points = -200;
@@ -151,6 +154,7 @@ export const handleInputChange = (
             });
         }
         setIncorrectCharacters(prev => prev + 1);
+        setMultiplier(1);
     }
 
     setUserInput(userInputUpdated);
@@ -160,10 +164,12 @@ export const handleInputChange = (
     if (userLyricSize === lineLyricSize) {
         setIsValidated(true);
 
+        console.log("Line validated: ", completedInputs[currentLyricIndex]);
         if (!completedInputs[currentLyricIndex]){
-            const points = hasErrors ? 500 : 1000;
+            const points = hasErrors ? Math.floor(500 * multiplier) : Math.floor(1000 * multiplier);
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
+            console.log("Score: ", points);
         }
 
         const alphabeticCharacters = userInputUpdated.match(/[a-zA-Z]/g);
@@ -181,7 +187,7 @@ export const handleInputChange = (
     // Vérification si la ligne est validée et si on efface puis retape le dernier caractère
     if (previousInput.length === lineLyricSize - 1 && completedInputs[currentLyricIndex]) {
         // On a effacé un caractère mais la ligne était validée, réactive les points
-        const points = hasErrors ? 500 : 1000;
+        const points = hasErrors ? Math.floor(500 * multiplier) : Math.floor(1000 * multiplier);
         setScore(prevScore => calculateScore(prevScore, points));
         setLastScoreChange(points);
     }
