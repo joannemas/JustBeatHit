@@ -133,16 +133,27 @@ export const handleInputChange = (
     }
 
     setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
-    let test = 1;
+    let savedMultiplier = multiplier;
     if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
-        const points = Math.floor(100 * multiplier);
+        // Utiliser la version affichée (arrondie à 1 décimale) pour le calcul des points
+        const displayMultiplier = parseFloat(multiplier.toFixed(1));
+        const points = Math.floor(100 * displayMultiplier);
+
         if (!usedSpecialChar) {
             setScore(prevScore => {
                 const newScore = prevScore + points;
                 setLastScoreChange(points);
                 return newScore;
             });
-            setMultiplier(prev => parseFloat(Math.min(prev * 1.1, 4).toFixed(1)));
+
+            // Stocker avec 2 décimales pour garder l'incrémentation fluide
+            savedMultiplier = parseFloat((savedMultiplier * 1.04).toFixed(2));
+
+            if (savedMultiplier >= 4) {
+                savedMultiplier = 4;
+            }
+
+            setMultiplier(savedMultiplier);
         }
     } else {
         const points = -200;
@@ -164,12 +175,10 @@ export const handleInputChange = (
     if (userLyricSize === lineLyricSize) {
         setIsValidated(true);
 
-        console.log("Line validated: ", completedInputs[currentLyricIndex]);
         if (!completedInputs[currentLyricIndex]){
             const points = hasErrors ? Math.floor(500 * multiplier) : Math.floor(1000 * multiplier);
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
-            console.log("Score: ", points);
         }
 
         const alphabeticCharacters = userInputUpdated.match(/[a-zA-Z]/g);

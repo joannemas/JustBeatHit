@@ -215,6 +215,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                                 return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
                             });
 
+                            setCompletedInputs((prev) => ({
+                                ...prev,
+                                [currentLyricIndex]: userInput,
+                            }));
+
                             // Réinitialise l'état des inputs
                             setUserInput('');
                             setLockedChars('');
@@ -375,6 +380,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         return "gradient-default";
     };
 
+    const roundToOneDecimals = (num: number) => {
+        if (!num) return "";
+        if (num >=4) return num;
+        const match = num.toString().match(/^-?\d+(?:\.\d)?/);
+        return match ? match[0] : "";
+    }
+
     return (
         <div className={styles.karakaku}>
             {!isGameOver && (
@@ -469,7 +481,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
 
                                 <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3"/>
                             </svg>
-                            <span>x {multiplier}</span>
+                            <span>x {roundToOneDecimals(multiplier)}</span>
                         </div>
                         <div className={styles.scoreLine}>
                             <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24}/>
