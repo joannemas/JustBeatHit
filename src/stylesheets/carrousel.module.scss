@@ -1,14 +1,14 @@
-.carousel-container {
+.carouselContainer {
   width: 275px;
   margin: 20px auto;
 
-  .carousel-header {
+  .carouselHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 
-    .carousel-arrows {
+    .carouselArrows {
       .arrow {
         background: none;
         border: none;
@@ -19,7 +19,7 @@
       }
     }
 
-    .carousel-title {
+    .carouselTitle {
       h2 {
         margin: 0;
         font-size: 20px;
@@ -27,7 +27,7 @@
     }
   }
 
-  .carousel-content {
+  .carouselContent {
     .slide {
       width: 100%;
       height: 150px;

@@ -1,27 +1,26 @@
-
 import React from 'react';
 import Link from 'next/link';
-import '@/stylesheets/karakaku.scss';
-import { createClient } from '@/lib/supabase/server';
 
-export default async function SongList(){
-    const supabase = createClient()
-    const { data, error } = await supabase.from('song').select('*')
+import { createClient } from '@/lib/supabase/server';
+import styles from '@/stylesheets/songList.module.scss';
+
+export default async function SongList() {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('song').select('*');
 
     return (
-        <div>
-            <h1>Karakaku</h1>
-            <p>Sélectionnez votre musique : </p>
-            <ul className='song-list'>
-                {data?.map((song) => (
-                    <li key={song.id}>
-                        <Link href={`/karakaku/${song.id}`}>
-                            {`${song.title} - ${song.singer}`}
-                        </Link>
-                    </li>
-
-                ))}
-            </ul>
+        <div className={styles.songGrid}>
+            {data?.map((song) => (
+                <Link key={song.id} href={`/karakaku/${song.id}`} className={styles.songCard}>
+                    <div className={styles.songContent}>
+                        <div className={styles.innerDisk}></div>
+                        <div className={styles.songContentText}>
+                            <h2 className={styles.songTitle}>{song.title}</h2>
+                            <p className={styles.songSinger}>{song.singer}</p>
+                        </div>
+                    </div>
+                </Link>
+            ))}
         </div>
     );
 };

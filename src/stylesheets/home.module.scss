@@ -1,90 +1,105 @@
 @import './mixins.scss';
 @import './variables.scss';
 
-.home{
+.home {
   width: calc(100% - 40px);
   padding: 0 20px;
-  li{
+
+  li {
     list-style: none;
     text-transform: uppercase;
   }
-  .header-homepage{
+
+  .headerHomepage {
     position: relative;
     width: 100%;
     height: 75vh;
-    .header-homepage-text{
+
+    .headerHomepageContent {
       height: 100%;
       position: relative;
       display: inline-flex;
       justify-content: space-between;
       width: 100%;
     }
-    ul{
-      &:nth-of-type(1){
+
+    ul {
+      &:nth-of-type(1) {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         width: 30%;
         padding: 0;
-        li{
+
+        li {
           padding-bottom: 100px;
         }
+
         h3 {
           display: flex;
           flex-direction: column;
           align-items: flex-end;
           font-size: 32px;
+
           span {
             display: block;
-            
+
             &:first-child {
               margin-bottom: 0.5rem;
             }
           }
         }
       }
-      &:nth-of-type(2){
+
+      &:nth-of-type(2) {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         align-items: flex-end;
         width: 60%;
         gap: 10px;
-        li{
+
+        li {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
 
-          &:nth-of-type(2) button{
+          &:nth-of-type(2) button {
             @include button($sandy-color);
           }
-          &:nth-of-type(3) button{
+
+          &:nth-of-type(3) button {
             @include button($error-color);
           }
-          &:nth-of-type(4) button{
+
+          &:nth-of-type(4) button {
             @include button($primary-color);
           }
         }
       }
-      
+
     }
-    .Logo{
+
+    .logo {
       position: absolute;
       width: 30%;
       left: 35%;
       height: fit-content;
     }
   }
-  .BoatImage{
+
+  .boatImage {
     border-radius: 1.5rem;
     width: 100%;
   }
-  .desc-jbh-homepage{
+
+  .description {
     text-align: center;
     font-size: 28px;
   }
 }
-.start-button {
+
+.startButton {
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
@@ -97,7 +112,7 @@
     padding: 20px 0;
   }
 
-  .btn-feedback {
+  .btnFeedback {
     @include button(#F1203C);
   }
 }

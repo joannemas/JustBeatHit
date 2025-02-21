@@ -24,6 +24,9 @@ const inter = Inter({
 export const metadata = {
   title: 'Just Beat Hit',
   description: 'Jeux musicaux en ligne',
+  other: {
+    google: 'notranslate',
+  }
 }
 
 export default function RootLayout({

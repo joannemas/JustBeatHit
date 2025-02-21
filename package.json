@@ -11,6 +11,7 @@
     "react-audio-player": "^0.17.0",
     "react-dom": "^18.3.1",
     "sass": "^1.77.8",
+    "sharp": "^0.33.5",
     "zod": "^3.23.8"
   },
   "scripts": {

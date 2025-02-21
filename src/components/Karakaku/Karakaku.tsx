@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 import { LyricLine, parseLRC } from '@/utils/LrcParser';
-import '@/stylesheets/karakaku.scss';
+import styles from '@/stylesheets/karakaku.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -52,8 +52,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
     const [progress, setProgress] = useState(0);
-
-    console.log('songSrc' + songSrc);
+    const [multiplier, setMultiplier] = useState(1);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -124,7 +123,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             setStartTime,
             setEndTime,
             isStarted,
-            hasErrors
+            hasErrors,
+            multiplier,
+            setMultiplier
         );
     };
 
@@ -137,8 +138,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             if (index < userInput.length) {
                 // Vérification de la correspondance
                 className = normalizeString(userInput[index]) === normalizeString(char)
-                    ? 'right'
-                    : 'wrong';
+                    ? styles.right
+                    : styles.wrong;
             }
 
             if (!charRefs.current[currentLyricIndex]) {
@@ -179,6 +180,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         setTotalCharacters(0);
         setCompletedInputs([]);
         setIsCountdownActive(false);
+        setMultiplier(1);
         audioPlayerRef.current?.audioEl.current?.load();
     };
     const isHandlingLineSwitch = useRef(false);
@@ -198,6 +200,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                 return newScore;
             });
 
+            setMultiplier(1);
             timer = setInterval(() => {
                 setCountdown((prev) => {
 
@@ -261,16 +264,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const renderLyrics = () => {
         if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
             return (
-                <div className="final-score">
+                <div className={styles.finalScore}>
                     <p>Score final: {score}</p>
                     <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
                     <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
                     <p>Précision d&apos;écriture : {calculateAccuracy(completedInputs, lyrics)}%</p>
                     <p>Nombre de fautes : {totalErrors} / {totalChars}</p>
-                    <div className="btn-list">
-                        <button className="btn-primary" onClick={handleReplay}>Rejouer</button>
+                    <div className={styles.btnList}>
+                        <button className={styles.btnPrimary} onClick={handleReplay}>Rejouer</button>
                         <Link href="/karakaku">
-                            <button className="btn-secondary">Retour choix de musiques</button>
+                            <button className={styles.btnSecondary}>Retour choix de musiques</button>
                         </Link>
                     </div>
                 </div>
@@ -289,24 +292,24 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             }
 
             return (
-                <div key={index} className={`lyric-line ${index === currentLyricIndex ? 'current' : ''}`}>
+                <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
                     {/* Lignes précédentes */}
                     {index < currentLyricIndex && (
                         <p
-                            className={`previous 
-                            ${index === currentLyricIndex ? 'current' : ''}
-                            ${isBeforeFirst ? '--before-line' : ''}
-                            ${isFirstLine ? '--first-line' : ''}`
+                            className={`${styles.previous} 
+                            ${index === currentLyricIndex ? styles.current : ''}
+                            ${isBeforeFirst ? styles['--before-line'] : ''}
+                            ${isFirstLine ? styles['--first-line'] : ''}`
                             }
                         >
                             {lyrics[index].text.split('').map((char, charIndex) => {
                                 const userInputForLine = completedInputs[index] || ''; // Évite undefined
                                 const userChar = userInputForLine[charIndex] || ''; // Évite undefined
                                 const className = normalizeString(userChar) === normalizeString(char)
-                                    ? 'right'  // Si le caractère saisi est correct
+                                    ? styles.right  // Si le caractère saisi est correct
                                     : userChar === ''  // Pas encore saisi
                                         ? '' // Pas de classe si rien saisi
-                                        : 'wrong'; // Si le caractère est incorrect
+                                        : styles.wrong; // Si le caractère est incorrect
 
                                 return <span key={charIndex} className={className}>{char}</span>;
                             })}
@@ -315,16 +318,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
 
                     {/* Ligne actuelle */}
                     {index === currentLyricIndex && (
-                        <div className="current-lyric-container">
+                        <div className={styles.currentLyricContainer}>
                             <Image priority
                                 src="/assets/img/icon/arrow-right.svg"
                                 alt="Music svg"
                                 width={40}
                                 height={40}
-                                className="arrow-icon"
+                                className={styles.arrowIcon}
                             />
                             {isCountdownActive &&
-                                <div className="countdown">
+                                <div className={styles.countdown}>
                                     <Image priority
                                         src="/assets/img/icon/timer.svg"
                                         alt="Music svg"
@@ -332,11 +335,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                                         height={40}
                                         className="countdown__icon"
                                     />
-                                    <span className="highlight">{countdown}&nbsp;</span>
+                                    <span className={styles.highlight}>{countdown}&nbsp;</span>
                                     {countdown === 1 ? 'seconde' : 'secondes'}
                                 </div>
                             }
-                            <p className="current-lyric">
+                            <p className={styles.currentLyric}>
                                 {getStyledText()}
                             </p>
                             <input
@@ -344,19 +347,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                                 value={userInput}
                                 onChange={handleInputChange}
                                 onPaste={handlePaste}
-                                className="text-input"
+                                className={styles.textInput}
                                 autoFocus
                                 spellCheck={false}
                             />
-                            <div ref={caretRef} className="caret"></div>
+                            <div ref={caretRef} className={styles.caret}></div>
                         </div>
                     )}
 
                     {/* Lignes suivantes */}
                     {index > currentLyricIndex && (
-                        <p className={`next 
-                            ${isLastLine ? '--last-line' : ''}
-                            ${isBeforeLast ? '--before-line' : ''}`
+                        <p className={`${styles.next}
+                            ${isLastLine ? styles['--last-line'] : ''}
+                            ${isBeforeLast ? styles['--before-line'] : ''}`
                         }>
                             {lyrics[index].text}
                         </p>
@@ -366,19 +369,37 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         });
     };
 
+    const speedClass = multiplier === 4 ? styles.faster :
+        multiplier >= 3 ? styles.fast :
+            multiplier >= 2 ? styles.medium : "";
+
+    const getGradientId = () => {
+        if (multiplier === 4) return "gradient-faster";
+        if (multiplier >= 3) return "gradient-fast";
+        if (multiplier >= 2) return "gradient-medium";
+        return "gradient-default";
+    };
+
+    const roundToOneDecimals = (num: number) => {
+        if (!num) return "";
+        if (num >=4) return num;
+        const match = num.toString().match(/^-?\d+(?:\.\d)?/);
+        return match ? match[0] : "";
+    }
+
     return (
-        <div className="karakaku">
+        <div className={styles.karakaku}>
             {!isGameOver && (
                 <>
-                    <div className="animated-background"></div>
-                    <div className="animated-background --inverse"></div>
+                    <div className={styles.animatedBackground}></div>
+                    <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
 
                     <Image priority
                         src="/assets/img/logo-jbh.png"
                         alt="Logo Just Beat Hit"
                         width={1000}
                         height={1000}
-                        className="logo-jbh"
+                        className={styles.logoJbh}
                     />
                     <ReactAudioPlayer
                         src={songSrc}
@@ -389,17 +410,22 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     />
                     {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
                     {!isStarted && (
-                        <button
-                            onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                            className="btn-primary" style={{ opacity: 0 }}>
-                            {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
-                        </button>
+                        <div className={styles.btnContainer}>
+                            <button
+                                onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                                className={styles.btnPrimary} style={{ display: 'none' }}>
+                                {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                            </button>
+                            <a href="/karakaku" className={styles.btnSecondary}>
+                                Quit
+                            </a>
+                        </div>
                     )}
-                    <div className="progress-bar-background">
-                        <div className="progress-bar" style={{ height: `${progress}%` }}></div>
+                    <div className={styles.progressBarBackground}>
+                        <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
                     </div>
 
-                    <div className="title-song">
+                    <div className={styles.titleSong}>
                         <h5>{singer} - {title}</h5>
                     </div>
                     <Image priority
@@ -407,28 +433,64 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         alt="Vinyl svg"
                         width={1000}
                         height={1000}
-                        className={`vinyl-player ${isStarted && !isCountdownActive ? '--playing' : '--paused'}`}
+                        className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive ? styles['--playing'] : styles['--paused']}`}
                     />
                 </>
             )}
-            <div className="lyrics">
+            <div className={styles.lyrics}>
                 {renderLyrics()}
             </div>
 
             {!isGameOver && (
-                <div className="score">
+                <div className={styles.score}>
                     <p
-                        className='change-score'
+                        className={styles.changeScore}
                         key={lastScoreChange}
-                        style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                        style={{display: lastScoreChange === 0 ? 'none' : 'inline-block'}}>
                         {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-                    </p>                
-                    <div className='score-line'>
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
-                        <p className='actual-score'>{score}</p>
+                    </p>
+                    <div className={styles.score_display}>
+                        <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
+                            <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="gradient-default">
+                                        <stop offset="0%" stopColor="#fff" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#fff" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-medium">
+                                        <stop offset="0%" stopColor="#FFAB36" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#FFAB36" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-fast">
+                                        <stop offset="0%" stopColor="#FF6026" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#FF6026" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-faster">
+                                        <stop offset="0%" stopColor="#F1203C" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#F1203C" stopOpacity="0"/>
+                                    </linearGradient>
+                                </defs>
+
+                                <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
+                                        stroke={`url(#${getGradientId()})`}
+                                        strokeLinecap="round" strokeDasharray="143, 188"/>
+
+                                <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3"/>
+                            </svg>
+                            <span>x {roundToOneDecimals(multiplier)}</span>
+                        </div>
+                        <div className={styles.scoreLine}>
+                            <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24}/>
+                            <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24}
+                                   className={styles.scoreDecoration}/>
+                            <p className={styles.actualScore}>{score}</p>
+                        </div>
                     </div>
-                    <p className='label'>Score</p>
+                    <p className={styles.label}>Score</p>
                 </div>
             )}
         </div>

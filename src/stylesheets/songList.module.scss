@@ -1,0 +1,140 @@
+.backBtn {
+    position: absolute;
+    left: 4rem;
+    top: 3rem;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background: #1D1D1D; //linear-gradient(-135deg, #FF6026, #C1208F);
+    min-height: 100vh;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+
+.titleContainer {
+    background-color: #1D1D1D;
+    padding: 10px;
+    border: 3px solid #FFAB36;
+    display: inline-block;
+    border-radius: 25px;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-weight: bold;
+    font-style: italic;
+    color: #FFA540;
+    font-size: 4rem;
+    margin: 0;
+}
+
+.subtitle {
+    font-weight: bold;
+    font-style: italic;
+    color: white;
+    font-size: 2.5rem;
+    margin: 30px 0;
+}
+
+.songGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.songCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 10px;
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+
+.songCard:hover {
+    transform: scale(1.05);
+}
+
+.songTitle {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.songSinger {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.songContent {
+    position: relative;
+    background-image: url('/assets/img/vinyl.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: transform 0.5s ease-in-out;
+    cursor: pointer;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.innerDisk {
+    position: absolute;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    z-index: 2;
+}
+
+.songContentText {
+    z-index: 3;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.songCard:hover .songContent {
+    animation: spinText 5s linear infinite;
+}
+
+@keyframes spinText {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.songTitle,
+.songSinger {
+    color: white;
+    margin: 5px 0;
+}
+
+.container * {
+    font-family: var(--font-goia);
+}
+
+.songTitle,
+.songSinger {
+    color: white;
+    margin: 5px 0;
+    user-select: none;
+    pointer-events: none;
+}

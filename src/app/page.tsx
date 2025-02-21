@@ -1,4 +1,4 @@
-import "@/stylesheets/home.scss";
+import styles from "@/stylesheets/home.module.scss";
 import Link from "next/link";
 import Image from "next/image";
 import Carousel from "@/components/Carrousel";
@@ -12,10 +12,10 @@ export default function Page() {
   ];
 
   return (
-    <div className="home">
+    <div className={styles.home}>
       <Navbar />
-      <div className="header-homepage">
-        <div className="header-homepage-text">
+      <div className={styles.headerHomepage}>
+        <div className={styles.headerHomepageContent}>
           <ul>
             <li>
               <h3>
@@ -23,11 +23,11 @@ export default function Page() {
                 <span>and beat your friends</span>
               </h3>
             </li>
-            <li className="feedback">
-            <p>Aidez-nous à améliorer notre jeu !</p>
-            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfHnAhsBZLp80V5M1mJ4AiTJRpjXfVINfIm87CUIDC758PtSQ/viewform?pli=1">
-              <button className="btn-feedback">Donner son avis</button>
-            </Link>
+            <li className={styles.feedback}>
+              <p>Aidez-nous à améliorer notre jeu !</p>
+              <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfHnAhsBZLp80V5M1mJ4AiTJRpjXfVINfIm87CUIDC758PtSQ/viewform?pli=1">
+                <button className={styles.btnFeedback}>Donner son avis</button>
+              </Link>
             </li>
           </ul>
           <ul>
@@ -35,11 +35,12 @@ export default function Page() {
             <li>
               <Link href="/karakaku">
 
-                <button className="start-button">
+                <button className={styles.startButton}>
                   <Image
                     priority
                     src="/assets/img/icon/Karaoke.svg"
-                    alt="Karaoke svg"
+                    alt="" // Pas de texte alternatif pour les images décoratives
+                    aria-hidden="false"
                     width={24}
                     height={24}
                   />
@@ -50,17 +51,18 @@ export default function Page() {
               <Image
                 priority
                 src="/assets/img/SoonLogo.svg"
-                alt="Soon Logo"
-                className="ComingSoon"
+                alt=""  // Pas de texte alternatif pour les images décoratives
+                aria-hidden="true"
                 width={89}
                 height={44}
               />
               <Link href="">
-                <button className="start-button">
+                <button className={styles.startButton}>
                   <Image
                     priority
                     src="/assets/img/icon/question-mark.svg"
-                    alt="Question svg"
+                    alt="" // Pas de texte alternatif pour les images décoratives
+                    aria-hidden="true"
                     width={24}
                     height={24}
                   />
@@ -71,24 +73,25 @@ export default function Page() {
               <Image
                 priority
                 src="/assets/img/SoonLogo.svg"
-                alt="Soon Logo"
-                className="ComingSoon"
+                alt="" // Pas de texte alternatif pour les images décoratives
+                aria-hidden="true"
                 width={89}
                 height={44}
               />
               <Link href="/">
-                <button className="start-button">
+                <button className={styles.startButton}>
                   <Image
                     priority
                     src="/assets/img/icon/music-1.svg"
-                    alt="Music svg"
+                    alt="" // Pas de texte alternatif pour les images décoratives
+                    aria-hidden="true"
                     width={24}
                     height={24}
                   />
                   N&apos;oubliez pas les paroles</button>
               </Link>
             </li>
-            <div className="">
+            <div>
               <Carousel images={carouselImages} />
             </div>
           </ul>
@@ -97,7 +100,7 @@ export default function Page() {
           priority
           src="/assets/img/Logo.svg"
           alt="Logo"
-          className="Logo"
+          className={styles.logo}
           width={584}
           height={756}
         />
@@ -106,12 +109,12 @@ export default function Page() {
         <Image
           src="/assets/img/Boat.jpg"
           alt="Boat"
-          className="BoatImage"
+          className={styles.boatImage}
           width={1792}
           height={419}
         />
       </div>
-      <div className="desc-jbh-homepage">
+      <div className={styles.description}>
         <h3>Just Beat Hit propose une variété de <br /> mini-jeux rythmés pour tester vos <br />réflexes et votre sens du tempo</h3>
       </div>
     </div>
