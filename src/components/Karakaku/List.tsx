@@ -1,25 +1,17 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
 
-import { createClient } from '@/lib/supabase/server';
-import styles from '@/stylesheets/songList.module.scss';
+import { createClient } from "@/lib/supabase/server";
+import styles from "@/stylesheets/songList.module.scss";
+import SongCard from "./SongCard";
 
-export default async function SongList() {
+export default async function SongList({ gameId }: { gameId?: string }) {
     const supabase = createClient();
-    const { data, error } = await supabase.from('song').select('*');
+    const { data, error } = await supabase.from("song").select("*");
 
     return (
         <div className={styles.songGrid}>
             {data?.map((song) => (
-                <Link key={song.id} href={`/karakaku/${song.id}`} className={styles.songCard}>
-                    <div className={styles.songContent}>
-                        <div className={styles.innerDisk}></div>
-                        <div className={styles.songContentText}>
-                            <h2 className={styles.songTitle}>{song.title}</h2>
-                            <p className={styles.songSinger}>{song.singer}</p>
-                        </div>
-                    </div>
-                </Link>
+                <SongCard key={song.id} gameId={gameId} song={song} />
             ))}
         </div>
     );

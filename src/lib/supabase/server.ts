@@ -1,6 +1,7 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import { Database } from '~/database.types'
+import { createServerClient } from "@supabase/ssr"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
+import { cookies } from "next/headers"
+import { Database } from "~/database.types"
 
 export function createClient() {
     const cookieStore = cookies()
@@ -24,6 +25,19 @@ export function createClient() {
                         // user sessions.
                     }
                 },
+            },
+        }
+    )
+}
+
+export function createAdminClient() {
+    return createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
             },
         }
     )
