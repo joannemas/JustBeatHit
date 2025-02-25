@@ -7,6 +7,12 @@ export default async function page({ params: { game_name, game_id } }: { params:
   const supabase = createAdminClient()
   const { data } = await supabase.from('games').select().eq('id', game_id).single()
 
+  // If no game found, redirect to game page
+  if (!data) {
+    redirect(`/game/${game_name}`)
+  }
+
+  // If no song found, redirect to songs page
   if (!data?.song_id) {
     redirect(`/game/${game_name}/${game_id}`)
   }
