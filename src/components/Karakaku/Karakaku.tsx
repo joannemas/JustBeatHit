@@ -52,6 +52,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
     const [progress, setProgress] = useState(0);
+    const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     console.log('songSrc' + songSrc);
 
@@ -179,7 +181,17 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         setTotalCharacters(0);
         setCompletedInputs([]);
         setIsCountdownActive(false);
-        audioPlayerRef.current?.audioEl.current?.load();
+        setIsPausedMenuOpen(false); // Ferme le menu si ouvert
+        // Recharge et relance
+        const audio = audioPlayerRef.current?.audioEl.current;
+        if (audio) {
+            audio.load(); // Recharge l'audio
+        }
+
+        // Redonne le focus à l'input
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 200);
     };
     const isHandlingLineSwitch = useRef(false);
 
@@ -347,6 +359,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                                 className="text-input"
                                 autoFocus
                                 spellCheck={false}
+                                ref={inputRef}
                             />
                             <div ref={caretRef} className="caret"></div>
                         </div>
@@ -366,8 +379,72 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         });
     };
 
+    // Pause ECHAP
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape" && !isGameOver) {
+                setIsPausedMenuOpen((prev) => {
+                    if (prev) {
+                        // Si le menu était ouvert et qu'on le ferme
+                        const audio = audioPlayerRef.current?.audioEl.current;
+                        
+                        if (audio) {
+                            const isMusicFinished = audio.ended; // Vérifie si la musique est complètement terminée
+    
+                            // Reprendre la musique seulement si conditions
+                            if (!isCountdownActive && !isMusicFinished) {
+                                audio.play();
+                            }
+                        }
+    
+                        inputRef.current?.focus(); // Remet le focus sur l'input
+                    } else {
+                        // Si le menu était fermé et qu'on l'ouvre, mettre en pause
+                        audioPlayerRef.current?.audioEl.current?.pause();
+                    }
+                    return !prev; // Inverse l'état du menu
+                });
+            }
+        };
+    
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isGameOver, currentLyricIndex, isCountdownActive, lyrics.length]);
+
+    // Bouton Reprendre
+    const handleResume = () => {
+        setIsPausedMenuOpen(false);
+    
+        const audio = audioPlayerRef.current?.audioEl.current;
+        if (audio) {
+            const isMusicFinished = audio.ended; // Vérifie si la musique est complètement terminée
+    
+            // Reprendre la musique seulement si conditions
+            if (!isCountdownActive && !isMusicFinished) {
+                audio.play();
+            }
+        }
+    
+        inputRef.current?.focus(); // Remet le focus sur l'input
+    };
+    
+
     return (
         <div className="karakaku">
+            {isPausedMenuOpen && (
+                <div className="pause-menu">
+                    <div className="pause-menu-content">
+                        <button className="btn-primary" onClick={handleResume}>Reprendre</button>
+                        <button className="btn-secondary" onClick={handleReplay}>Rejouer</button>
+                        <Link href="/">
+                            <button className="btn-secondary">Quitter</button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+
             {!isGameOver && (
                 <>
                     <div className="animated-background"></div>
@@ -395,9 +472,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                               className="btn-primary" style={{ opacity: 0 }}>
                               {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
                           </button>
-                          <a href="/karakaku" className="btn-secondary">
-                              Quit
-                          </a>
                         </div>
                     )}
                     <div className="progress-bar-background">
