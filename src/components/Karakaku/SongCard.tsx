@@ -3,14 +3,14 @@
 import Link from "next/link";
 import React from "react"
 import styles from "@/stylesheets/songList.module.scss";
-import { updateGame } from "@/app/game/actions";
+import { updateGameSong } from "@/app/game/actions";
 import { Database } from "~/database.types";
 
 export default function SongCard({ song, gameId }: { song: Database["public"]["Tables"]["song"]["Row"], gameId?: string }) {
     /** @todo - Add toaster on updateGame error */
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        updateGame(song.id, gameId);
+        updateGameSong(song.id, gameId);
     };
 
     return (

@@ -1,10 +1,10 @@
 import Karakaku from "@/components/Karakaku/Karakaku";
-import { createAdminClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import React from 'react'
 
 export default async function page({ params: { game_name, game_id } }: { params: { game_name: string, game_id: string } }) {
-  const supabase = createAdminClient()
+  const supabase = createClient()
   const { data } = await supabase.from('games').select().eq('id', game_id).single()
 
   // If no game found, redirect to game page
@@ -14,7 +14,7 @@ export default async function page({ params: { game_name, game_id } }: { params:
 
   // If no song found, redirect to songs page
   if (!data?.song_id) {
-    redirect(`/game/${game_name}/${game_id}`)
+    redirect(`/game/${game_name}`)
   }
 
   const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data.song_id).single()
@@ -24,11 +24,11 @@ export default async function page({ params: { game_name, game_id } }: { params:
   ]
   const [lyricsURL, songURL] = await Promise.all(songPromises)
 
-  // console.debug(lyricsURL, songURL, `${song.singer} - ${song.title.replaceAll('\'','')}/lyrics.lrc`)
+  console.debug(lyricsURL, songURL, `${song.singer} - ${song.title.replaceAll('\'', '')}/lyrics.lrc`)
 
   if (!song || !lyricsURL.data || !songURL.data) {
     return <div>Loading...</div>;
   }
 
-  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} />;
+  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} gameId={game_id} />;
 }

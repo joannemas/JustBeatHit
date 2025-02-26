@@ -17,16 +17,19 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
+import { startGame } from "@/app/game/actions";
+// import { startGame } from "@/app/game/actions";
 
 interface KarakakuProps {
     songSrc: string;
     lyricSrc: string;
     title?: string;
     singer?: string;
+    gameId: string
 }
 
 
-const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer }) => {
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId }) => {
     const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
     const [userInput, setUserInput] = useState<string>('');
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -256,6 +259,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
         };
     }, [isCountdownActive, lyrics.length, audioPlayerRef, isValidated]);
 
+    useEffect(() => {
+        if (isStarted) { startGame(gameId) }
+    }, [isStarted, gameId])
 
     //Affiche les paroles et le score final
     const renderLyrics = () => {
