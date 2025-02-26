@@ -392,7 +392,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     if (prev) {
                         // Si le menu était ouvert et qu'on le ferme
                         const audio = audioPlayerRef.current?.audioEl.current;
-                        
                         if (audio) {
                             const isMusicFinished = audio.ended; // Vérifie si la musique est complètement terminée
     
@@ -406,6 +405,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                     } else {
                         // Si le menu était fermé et qu'on l'ouvre, mettre en pause
                         audioPlayerRef.current?.audioEl.current?.pause();
+                        inputRef.current?.blur(); // Enlève le focus de l'input
                     }
                     return !prev; // Inverse l'état du menu
                 });
