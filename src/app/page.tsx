@@ -33,8 +33,7 @@ export default function Page() {
           <ul>
             <li>accès rapide ·</li>
             <li>
-              <Link href="/karakaku">
-
+              <Link href="/game/karakaku">
                 <button className={styles.startButton}>
                   <Image
                     priority
