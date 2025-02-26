@@ -197,10 +197,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
 
     // Compte à rebours si ligne incomplète
     useEffect(() => {
-        let timer: NodeJS.Timeout;
-
-        if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated) {
-            isHandlingLineSwitch.current = true; // Active le verrou
+        if (isCountdownActive) {
             setCountdown(10);
             setPauseCount(prevCount => calculatePauseCount(prevCount));
             const points = -500;
@@ -209,13 +206,21 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                 setLastScoreChange(points);
                 return newScore;
             });
+        }
+    }, [isCountdownActive]);
 
+    // Gestion du changement de ligne
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated && !isPausedMenuOpen) {
+            isHandlingLineSwitch.current = true; // Active le verrou
+            setCountdown((prev) => prev > 0 ? prev : 10); // Récupère le compteur en fonction de l'état actuel
             timer = setInterval(() => {
                 setCountdown((prev) => {
 
                     if (prev <= 1) {
                         clearInterval(timer);
-                        setCountdown(10);
                         setIsCountdownActive(false);
 
                         if (currentLyricIndex < lyrics.length - 1) {
@@ -266,7 +271,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
             clearInterval(timer);
             isHandlingLineSwitch.current = false; // Libère le verrou
         };
-    }, [isCountdownActive, lyrics.length, audioPlayerRef, isValidated]);
+    }, [isCountdownActive, lyrics.length, audioPlayerRef, isValidated, isPausedMenuOpen]);
 
 
     //Affiche les paroles et le score final
