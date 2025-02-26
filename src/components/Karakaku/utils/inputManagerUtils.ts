@@ -31,6 +31,8 @@ export const handleInputChange = (
     setEndTime: (time: number) => void,
     isStarted: boolean,
     hasErrors: boolean,
+    multiplier: number,
+    setMultiplier: React.Dispatch<React.SetStateAction<number>>
 ) => {
     let inputValue = e.target.value;
 
@@ -130,14 +132,28 @@ export const handleInputChange = (
         setHasErrors(true);
     }
 
+    setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
+    let savedMultiplier = multiplier;
     if (normalizeString(lastTypedChar) === normalizeString(correctChar)) {
-        const points = 100;
+        // Utiliser la version affichée (arrondie à 1 décimale) pour le calcul des points
+        const displayMultiplier = parseFloat(multiplier.toFixed(1));
+        const points = Math.floor(100 * displayMultiplier);
+
         if (!usedSpecialChar) {
             setScore(prevScore => {
                 const newScore = prevScore + points;
                 setLastScoreChange(points);
                 return newScore;
             });
+
+            // Stocker avec 2 décimales pour garder l'incrémentation fluide
+            savedMultiplier = parseFloat((savedMultiplier * 1.04).toFixed(2));
+
+            if (savedMultiplier >= 4) {
+                savedMultiplier = 4;
+            }
+
+            setMultiplier(savedMultiplier);
         }
     } else {
         const points = -200;
@@ -149,6 +165,7 @@ export const handleInputChange = (
             });
         }
         setIncorrectCharacters(prev => prev + 1);
+        setMultiplier(1);
     }
 
     setUserInput(userInputUpdated);
@@ -156,11 +173,10 @@ export const handleInputChange = (
     let lineLyricSize = normalizeString(currentLyric.trim()).length;
 
     if (userLyricSize === lineLyricSize) {
-        setCompletedInputs(prev => ({ ...prev, [currentLyricIndex]: userInputUpdated }));
         setIsValidated(true);
 
         if (!completedInputs[currentLyricIndex]){
-            const points = hasErrors ? 500 : 1000;
+            const points = hasErrors ? Math.floor(500 * multiplier) : Math.floor(1000 * multiplier);
             setScore(prevScore => calculateScore(prevScore, points));
             setLastScoreChange(points);
         }
@@ -180,7 +196,7 @@ export const handleInputChange = (
     // Vérification si la ligne est validée et si on efface puis retape le dernier caractère
     if (previousInput.length === lineLyricSize - 1 && completedInputs[currentLyricIndex]) {
         // On a effacé un caractère mais la ligne était validée, réactive les points
-        const points = hasErrors ? 500 : 1000;
+        const points = hasErrors ? Math.floor(500 * multiplier) : Math.floor(1000 * multiplier);
         setScore(prevScore => calculateScore(prevScore, points));
         setLastScoreChange(points);
     }

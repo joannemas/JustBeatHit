@@ -55,8 +55,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     const [completedInputs, setCompletedInputs] = useState<string[]>([]);
     const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
     const [progress, setProgress] = useState(0);
-
-    console.log('songSrc' + songSrc);
+    const [multiplier, setMultiplier] = useState(1);
 
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -127,7 +126,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             setStartTime,
             setEndTime,
             isStarted,
-            hasErrors
+            hasErrors,
+            multiplier,
+            setMultiplier
         );
     };
 
@@ -184,6 +185,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 return newScore;
             });
 
+            setMultiplier(1);
             timer = setInterval(() => {
                 setCountdown((prev) => {
 
@@ -363,6 +365,24 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         });
     };
 
+    const speedClass = multiplier === 4 ? styles.faster :
+        multiplier >= 3 ? styles.fast :
+            multiplier >= 2 ? styles.medium : "";
+
+    const getGradientId = () => {
+        if (multiplier === 4) return "gradient-faster";
+        if (multiplier >= 3) return "gradient-fast";
+        if (multiplier >= 2) return "gradient-medium";
+        return "gradient-default";
+    };
+
+    const roundToOneDecimals = (num: number) => {
+        if (!num) return "";
+        if (num >=4) return num;
+        const match = num.toString().match(/^-?\d+(?:\.\d)?/);
+        return match ? match[0] : "";
+    }
+
     return (
         <div className={styles.karakaku}>
             {!isGameOver && (
@@ -422,13 +442,49 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                     <p
                         className={styles.changeScore}
                         key={lastScoreChange}
-                        style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }} >
+                        style={{display: lastScoreChange === 0 ? 'none' : 'inline-block'}}>
                         {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
                     </p>
-                    <div className={styles.scoreLine}>
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className={styles.scoreDecoration} />
-                        <p className={styles.actualScore}>{score}</p>
+                    <div className={styles.score_display}>
+                        <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
+                            <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="gradient-default">
+                                        <stop offset="0%" stopColor="#fff" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#fff" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-medium">
+                                        <stop offset="0%" stopColor="#FFAB36" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#FFAB36" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-fast">
+                                        <stop offset="0%" stopColor="#FF6026" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#FF6026" stopOpacity="0"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="gradient-faster">
+                                        <stop offset="0%" stopColor="#F1203C" stopOpacity="1"/>
+                                        <stop offset="80%" stopColor="#F1203C" stopOpacity="0"/>
+                                    </linearGradient>
+                                </defs>
+
+                                <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
+                                        stroke={`url(#${getGradientId()})`}
+                                        strokeLinecap="round" strokeDasharray="143, 188"/>
+
+                                <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3"/>
+                            </svg>
+                            <span>x {roundToOneDecimals(multiplier)}</span>
+                        </div>
+                        <div className={styles.scoreLine}>
+                            <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24}/>
+                            <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24}
+                                   className={styles.scoreDecoration}/>
+                            <p className={styles.actualScore}>{score}</p>
+                        </div>
                     </div>
                     <p className={styles.label}>Score</p>
                 </div>
