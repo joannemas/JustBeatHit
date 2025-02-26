@@ -17,7 +17,7 @@ import {
 } from './utils/scoreUtils';
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
-import { startGame } from "@/app/game/actions";
+import { endGame, replayGame, startGame } from "@/app/game/actions";
 // import { startGame } from "@/app/game/actions";
 
 interface KarakakuProps {
@@ -25,7 +25,7 @@ interface KarakakuProps {
     lyricSrc: string;
     title?: string;
     singer?: string;
-    gameId: string
+    gameId: string;
 }
 
 
@@ -165,24 +165,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
     //Relance la partie
     const handleReplay = () => {
-        setCurrentLyricIndex(0);
-        setUserInput('');
-        setIsValidated(false);
-        setLockedChars('');
-        setIsStarted(false);
-        setIsGameOver(false);
-        setIsMusicFinished(false);
-        setScore(0);
-        setLastScoreChange(0);
-        setHasErrors(false);
-        setPauseCount(0);
-        setStartTime(0);
-        setEndTime(0);
-        setIncorrectCharacters(0);
-        setTotalCharacters(0);
-        setCompletedInputs([]);
-        setIsCountdownActive(false);
-        audioPlayerRef.current?.audioEl.current?.load();
+        replayGame(gameId);
     };
     const isHandlingLineSwitch = useRef(false);
 
@@ -263,6 +246,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         if (isStarted) { startGame(gameId) }
     }, [isStarted, gameId])
 
+    useEffect(() => {
+        if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
+            const word_speed = calculateWPM(startTime, endTime, lyrics)
+            const typing_accuracy = calculateAccuracy(completedInputs, lyrics)
+            endGame({ score, mistakes: totalErrors, typing_accuracy, word_speed }, gameId)
+        }
+    }, [isValidated, isGameOver, currentLyricIndex, lyrics.length])
+
     //Affiche les paroles et le score final
     const renderLyrics = () => {
         if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
@@ -275,7 +266,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                     <p>Nombre de fautes : {totalErrors} / {totalChars}</p>
                     <div className={styles.btnList}>
                         <button className={styles.btnPrimary} onClick={handleReplay}>Rejouer</button>
-                        <Link href="/karakaku">
+                        <Link href="/game/karakaku">
                             <button className={styles.btnSecondary}>Retour choix de musiques</button>
                         </Link>
                     </div>
