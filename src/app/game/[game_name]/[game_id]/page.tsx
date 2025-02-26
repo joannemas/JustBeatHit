@@ -1,7 +1,8 @@
 import Karakaku from "@/components/Karakaku/Karakaku";
-import { createAdminClient, createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import React from 'react'
+import { replayGame } from "../../actions";
 
 export default async function page({ params: { game_name, game_id } }: { params: { game_name: string, game_id: string } }) {
   const supabase = createClient()
@@ -10,6 +11,11 @@ export default async function page({ params: { game_name, game_id } }: { params:
   // If no game found, redirect to game page
   if (!data) {
     redirect(`/game/${game_name}`)
+  }
+
+  // If game is already started, that's mean user refresh the page, so create a new game and redirect to it
+  if (data.status === 'started') {
+    await replayGame(game_id)
   }
 
   // If no song found, redirect to songs page
