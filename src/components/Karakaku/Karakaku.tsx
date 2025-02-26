@@ -508,8 +508,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer })
                         {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
                     </p>                
                     <div className='score-line'>
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} className='score-decorator'/>
+                        <Image src="/assets/img/icon/score-line.svg" alt="Score" width={36} height={36} />
                         <p className='actual-score'>{score}</p>
                     </div>
                     <p className='label'>Score</p>
