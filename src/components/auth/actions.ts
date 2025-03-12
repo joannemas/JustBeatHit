@@ -49,6 +49,16 @@ export async function login(prevState: AuthState | undefined, formData: FormData
     redirect('/')
 }
 
+export async function loginAnonymously(prevState: AuthState, captchaToken: string) {
+    const supabase = createClient()
+    const {data, error} = await supabase.auth.signInAnonymously({options: {captchaToken}})
+
+    if (error) {
+        console.error(error)
+        return { message: error.message }
+    }
+}
+
 export async function register(prevState: AuthState | undefined, formData: FormData) {
     const supabase = createClient()
 
