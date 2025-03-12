@@ -26,10 +26,11 @@ interface KarakakuProps {
     title?: string;
     singer?: string;
     gameId: string;
+    gameName: string;
 }
 
 
-const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId }) => {
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId, gameName }) => {
     const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
     const [userInput, setUserInput] = useState<string>('');
     const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -252,30 +253,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
             const word_speed = calculateWPM(startTime, endTime, lyrics)
             const typing_accuracy = calculateAccuracy(completedInputs, lyrics)
-            endGame({ score, mistakes: totalErrors, typing_accuracy, word_speed }, gameId)
+            endGame({ score, mistakes: totalErrors, typing_accuracy, word_speed }, gameName, gameId)
         }
     }, [isValidated, isGameOver, currentLyricIndex, lyrics.length])
 
     //Affiche les paroles et le score final
     const renderLyrics = () => {
-        if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
-            return (
-                <div className={styles.finalScore}>
-                    <p>Score final: {score}</p>
-                    <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p>
-                    <p>Vitesse de frappe : {calculateWPM(startTime, endTime, lyrics)} mots par minute</p>
-                    <p>Précision d&apos;écriture : {calculateAccuracy(completedInputs, lyrics)}%</p>
-                    <p>Nombre de fautes : {totalErrors} / {totalChars}</p>
-                    <div className={styles.btnList}>
-                        <button className={styles.btnPrimary} onClick={handleReplay}>Rejouer</button>
-                        <Link href="/game/karakaku">
-                            <button className={styles.btnSecondary}>Retour choix de musiques</button>
-                        </Link>
-                    </div>
-                </div>
-            );
-        }
-
         return lyrics.map((lyric, index) => {
             const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
             const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
