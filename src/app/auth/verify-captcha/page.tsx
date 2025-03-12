@@ -3,11 +3,10 @@
 import { useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import HCaptcha from "@hcaptcha/react-hcaptcha"
-import { supabase } from '@/lib/supabase/client'
 import styles from '../auth.module.scss'
 import { loginAnonymously } from '@/components/auth/actions'
 
-export default function VerifyCaptcha() {
+export default function Page() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
