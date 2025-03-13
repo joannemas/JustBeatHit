@@ -4,7 +4,10 @@ import { login } from "@/components/auth/actions";
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { z } from "zod";
-import styles from "../auth.module.scss"; // ✅ Import du CSS module
+import styles from "../auth.module.scss";
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 
 const loginForm = z.object({
   email: z.string().email(),
@@ -42,7 +45,7 @@ export default function Page() {
           {state?.message}
         </span>
 
-        <LoginButton />
+        <LoginButton/>
       </form>
 
       <Link href="/auth/register" className={styles.link}>
@@ -54,10 +57,26 @@ export default function Page() {
 
 function LoginButton() {
   const { pending } = useFormStatus();
+  const captcha = useRef<HCaptcha | null>(null)
+
 
   return (
-    <button className={styles.button} disabled={pending}>
-      Connexion
-    </button>
+    <>
+      <HCaptcha ref={captcha} size='invisible' sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}/>
+      <button className={styles.button} disabled={pending} onClick={async (e)=>{
+        e.preventDefault()
+        
+        await captcha.current?.execute({async: true})
+        
+        requestAnimationFrame(() => {
+          const button = e.target as HTMLButtonElement;
+          const form = button.form
+          form?.requestSubmit();
+        });
+      }}>
+        {pending && <Loader2 className='spinner' />}
+        {!pending && "Connexion"}
+      </button>
+    </>
   );
 }

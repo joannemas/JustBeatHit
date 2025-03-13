@@ -35,7 +35,7 @@ export async function login(prevState: AuthState | undefined, formData: FormData
 
     const data = parse.data
 
-    const { error } = await supabase.auth.signInWithPassword(data)
+    const { error } = await supabase.auth.signInWithPassword({...data, options: {captchaToken: formData.get("h-captcha-response")?.toString()}})
 
     if (error) {
         console.error(error)
@@ -73,7 +73,7 @@ export async function register(prevState: AuthState | undefined, formData: FormD
         return { message: 'Nom d\'utilisateur déjà utilisé' }
     }
 
-    const { data: { user, session } } = await supabase.auth.signUp({ ...fields, options: { data: { username, avatar_url } } })
+    const { data: { user, session } } = await supabase.auth.signUp({ ...fields, options: { data: { username, avatar_url }, captchaToken: formData.get("captchaToken")?.toString() } })
 
     /** Signup with currently existing email give a fake user without role
      * So we check the role to check if the user already exist or not
