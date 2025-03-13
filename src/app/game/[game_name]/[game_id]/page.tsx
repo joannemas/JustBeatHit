@@ -4,6 +4,29 @@ import { redirect } from "next/navigation";
 import React from 'react'
 import { replayGame } from "../../actions";
 import GameResult from '@/components/GameResult/GameResult';
+import Head from 'next/head';
+import { headers } from "next/headers";
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params: { game_name, game_id } }: { params: { game_name: string, game_id: string } }): Promise<Metadata> { 
+  const supabase = createClient()
+  const { data } = await supabase.from('games').select().eq('id', game_id).single()
+  const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data?.song_id?? '').single()
+
+  const host = headers().get('x-forwarded-host')
+  const protocol = headers().get('x-forwarded-proto')
+ 
+  return {
+    title: `${song.title} - ${song.singer} | Karakaku`,
+    description: `J'ai obtenu ${data?.score} points sur ${song.title} de ${song.singer}, essaye de faire mieux !`,
+    openGraph: {
+      title: `${song.title} - ${song.singer} | Karakaku`,
+      description: `J'ai obtenu ${data?.score} points sur ${song.title} de ${song.singer}, essaye de faire mieux !`,
+      url: `${protocol}://${host}/game/${game_name}/${game_id}`,
+      // images: ['/some-specific-page-image.jpg', ...previousImages],
+    },
+  }
+}
 
 export default async function page({ params: { game_name, game_id } }: { params: { game_name: string, game_id: string } }) {
   const supabase = createClient()
@@ -28,7 +51,7 @@ export default async function page({ params: { game_name, game_id } }: { params:
     return <GameResult gameId={game_id}/>
   }
 
-  const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data.song_id).single()
+  const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data?.song_id?? '').single()
   const songPromises = [
     supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5),
     supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),

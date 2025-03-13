@@ -31,14 +31,19 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(captchaUrl)
     }
 
-    if (
-        !isPublicPath
-    ) {
-        if(!user || user.is_anonymous){
-            // no user, respond by redirecting the user to the login page
-            const url = request.nextUrl.clone()
-            url.pathname = '/auth/login'
-            return NextResponse.redirect(url)
+    if (!isPublicPath) {
+        if (!user) {
+            // Pas d'utilisateur, redirection vers la page de connexion
+            const url = request.nextUrl.clone();
+            url.pathname = '/auth/login';
+            return NextResponse.redirect(url);
+        }
+    
+        if (user.is_anonymous && !isAnonymPath) {
+            // Utilisateur anonyme tentant d'accéder à une page non anonyme
+            const url = request.nextUrl.clone();
+            url.pathname = '/auth/login';
+            return NextResponse.redirect(url);
         }
     }
 
