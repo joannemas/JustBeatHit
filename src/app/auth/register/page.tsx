@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { register } from "@/components/auth/actions";
 import styles from '../auth.module.scss'
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useRef } from 'react';
 
 export default function Page() {
   const [state, formAction] = useFormState(register, undefined)
@@ -43,11 +45,25 @@ export default function Page() {
 
 function SignUpButton() {
   const { pending } = useFormStatus()
+  const captcha = useRef<HCaptcha | null>(null)
 
   return (
-    <button className={styles.button} disabled={pending} aria-disabled={pending}>
-      {pending && <Loader2 className='spinner' />}
-      {!pending && "S'inscrire"}
-    </button>
+    <>
+      <HCaptcha ref={captcha} size='invisible' sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}/>
+        <button className={styles.button} disabled={pending} onClick={async (e)=>{
+          e.preventDefault()
+          
+          await captcha.current?.execute({async: true})
+          
+          requestAnimationFrame(() => {
+            const button = e.target as HTMLButtonElement;
+            const form = button.form
+            form?.requestSubmit();
+          });
+        }}>
+        {pending && <Loader2 className='spinner' />}
+        {!pending && "S'inscrire"}
+      </button>
+    </>
   )
 }
