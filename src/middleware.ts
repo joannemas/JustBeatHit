@@ -1,6 +1,16 @@
 import { type NextRequest, NextResponse  } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
+// Public path regex
+export const PUBLIC_PATH = [
+    /^\/$/,                    // Allow "/"
+    /^\/auth(\/.*)?$/,         // Allow "/auth" and all that follows "/auth/..."
+]
+
+export const ANON_PATH = [
+    /^\/game\/[^/]+\/[^/]+$/   // Allow "/game/{gameName}/{gameId}"
+]
+
 export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     console.log('middleware', pathname)

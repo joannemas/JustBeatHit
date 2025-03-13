@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import React from 'react'
 import { replayGame } from "../../actions";
+import GameResult from '@/components/GameResult/GameResult';
 
 export default async function page({ params: { game_name, game_id } }: { params: { game_name: string, game_id: string } }) {
   const supabase = createClient()
@@ -23,6 +24,10 @@ export default async function page({ params: { game_name, game_id } }: { params:
     redirect(`/game/${game_name}`)
   }
 
+  if(data.status === 'finished'){
+    return <GameResult gameId={game_id}/>
+  }
+
   const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data.song_id).single()
   const songPromises = [
     supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5),
@@ -36,5 +41,5 @@ export default async function page({ params: { game_name, game_id } }: { params:
     return <div>Loading...</div>;
   }
 
-  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} gameId={game_id} />;
+  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} gameId={game_id} gameName={game_name} />;
 }
