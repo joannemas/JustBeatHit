@@ -1,49 +1,45 @@
+import { ANON_PATH, PUBLIC_PATH } from '@/middleware'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { createClient } from './server'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
     })
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll()
-                },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-                    supabaseResponse = NextResponse.next({
-                        request,
-                    })
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        supabaseResponse.cookies.set(name, value, options)
-                    )
-                },
-            },
-        }
-    )
+    const supabase = createClient()
+    let { data: { user } } = await supabase.auth.getUser()
 
     // IMPORTANT: Avoid writing any logic between createServerClient and
     // supabase.auth.getUser(). A simple mistake could make it very hard to debug
     // issues with users being randomly logged out.
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+
+    const pathname = request.nextUrl.pathname
+    const isPublicPath = PUBLIC_PATH.some((pattern) => pattern.test(pathname))
+    const isAnonymPath = ANON_PATH.some((pattern) => pattern.test(pathname))
+
+    // If no user and is anonym access path, we redirect the user to captcha if it's valid, we create an anonym user
+    if(!user && isAnonymPath){
+        const url = request.nextUrl.clone()
+        const returnTo = url.pathname + url.search
+    
+        const captchaUrl = new URL("/auth/verify-captcha", request.url)
+        captchaUrl.searchParams.set("returnTo", returnTo)
+        
+        return NextResponse.redirect(captchaUrl)
+    }
 
     if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/auth') &&
-        request.nextUrl.pathname !== '/'
+        !isPublicPath
     ) {
-        // no user, potentially respond by redirecting the user to the login page
-        const url = request.nextUrl.clone()
-        url.pathname = '/auth/login'
-        return NextResponse.redirect(url)
+        if(!user || user.is_anonymous){
+            // no user, respond by redirecting the user to the login page
+            const url = request.nextUrl.clone()
+            url.pathname = '/auth/login'
+            return NextResponse.redirect(url)
+        }
     }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
