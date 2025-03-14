@@ -2,6 +2,7 @@ import { ANON_PATH, PUBLIC_PATH } from '@/middleware'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from './server'
+import { isBotRequest } from "@/utils/isBotRequest"
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -10,15 +11,21 @@ export async function updateSession(request: NextRequest) {
 
     const supabase = createClient()
     let { data: { user } } = await supabase.auth.getUser()
+    const isBot = isBotRequest(request);
 
     // IMPORTANT: Avoid writing any logic between createServerClient and
     // supabase.auth.getUser(). A simple mistake could make it very hard to debug
     // issues with users being randomly logged out.
 
-
     const pathname = request.nextUrl.pathname
     const isPublicPath = PUBLIC_PATH.some((pattern) => pattern.test(pathname))
     const isAnonymPath = ANON_PATH.some((pattern) => pattern.test(pathname))
+
+    if(isBot){
+        const response = NextResponse.next({request})
+        response.headers.set('x-is-bot', 'true')
+        return response
+    }
 
     // If no user and is anonym access path, we redirect the user to captcha if it's valid, we create an anonym user
     if(!user && isAnonymPath){
@@ -39,7 +46,7 @@ export async function updateSession(request: NextRequest) {
             return NextResponse.redirect(url);
         }
     
-        if (user.is_anonymous && !isAnonymPath) {
+        if (user?.is_anonymous && !isAnonymPath) {
             // Utilisateur anonyme tentant d'accéder à une page non anonyme
             const url = request.nextUrl.clone();
             url.pathname = '/auth/login';

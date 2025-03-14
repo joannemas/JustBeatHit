@@ -1,16 +1,14 @@
 import Link from 'next/link';
 import styles from '@/stylesheets/gameend.module.scss';
-import { replayGame } from '@/app/game/actions';
 import ShareButton from './ShareButton';
 import { createClient } from '@/lib/supabase/server';
 import ReplayButton from './ReplayButton';
 
-export default async function GameResult({gameId}: { gameId: string }) {
+export default async function GameResult({ gameId }: { gameId: string }) {
     const supabase = createClient()
-    const {data: {user}} = await supabase.auth.getUser()
+    const user = (await supabase.auth.getUser()).data.user ?? undefined
 
-    console.log('userId', user?.id)
-    const gameData = (await supabase.from('games').select().eq('id', gameId).single()).data
+    const gameData = (await supabase.from('games').select().eq('id', gameId).single()).data ?? undefined
 
     return (
         <div className={styles.finalScore}>
