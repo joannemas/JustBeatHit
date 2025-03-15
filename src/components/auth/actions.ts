@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from 'next/cache'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient, createClient } from '@/lib/supabase/server'
 import { AuthError } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 
@@ -25,6 +25,8 @@ export async function logout() {
 
 export async function login(prevState: AuthState | undefined, formData: FormData) {
     const supabase = createClient()
+    const supabaseAdmin = createAdminClient()
+    const {data: {user}} = await supabase.auth.getUser()
 
     const parse = loginSchema.safeParse({
         email: formData.get("email") as string,
@@ -35,9 +37,7 @@ export async function login(prevState: AuthState | undefined, formData: FormData
         return { errors: parse.error.flatten().fieldErrors }
     }
 
-    const data = parse.data
-
-    const { error } = await supabase.auth.signInWithPassword({...data, options: {captchaToken: formData.get("h-captcha-response")?.toString()}})
+    const { error, data } = await supabase.auth.signInWithPassword({...parse.data, options: {captchaToken: formData.get("h-captcha-response")?.toString()}})
 
     if (error) {
         console.error(error)
@@ -45,6 +45,11 @@ export async function login(prevState: AuthState | undefined, formData: FormData
             return { message: error.message + ', veuillez vérifier vos emails' }
         }
         return { message: error.message }
+    }
+
+    /** Add game played by anonymous to his permanent account */
+    if(user?.is_anonymous){
+        await supabaseAdmin.from('games').update({user_id: data.user.id}).eq('user_id', user.id)
     }
 
     revalidatePath('/', 'layout')
