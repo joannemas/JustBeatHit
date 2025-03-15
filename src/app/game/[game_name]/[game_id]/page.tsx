@@ -6,6 +6,7 @@ import { replayGame } from "../../actions";
 import GameResult from '@/components/GameResult/GameResult';
 import { headers } from "next/headers";
 import { Metadata } from 'next';
+import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 
 export async function generateMetadata({ params: { game_name, game_id }, params }: { params: { game_name: string, game_id: string } }): Promise<Metadata | void> {
   const supabase = createClient()
@@ -18,10 +19,10 @@ export async function generateMetadata({ params: { game_name, game_id }, params 
 
   if (isBot) {
     return {
-      title: `${song?.title} - ${song?.singer} | Karakaku`,
+      title: `${song?.title} - ${song?.singer} | ${capitalizeFirstLetter(game_name)}`,
       description: `J'ai obtenu ${data?.score} points sur ${song?.title} de ${song?.singer}, essaye de faire mieux !`,
       openGraph: {
-        title: `${song?.title} - ${song?.singer} | Karakaku`,
+        title: `${song?.title} - ${song?.singer} | ${capitalizeFirstLetter(game_name)}`,
         description: `J'ai obtenu ${data?.score} points sur ${song?.title} de ${song?.singer}, essaye de faire mieux !`,
         url: `${protocol}://${host}/game/${game_name}/${game_id}`,
         // images: ['/some-specific-page-image.jpg', ...previousImages],
