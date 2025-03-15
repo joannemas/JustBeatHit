@@ -3,6 +3,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from './server'
 import { isBotRequest } from "@/utils/isBotRequest"
+import next from "next"
+import path from "path"
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -51,6 +53,10 @@ export async function updateSession(request: NextRequest) {
             const url = request.nextUrl.clone();
             url.pathname = '/auth/login';
             return NextResponse.redirect(url);
+        }
+
+        if(!user?.is_anonymous && pathname === '/auth/login' || pathname === '/auth/register'){
+            return NextResponse.redirect('/')
         }
     }
 

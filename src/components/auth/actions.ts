@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from 'next/cache'
 
 import { createClient } from '@/lib/supabase/server'
+import { AuthError } from "@supabase/supabase-js";
 
 export async function logout() {
     const supabase = createClient()
@@ -61,6 +62,7 @@ export async function loginAnonymously(prevState: AuthState, captchaToken: strin
 
 export async function register(prevState: AuthState | undefined, formData: FormData) {
     const supabase = createClient()
+    const currentUser = await supabase.auth.getUser()
 
     const parse = registerSchema.safeParse({
         email: formData.get("email") as string,
@@ -77,25 +79,25 @@ export async function register(prevState: AuthState | undefined, formData: FormD
     const avatar_url = `https://api.dicebear.com/9.x/adventurer/png?seed=${username}&radius=50&backgroundColor=b6e3f4,c0aede,d1d4f9&size=128`
 
     /* Check if the username is already used or not (we have exception in db function for this, but it doesn't return the error to front ) */
-    const { data } = await supabase.from('profiles').select('username').eq('username', username).single()
-    console.info(data)
+    const { data } = await supabase.from('profiles').select('username').eq('username', username).maybeSingle()
     if(data){
         return { message: 'Nom d\'utilisateur déjà utilisé' }
     }
 
-    const { data: { user, session } } = await supabase.auth.signUp({ ...fields, options: { data: { username, avatar_url }, captchaToken: formData.get("captchaToken")?.toString() } })
+    const updateAnonymUser = supabase.auth.updateUser({...fields, data: {username, avatar_url}})
+    const signUp = supabase.auth.signUp({ ...fields, options: { data: { username, avatar_url }, captchaToken: formData.get("h-captcha-response")?.toString() } })
 
-    /** Signup with currently existing email give a fake user without role
-     * So we check the role to check if the user already exist or not
-     */
-    if (!user?.role) {
-        return { message: 'Email déjà existant' }
+    /** If the user is currently log in as anonymous, we update his profile */
+    const {error} = currentUser.data.user?.is_anonymous ? await updateAnonymUser : await signUp
+
+    if (error) {
+        console.error(error)
+        if(error.code === 'email_not_confirmed'){
+            return { message: error.message + ', veuillez vérifier vos emails' }
+        }
+        return { message: error.message }
     }
 
-    if(session){
-        revalidatePath('/', 'layout')
-        redirect('/')
-    }
     revalidatePath('/', 'layout')
-    redirect('/auth/login')
+    redirect('/auth/confirmation')
 }
