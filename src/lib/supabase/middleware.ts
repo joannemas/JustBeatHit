@@ -58,6 +58,18 @@ export async function updateSession(request: NextRequest) {
         url.pathname = '/';
         return NextResponse.redirect(url)
     }
+
+    if(isAnonymPath && user?.is_anonymous){
+        const game_id = pathname.split('/')[3]
+        const {data} = await supabase.from('games').select().eq('id', game_id).single()
+        const { count } = await supabase.from('games').select('*', { count: 'exact', head: true }).in('status', ['abandoned', 'finished']).eq('user_id', user?.id ?? '')
+        if ((!count || count >= 2) && data?.status !== 'finished') {
+            const url = request.nextUrl.clone();
+                url.pathname = '/auth/login';
+                return NextResponse.redirect(url);
+        }
+    }
+    
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
     // 1. Pass the request in it, like so:
