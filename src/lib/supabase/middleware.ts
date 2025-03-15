@@ -53,7 +53,7 @@ export async function updateSession(request: NextRequest) {
         }
     }
     
-    if(!user?.is_anonymous && (pathname === '/auth/login' || pathname === '/auth/register')){
+    if(user && !user?.is_anonymous && (pathname === '/auth/login' || pathname === '/auth/register')){
         const url = request.nextUrl.clone();
         url.pathname = '/';
         return NextResponse.redirect(url)
