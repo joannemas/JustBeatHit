@@ -1,51 +1,75 @@
-import { createServerClient } from '@supabase/ssr'
+import { ANON_PATH, PUBLIC_PATH } from '@/middleware'
 import { NextResponse, type NextRequest } from 'next/server'
+import { createClient } from './server'
+import { isBotRequest } from "@/utils/isBotRequest"
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
     })
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll()
-                },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-                    supabaseResponse = NextResponse.next({
-                        request,
-                    })
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        supabaseResponse.cookies.set(name, value, options)
-                    )
-                },
-            },
-        }
-    )
+    const supabase = createClient()
+    let { data: { user } } = await supabase.auth.getUser()
+    const isBot = isBotRequest(request);
 
     // IMPORTANT: Avoid writing any logic between createServerClient and
     // supabase.auth.getUser(). A simple mistake could make it very hard to debug
     // issues with users being randomly logged out.
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    const pathname = request.nextUrl.pathname
+    const isPublicPath = PUBLIC_PATH.some((pattern) => pattern.test(pathname))
+    const isAnonymPath = ANON_PATH.some((pattern) => pattern.test(pathname))
 
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/auth') &&
-        request.nextUrl.pathname !== '/'
-    ) {
-        // no user, potentially respond by redirecting the user to the login page
+    if(isBot){
+        const response = NextResponse.next({request})
+        response.headers.set('x-is-bot', 'true')
+        return response
+    }
+
+    // If no user and is anonym access path, we redirect the user to captcha if it's valid, we create an anonym user
+    if(!user && isAnonymPath){
         const url = request.nextUrl.clone()
-        url.pathname = '/auth/login'
+        const returnTo = url.pathname + url.search
+    
+        const captchaUrl = new URL("/auth/verify-captcha", request.url)
+        captchaUrl.searchParams.set("returnTo", returnTo)
+        
+        return NextResponse.redirect(captchaUrl)
+    }
+
+    if (!isPublicPath) {
+        if (!user) {
+            // Pas d'utilisateur, redirection vers la page de connexion
+            const url = request.nextUrl.clone();
+            url.pathname = '/auth/login';
+            return NextResponse.redirect(url);
+        }
+    
+        if (user?.is_anonymous && !isAnonymPath) {
+            // Utilisateur anonyme tentant d'accéder à une page non anonyme
+            const url = request.nextUrl.clone();
+            url.pathname = '/auth/login';
+            return NextResponse.redirect(url);
+        }
+    }
+    
+    if(!user?.is_anonymous && (pathname === '/auth/login' || pathname === '/auth/register')){
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
         return NextResponse.redirect(url)
     }
 
+    if(isAnonymPath && user?.is_anonymous){
+        const game_id = pathname.split('/')[3]
+        const {data} = await supabase.from('games').select().eq('id', game_id).single()
+        const { count } = await supabase.from('games').select('*', { count: 'exact', head: true }).in('status', ['abandoned', 'finished']).eq('user_id', user?.id ?? '')
+        if ((!count || count >= 2) && data?.status !== 'finished') {
+            const url = request.nextUrl.clone();
+                url.pathname = '/auth/login';
+                return NextResponse.redirect(url);
+        }
+    }
+    
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
     // 1. Pass the request in it, like so:
