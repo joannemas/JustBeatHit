@@ -1,10 +1,7 @@
 import { ANON_PATH, PUBLIC_PATH } from '@/middleware'
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from './server'
 import { isBotRequest } from "@/utils/isBotRequest"
-import next from "next"
-import path from "path"
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -54,12 +51,13 @@ export async function updateSession(request: NextRequest) {
             url.pathname = '/auth/login';
             return NextResponse.redirect(url);
         }
-
-        if(!user?.is_anonymous && pathname === '/auth/login' || pathname === '/auth/register'){
-            return NextResponse.redirect('/')
-        }
     }
-
+    
+    if(!user?.is_anonymous && (pathname === '/auth/login' || pathname === '/auth/register')){
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
+        return NextResponse.redirect(url)
+    }
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
     // 1. Pass the request in it, like so:

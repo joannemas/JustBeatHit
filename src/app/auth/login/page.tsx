@@ -3,21 +3,10 @@
 import { login } from "@/components/auth/actions";
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
-import { z } from "zod";
 import styles from "../auth.module.scss";
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useRef } from 'react';
 import { Loader2 } from 'lucide-react';
-
-const loginForm = z.object({
-  email: z.string().email(),
-  password: z.string()
-    .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-    .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une lettre majuscule")
-    .regex(/[a-z]/, "Le mot de passe doit contenir au moins une lettre minuscule")
-    .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre")
-    .regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial"),
-});
 
 export default function Page() {
   const [state, formAction] = useFormState(login, undefined);
@@ -45,7 +34,7 @@ export default function Page() {
           {state?.message}
         </span>
 
-        <LoginButton/>
+        <LoginButton />
       </form>
 
       <Link href="/auth/register" className={styles.link}>
@@ -62,12 +51,12 @@ function LoginButton() {
 
   return (
     <>
-      <HCaptcha ref={captcha} size='invisible' sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}/>
-      <button className={styles.button} disabled={pending} onClick={async (e)=>{
+      <HCaptcha ref={captcha} size='invisible' sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!} />
+      <button className={styles.button} disabled={pending} onClick={async (e) => {
         e.preventDefault()
-        
-        await captcha.current?.execute({async: true})
-        
+
+        await captcha.current?.execute({ async: true })
+
         requestAnimationFrame(() => {
           const button = e.target as HTMLButtonElement;
           const form = button.form
