@@ -74,7 +74,7 @@ export const handleTimeUpdate = (
             };
         } else if (nextLyricTime && currentTime >= nextLyricTime - 0.05) {
             // Logique normale pour les autres lyrics
-            if (!isValidated) {
+            if (userInput.length !== currentLyric.length) {
                 audioEl.pause();
                 setIsCountdownActive(true);
             } else {
