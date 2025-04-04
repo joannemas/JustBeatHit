@@ -332,7 +332,7 @@
         font-size: 5rem;
         font-weight: 700;
         margin: 0;
-        padding: 0 1rem;
+        padding-right: 1rem;
         background: $gradient;
         -webkit-background-clip: text;
         background-clip: text;
@@ -540,4 +540,33 @@
     100% {
         transform: rotate(-360deg);
     }
+}
+
+
+.pause-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    z-index: 1000;
+}
+
+.pause-menu-content {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    border: $yellow 3px solid;
+}
+
+.pause-menu button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
 }
