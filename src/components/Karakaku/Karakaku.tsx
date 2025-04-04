@@ -216,11 +216,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                                 return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
                             });
 
-                            setCompletedInputs((prev) => ({
-                                ...prev,
-                                [currentLyricIndex]: userInput,
-                            }));
-
                             // Réinitialise l'état des inputs
                             setUserInput('');
                             setLockedChars('');
