@@ -543,7 +543,7 @@
 }
 
 
-.pause-menu {
+.pauseMenu {
     position: fixed;
     top: 0;
     left: 0;
@@ -556,7 +556,7 @@
     z-index: 1000;
 }
 
-.pause-menu-content {
+.pauseMenuContent {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
@@ -565,7 +565,7 @@
     border: $yellow 3px solid;
 }
 
-.pause-menu button {
+.pauseMmenu button {
     margin: 10px;
     padding: 10px 20px;
     font-size: 16px;
