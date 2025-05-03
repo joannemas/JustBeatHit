@@ -28,10 +28,16 @@ export const lyricsDisplayUtils = (
             try {
                 const lrcContent = await loadLRCFile(lyricsSrc);
                 const parsedLyrics = parseLRC(lrcContent);
-                const cleanedLyrics = parsedLyrics.map(lyric => ({
-                    ...lyric,
-                    text: removeParentheses(lyric.text),
-                }));
+                const cleanedLyrics = parsedLyrics
+                    .map(lyric => ({
+                        ...lyric,
+                        text: removeParentheses(lyric.text).trim(),
+                    }))
+                    .filter(lyric => {
+                        // Supprime les lignes vides ou celles qui ne contiennent que des symboles/espaces
+                        return /[a-zA-Z0-9À-ÿ]/.test(lyric.text);
+                    });
+
                 setLyrics(cleanedLyrics);
                 setTotalLines(cleanedLyrics.length);
 
