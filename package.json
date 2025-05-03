@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "^1.12.0",
+    "@hookform/resolvers": "^5.0.1",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.6",
     "lucide-react": "^0.439.0",
@@ -11,9 +12,10 @@
     "react": "^18.3.1",
     "react-audio-player": "^0.17.0",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.56.0",
     "sass": "^1.77.8",
     "sharp": "^0.33.5",
-    "zod": "^3.23.8"
+    "zod": "^3.24.3"
   },
   "scripts": {
     "dev": "next dev",
