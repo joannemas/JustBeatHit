@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState } from 'react';
+import { useState} from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
@@ -40,6 +40,7 @@ export default function UploadSongPage() {
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
     const [audioDuration, setAudioDuration] = useState<number>(0);
     const [range, setRange] = useState({ min: 0, max: 90 });
+    const [lyrics, setLyrics] = useState<{ time: number; text: string }[]>([]);
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
@@ -120,6 +121,24 @@ export default function UploadSongPage() {
         }
     };
 
+    const parseLRC = async (file: File) => {
+        const text = await file.text();
+        const lines = text
+            .split('\n')
+            .map((line) => {
+                const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?](.*)/);
+                if (!match) return null;
+                const minutes = parseInt(match[1], 10);
+                const seconds = parseInt(match[2], 10);
+                const millis = parseInt(match[3] || '0', 10);
+                const time = minutes * 60 + seconds + millis / 1000;
+                const text = match[4].trim();
+                return { time, text };
+            })
+            .filter((entry): entry is { time: number; text: string } => !!entry);
+        setLyrics(lines);
+    };
+
     return (
         <main className="max-w-xl mx-auto py-10 px-4">
             <h1 className="text-3xl font-bold mb-6">Uploader une chanson</h1>
@@ -183,7 +202,15 @@ export default function UploadSongPage() {
 
                 <div>
                     <label className="block font-semibold">Fichier LRC</label>
-                    <input type="file" accept=".lrc" {...register('lrc')} />
+                    <input
+                        type="file"
+                        accept=".lrc"
+                        {...register('lrc')}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) parseLRC(file);
+                        }}
+                    />
                     {typeof errors.lrc?.message === 'string' && (
                         <p className="text-red-500">{errors.lrc?.message}</p>
                     )}
@@ -234,6 +261,22 @@ export default function UploadSongPage() {
                             <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
                             <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
                         </div>
+                    </div>
+                )}
+
+                {lyrics.length > 0 && (
+                    <div className="mt-4 space-y-1 text-sm font-mono bg-gray-100 p-3 rounded max-h-64 overflow-y-auto">
+                        {lyrics.map(({ time, text }, i) => {
+                            const isInRange = time >= range.min && time <= range.max;
+                            return (
+                                <div
+                                    key={i}
+                                    className={isInRange ? 'highlight' : 'deleted'}
+                                >
+                                    [{time.toFixed(2)}] {text}
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
 
