@@ -60,8 +60,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    console.log('songSrc' + songSrc);
-
     useEffect(() => {
         lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
     }, [lyricSrc, charRefs]);

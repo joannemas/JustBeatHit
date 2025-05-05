@@ -5,6 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
+import { trimLrc } from '@/lib/lrc/trimLrc';
+
 
 
 // Schéma Zod pour valider le formulaire
@@ -34,6 +37,9 @@ export default function UploadSongPage() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const [audioDuration, setAudioDuration] = useState<number>(0);
+    const [range, setRange] = useState({ min: 0, max: 90 });
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
@@ -43,11 +49,15 @@ export default function UploadSongPage() {
 
         const mp3File = mp3[0];
         const lrcFile = lrc[0];
+        const duration = range.max - range.min;
+        const trimmedMp3Blob = await trimMp3(mp3File, range.min, duration);
+        const trimmedLrcBlob = await trimLrc(lrcFile, range.min, range.max);
+
 
         // Upload du MP3
         const { error: mp3Error } = await supabase.storage
             .from('song')
-            .upload(`${folderPath}/song.mp3`, mp3File, {
+            .upload(`${folderPath}/song.mp3`, trimmedMp3Blob, {
                 cacheControl: '3600',
                 upsert: true,
             });
@@ -62,11 +72,10 @@ export default function UploadSongPage() {
         // Upload du LRC
         const { error: lrcError } = await supabase.storage
             .from('song')
-            .upload(`${folderPath}/lyrics.lrc`, lrcFile, {
+            .upload(`${folderPath}/lyrics.lrc`, trimmedLrcBlob, {
                 cacheControl: '3600',
                 upsert: true,
             });
-
         if (lrcError) {
             console.error('Erreur à l’upload du LRC:', lrcError.message);
             alert("Échec de l'upload du fichier LRC");
@@ -96,7 +105,20 @@ export default function UploadSongPage() {
         setIsSubmitting(false);
     };
 
-
+    const onMP3Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setAudioUrl(url);
+            const audio = new Audio(url);
+            audio.addEventListener('loadedmetadata', () => {
+                const duration = audio.duration;
+                setAudioDuration(duration);
+                const defaultEnd = Math.min(duration, 90);
+                setRange({ min: 0, max: defaultEnd });
+            });
+        }
+    };
 
     return (
         <main className="max-w-xl mx-auto py-10 px-4">
@@ -153,7 +175,7 @@ export default function UploadSongPage() {
 
                 <div>
                     <label className="block font-semibold">Fichier MP3</label>
-                    <input type="file" accept=".mp3" {...register('mp3')} />
+                    <input type="file" accept=".mp3" {...register('mp3')} onChange={onMP3Change} />
                     {typeof errors.mp3?.message === 'string' && (
                         <p className="text-red-500">{errors.mp3?.message}</p>
                     )}
@@ -166,6 +188,54 @@ export default function UploadSongPage() {
                         <p className="text-red-500">{errors.lrc?.message}</p>
                     )}
                 </div>
+
+                {audioUrl && (
+                    <div className="double_range_slider_box">
+                        <audio controls src={audioUrl} className="mb-4" />
+
+                        <div className="double_range_slider">
+            <span
+                className="range_track"
+                style={{
+                    left: `${(range.min / audioDuration) * 100}%`,
+                    width: `${((range.max - range.min) / audioDuration) * 100}%`,
+                }}
+            ></span>
+
+                            <input
+                                type="range"
+                                className="min"
+                                min={0}
+                                max={Math.max(audioDuration - 30, 1)}
+                                value={range.min}
+                                step={0.1}
+                                onChange={(e) => {
+                                    const newMin = Number(e.target.value);
+                                    if (newMin < range.max - 30) {
+                                        setRange((prev) => ({ ...prev, min: newMin }));
+                                    }
+                                }}
+                            />
+                            <input
+                                type="range"
+                                className="max"
+                                min={30}
+                                max={audioDuration}
+                                value={range.max}
+                                step={0.1}
+                                onChange={(e) => {
+                                    const newMax = Number(e.target.value);
+                                    if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
+                                        setRange((prev) => ({ ...prev, max: newMax }));
+                                    }
+                                }}
+                            />
+
+                            <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
+                            <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
+                        </div>
+                    </div>
+                )}
 
                 <button
                     type="submit"
