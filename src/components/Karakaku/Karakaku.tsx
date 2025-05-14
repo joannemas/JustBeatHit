@@ -384,6 +384,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 setIsPausedMenuOpen((prev) => {
                     if (prev) {
                         // Si le menu était ouvert et qu'on le ferme
+                        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
                         const audio = audioPlayerRef.current?.audioEl.current;
                         if (audio) {
                             const isMusicFinished = audio.ended; // Vérifie si la musique est complètement terminée
@@ -397,6 +398,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         inputRef.current?.focus(); // Remet le focus sur l'input
                     } else {
                         // Si le menu était fermé et qu'on l'ouvre, mettre en pause
+                        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: none;");
                         audioPlayerRef.current?.audioEl.current?.pause();
                         inputRef.current?.blur(); // Enlève le focus de l'input
                     }
@@ -522,6 +524,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         height={1000}
                         className={styles.logoJbh}
                     />
+
+                    <div className={styles.echapInfoText}>
+                        <span>
+                        <Image
+                            src="/assets/img/icon/echap-key.svg"
+                            alt="Music svg"
+                            width={50}
+                            height={50}
+                        />
+                        <span>pour mettre en pause la partie</span>
+                        </span>
+                    </div>
+
                     <ReactAudioPlayer
                         src={songSrc}
                         controls
@@ -543,9 +558,18 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
                     </div>
 
-                    <div className={styles.titleSong}>
-                        <h5>{singer} - {title}</h5>
-                    </div>
+                        <div className={styles.titleSong}>
+                        <Image
+                            src="/assets/img/icon/down-round-arrow.svg"
+                            alt="Arrow svg"
+                            width={30}
+                            height={30}
+                            className={styles.musicIcon}
+                        />
+                            <h5>{singer} - {title}</h5>
+                        </div>
+
+
                     <Image priority
                         src="/assets/img/vinyl-jbh.svg"
                         alt="Vinyl svg"

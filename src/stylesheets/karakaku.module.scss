@@ -243,9 +243,14 @@
     position: absolute;
     text-transform: uppercase;
     color: #FFF6F1;
-    top: 37%;
+    top: 50%;
     transform: translateY(-50%);
     left: 3%;
+    max-width: 20vw;
+
+    h5 {
+        margin: 8px 0;
+    }
 }
 
 .logoJbh {
@@ -380,7 +385,7 @@
 .progressBar {
     width: 100%;
     height: 0;
-    background-color: $yellow;
+    background: $gradient;
     border-radius: 10px;
     transition: height 0.5s ease;
 }
@@ -601,4 +606,30 @@
     bottom: -25%;
     right: -15%;
     animation: move-inverse 12s ease-in-out infinite, bounce 8s ease-in-out infinite, rotate-inverse 25s infinite;
+}
+
+.echapInfoText {
+    position: absolute;
+    height: auto;
+    left: 3%;
+    top: 20%;
+    max-width: 30vw;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-style: italic;
+    font-size: 14px;
+
+    span {
+        flex-wrap: wrap;
+        align-items: center;
+        line-height: 1.5;
+    
+        img {
+            flex-shrink: 0;
+            height: auto;
+            margin-right: 8px;
+            vertical-align: text-bottom;
+        }
+    
+    }
 }
