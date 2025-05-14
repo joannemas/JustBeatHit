@@ -433,11 +433,79 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         <div className={styles.karakaku}>
             {isPausedMenuOpen && (
                 <div className={styles.pauseMenu}>
+
+                    <Image
+                        src="/assets/img/MusicBar.svg"
+                        alt="Music Bar"
+                        width={300}
+                        height={300}
+                        className={styles.musicBarEchap}
+                    />
+
+                    <div className={`${styles.animatedEchap}`}></div>
+
                     <div className={styles.pauseMenuContent}>
-                        <button className={styles.btnPrimary} onClick={handleResume}>Reprendre</button>
-                        <button className={styles.btnSecondary} onClick={handleReplay}>Rejouer</button>
+                        <div>
+                            <Image
+                                src="/assets/img/icon/icon-echap.svg"
+                                alt="Pause"
+                                width={100}
+                                height={24}
+                                className={styles.pauseTextIcon}
+                            />
+                            <button className={styles.btnEchap} onClick={handleResume}>
+                            <Image
+                                src="/assets/img/icon/arrow-right-black.svg"
+                                alt="Play"
+                                width={24}
+                                height={24}
+                                className={styles.playIcon}
+                            />
+                            Reprendre
+                            </button>
+                        </div>
+                        <div>
+                            <Image
+                                    src="/assets/img/icon/icon-r.svg"
+                                    alt="Reprendre"
+                                    width={100}
+                                    height={24}
+                                    className={styles.pauseTextIcon}
+                                />
+                            <button className={styles.btnEchap} onClick={handleReplay}>
+                            <Image
+                                src="/assets/img/icon/refresh.svg"
+                                alt="Play"
+                                width={24}
+                                height={24}
+                                className={styles.playIcon}
+                            />
+                            Recommencer
+                            </button>
+                        </div>
                         <Link href="/">
-                            <button className={styles.btnSecondary}>Quitter</button>
+                            <button className={styles.btnEchap}>
+                            <Image
+                            src="/assets/img/icon/settings.svg"
+                            alt="Play"
+                            width={24}
+                            height={24}
+                            className={styles.playIcon}
+                            />
+                            Options
+                            </button>
+                        </Link>
+                        <Link href="/">
+                            <button className={styles.btnEchap}>
+                            <Image
+                            src="/assets/img/icon/arrow-left.svg"
+                            alt="Play"
+                            width={24}
+                            height={24}
+                            className={styles.playIcon}
+                            />
+                            Quitter
+                            </button>
                         </Link>
                     </div>
                 </div>
