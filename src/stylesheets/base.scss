@@ -12,6 +12,12 @@ audio {
   display: none;
 }
 
+.audio-preview {
+  audio{
+    display: block;
+  }
+}
+
 .spinner {
   animation: spin 1s linear infinite;
 }

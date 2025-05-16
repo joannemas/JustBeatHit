@@ -3,12 +3,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState} from 'react';
+import {useEffect, useState} from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
-
-
 
 // Schéma Zod pour valider le formulaire
 const songSchema = z.object({
@@ -41,6 +39,12 @@ export default function UploadSongPage() {
     const [audioDuration, setAudioDuration] = useState<number>(0);
     const [range, setRange] = useState({ min: 0, max: 90 });
     const [lyrics, setLyrics] = useState<{ time: number; text: string }[]>([]);
+    const [originalMp3File, setOriginalMp3File] = useState<File | null>(null);
+    const [trimmedAudioUrl, setTrimmedAudioUrl] = useState<string | null>(null);
+    const [isTrimming, setIsTrimming] = useState(false);
+    const [hasInitialTrim, setHasInitialTrim] = useState(false);
+    const [isPreparing, setIsPreparing] = useState(false); // Nouveau flag
+
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
@@ -109,6 +113,7 @@ export default function UploadSongPage() {
     const onMP3Change = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setOriginalMp3File(file); // <-- ici
             const url = URL.createObjectURL(file);
             setAudioUrl(url);
             const audio = new Audio(url);
@@ -121,87 +126,127 @@ export default function UploadSongPage() {
         }
     };
 
+    // Découpage automatique avec délai sauf au premier import
+    useEffect(() => {
+        if (!originalMp3File) return;
+
+        // On affiche immédiatement "Préparation..." dès que range change
+        setIsPreparing(true);
+
+        const trim = async () => {
+            setIsTrimming(true);
+            try {
+                const trimmedBlob = await trimMp3(originalMp3File, range.min, range.max - range.min);
+                const previewUrl = URL.createObjectURL(trimmedBlob);
+                setTrimmedAudioUrl(previewUrl);
+            } catch (err) {
+                console.error('Erreur lors du découpage de prévisualisation :', err);
+            } finally {
+                setIsTrimming(false);
+                setIsPreparing(false);
+                setHasInitialTrim(true);
+            }
+        };
+
+        const delay = hasInitialTrim ? 1500 : 200;
+        const timeout = setTimeout(trim, delay);
+
+        return () => clearTimeout(timeout);
+    }, [range, originalMp3File]);
+
     const parseLRC = async (file: File) => {
         const text = await file.text();
+        const allowedCharsRegex = /[^a-zA-Z0-9À-ÿ.,!?;:'"()\[\]{}<>«»\-–—_\/\\ \n\r]/g; // tout ce qui n'est PAS autorisé
+        const parenthesisRegex = /\([^)]*\)/g;
+
         const lines = text
             .split('\n')
             .map((line) => {
                 const match = line.match(/\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?](.*)/);
                 if (!match) return null;
+
                 const minutes = parseInt(match[1], 10);
                 const seconds = parseInt(match[2], 10);
                 const millis = parseInt(match[3] || '0', 10);
                 const time = minutes * 60 + seconds + millis / 1000;
-                const text = match[4].trim();
-                return { time, text };
+
+                let rawText = match[4].trim();
+
+                // Supprimer les textes entre parenthèses
+                rawText = rawText.replace(parenthesisRegex, '');
+
+                // Supprimer tous les caractères non autorisés
+                rawText = rawText.replace(allowedCharsRegex, '').trim();
+
+                if (!rawText) return null;
+
+                return { time, text: rawText };
             })
             .filter((entry): entry is { time: number; text: string } => !!entry);
         setLyrics(lines);
     };
 
     return (
-        <main className="max-w-xl mx-auto py-10 px-4">
+        <main className="upload">
             <h1 className="text-3xl font-bold mb-6">Uploader une chanson</h1>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div>
-                    <label className="block font-semibold">Titre</label>
+            <form onSubmit={handleSubmit(onSubmit)} className="upload-form">
+                <div className="upload-form__input">
+                    <label>Titre</label>
                     <input
                         type="text"
                         {...register('title')}
-                        className="w-full border p-2 rounded"
                     />
-                    {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+                    {errors.title && <p>{errors.title.message}</p>}
                 </div>
 
-                <div>
-                    <label className="block font-semibold">Artiste</label>
+                <div className="upload-form__input">
+                    <label>Artiste</label>
                     <input
                         type="text"
                         {...register('singer')}
-                        className="w-full border p-2 rounded"
                     />
-                    {errors.singer && <p className="text-red-500">{errors.singer.message}</p>}
+                    {errors.singer && <p>{errors.singer.message}</p>}
                 </div>
 
-                <div>
-                    <label className="inline-flex items-center space-x-2">
+                <div className="upload-form__input">
+                    <label>
                         <input type="checkbox" {...register('is_explicit')} />
                         <span>Contenu explicite</span>
                     </label>
                 </div>
 
-                <div>
-                    <label className="block font-semibold">Difficulté</label>
-                    <select {...register('difficulty')} className="w-full border p-2 rounded">
+                <div className="upload-form__input">
+                    <label>Difficulté</label>
+                    <select {...register('difficulty')}>
                         <option value="">-- Choisir --</option>
                         <option value="Easy">Facile</option>
                         <option value="Medium">Moyenne</option>
                         <option value="Hard">Difficile</option>
                     </select>
-                    {errors.difficulty && <p className="text-red-500">{errors.difficulty.message}</p>}
+                    {errors.difficulty && <p>{errors.difficulty.message}</p>}
                 </div>
 
-                <div>
-                    <label className="block font-semibold">Statut</label>
-                    <select {...register('status')} className="w-full border p-2 rounded">
+                <div className="upload-form__input">
+                    <label>Statut</label>
+                    <select {...register('status')}>
                         <option value="">-- Choisir --</option>
                         <option value="Live">Live</option>
                         <option value="Draft">Brouillon</option>
                     </select>
-                    {errors.status && <p className="text-red-500">{errors.status.message}</p>}
+                    {errors.status && <p>{errors.status.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block font-semibold">Fichier MP3</label>
+                    <label className="upload-form__input">Fichier MP3</label>
                     <input type="file" accept=".mp3" {...register('mp3')} onChange={onMP3Change} />
                     {typeof errors.mp3?.message === 'string' && (
-                        <p className="text-red-500">{errors.mp3?.message}</p>
+                        <p>{errors.mp3?.message}</p>
                     )}
                 </div>
 
-                <div>
-                    <label className="block font-semibold">Fichier LRC</label>
+                <div className="upload-form__input">
+                    <label>Fichier LRC</label>
                     <input
                         type="file"
                         accept=".lrc"
@@ -217,17 +262,26 @@ export default function UploadSongPage() {
                 </div>
 
                 {audioUrl && (
-                    <div className="double_range_slider_box">
-                        <audio controls src={audioUrl} className="mb-4" />
+                    <div className="audio-preview">
+                        {isPreparing  ? (
+                            <p>Préparation de l'extrait...</p>
+                        ) : (
+                            <audio controls src={trimmedAudioUrl || audioUrl} />
+                        )}
+                    </div>
+                )}
 
+
+                {audioUrl && (
+                    <div className="double_range_slider_box">
                         <div className="double_range_slider">
-            <span
-                className="range_track"
-                style={{
-                    left: `${(range.min / audioDuration) * 100}%`,
-                    width: `${((range.max - range.min) / audioDuration) * 100}%`,
-                }}
-            ></span>
+                            <span
+                                className="range_track"
+                                style={{
+                                    left: `${(range.min / audioDuration) * 100}%`,
+                                    width: `${((range.max - range.min) / audioDuration) * 100}%`,
+                                }}
+                            ></span>
 
                             <input
                                 type="range"
@@ -265,7 +319,7 @@ export default function UploadSongPage() {
                 )}
 
                 {lyrics.length > 0 && (
-                    <div className="mt-4 space-y-1 text-sm font-mono bg-gray-100 p-3 rounded max-h-64 overflow-y-auto">
+                    <div className="lyrics-preview">
                         {lyrics.map(({ time, text }, i) => {
                             const isInRange = time >= range.min && time <= range.max;
                             return (
@@ -283,7 +337,7 @@ export default function UploadSongPage() {
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="submit-btn"
                 >
                     {isSubmitting ? 'Envoi en cours...' : 'Ajouter la chanson'}
                 </button>
