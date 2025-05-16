@@ -553,16 +553,27 @@
 
 
 .pauseMenu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 30vw;
-    height: 100vh;
-    background-color: $white;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  right: -30vw; /* Hidden by default */
+  width: 30vw;
+  height: 100vh;
+  background-color: $white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  z-index: 1000;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; // Prevent interaction when hidden
+  opacity: 0;           // Optional: fade out with opacity
+  transition-property: right, opacity;
+  transition-duration: 0.4s;
+}
+
+.pauseMenuVisible {
+  right: 0;
+  pointer-events: auto;
+  opacity: 1;
 }
 
 .pauseMenuContent {
