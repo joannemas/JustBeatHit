@@ -57,6 +57,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [volume, setVolume] = useState<number>(0.8); // Default volume at 80%
+  const [linePoints, setLinePoints] = useState<number>(0); // Points for the last completed line
+  const [showLinePoints, setShowLinePoints] = useState<boolean>(false); // Whether to show the line points animation
+  const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null); // Ref to store the timer
+  const wasValidatedRef = useRef<boolean>(false); // Track if the line was previously validated
 
   console.log('songSrc' + songSrc);
 
@@ -109,12 +113,71 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    
     // Mise à jour du volume de l'audio
     if (audioPlayerRef.current?.audioEl.current) {
       audioPlayerRef.current.audioEl.current.volume = newVolume;
     }
   };
+
+  // Calculate points for a completed line
+  const calculateLinePoints = (input: string, lyricText: string, hasErrors: boolean, currentMultiplier: number) => {
+    if (!lyricText) return 0;
+    
+    // Base points: 10 points per character
+    const basePoints = lyricText.length * 10;
+    
+    // Perfect bonus: 50% extra if no errors
+    const perfectBonus = hasErrors ? 0 : basePoints * 0.5;
+    
+    // Apply multiplier
+    return Math.round((basePoints + perfectBonus) * currentMultiplier);
+  };
+
+  // Show line points with proper timing
+  const showLinePointsWithTimer = (points: number) => {
+    // Clear any existing timer
+    if (linePointsTimerRef.current) {
+      clearTimeout(linePointsTimerRef.current);
+    }
+    
+    // Set points and show them
+    setLinePoints(points);
+    setShowLinePoints(true);
+    
+    // Set a new timer to hide the points after 3 seconds
+    linePointsTimerRef.current = setTimeout(() => {
+      setShowLinePoints(false);
+      linePointsTimerRef.current = null;
+    }, 3000); // 3 seconds
+  };
+
+  // Clean up timer when component unmounts
+  useEffect(() => {
+    return () => {
+      if (linePointsTimerRef.current) {
+        clearTimeout(linePointsTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Monitor for line completion and show points
+  useEffect(() => {
+    // Check if the line was just validated (changed from not validated to validated)
+    if (isValidated && !wasValidatedRef.current) {
+      const points = calculateLinePoints(
+        userInput,
+        lyrics[currentLyricIndex]?.text || '',
+        hasErrors,
+        multiplier
+      );
+      
+      showLinePointsWithTimer(points);
+    }
+    
+    // Update the ref for next check
+    wasValidatedRef.current = isValidated;
+    
+  }, [isValidated, currentLyricIndex, userInput, lyrics, hasErrors, multiplier]);
 
   //Appel de fonction pour gérer les actions liées à la saisie de texte sur l'input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +249,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       inputRef.current?.focus();
     }, 200);
   };
+
   const isHandlingLineSwitch = useRef(false);
 
   // Compte à rebours si ligne incomplète
@@ -202,8 +266,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     }
   }, [isCountdownActive]);
 
-  // setMultiplier(1);
-  // Gestion du changement de ligne
+  // Handle line change
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isCountdownActive && !isHandlingLineSwitch.current && !isValidated && !isPausedMenuOpen) {
@@ -215,6 +278,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             clearInterval(timer);
             setIsCountdownActive(false);
             if (currentLyricIndex < lyrics.length - 1) {
+              // Hide line points when changing lines
+              setShowLinePoints(false);
+              if (linePointsTimerRef.current) {
+                clearTimeout(linePointsTimerRef.current);
+                linePointsTimerRef.current = null;
+              }
+              
+              // Reset validation tracking
+              wasValidatedRef.current = false;
+              
               setCurrentLyricIndex((prevIndex) => {
                 // +0.5 car ça s'effectue 2 fois (bizarrement). A fix plus tard
                 return prevIndex + (process.env.NODE_ENV === 'development' ? 0.5 : 1);
@@ -340,6 +413,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 ref={inputRef}
               />
               <div ref={caretRef} className={styles.caret}></div>
+              
+              {/* Points earned for completed line */}
+              {showLinePoints && (
+                <div className={styles.linePoints}>
+                  +{linePoints} points
+                </div>
+              )}
             </div>
           )}
 
@@ -433,6 +513,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           </div>
         </div>
       )}
+
       {!isGameOver && (
         <>
           <div className={styles.animatedBackground}></div>
@@ -444,6 +525,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             height={1000}
             className={styles.logoJbh}
           />
+
           {/* Volume Control */}
           <div className={styles.volumeControl}>
             <Image 
@@ -462,6 +544,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               className={styles.volumeSlider}
             />
           </div>
+
           <ReactAudioPlayer
             src={songSrc}
             controls
@@ -470,6 +553,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             listenInterval={100}
             volume={volume}
           />
+
           {/*Opacity 0 car si on retire le bouton, le player ne se lance pas*/}
           {!isStarted && (
             <div className={styles.btnContainer}>
@@ -480,6 +564,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               </button>
             </div>
           )}
+
           <div className={styles.progressBarBackground}>
             <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
           </div>
@@ -487,6 +572,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           <div className={styles.titleSong}>
             <h5>{singer} - {title}</h5>
           </div>
+
           <Image priority
             src="/assets/img/vinyl-jbh.svg"
             alt="Vinyl svg"
@@ -496,6 +582,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           />
         </>
       )}
+
       <div className={styles.lyrics}>
         {renderLyrics()}
       </div>

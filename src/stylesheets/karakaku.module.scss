@@ -570,6 +570,38 @@
     padding: 10px 20px;
     font-size: 16px;
 }
+.linePoints {
+  position: absolute;
+  right: 20px;
+  top: -40px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  animation: fadeUpAndOut 2s ease-out forwards;
+}
+
+@keyframes fadeUpAndOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
 .volumeControl {
   position: absolute;
   top: 20px;
@@ -580,8 +612,7 @@
   padding: 8px 12px;
   border-radius: 20px;
   z-index: 10;
-  
-  img {
+    img {
     margin-right: 8px;
   }
 }
