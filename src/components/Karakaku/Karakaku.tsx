@@ -59,7 +59,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     const [multiplier, setMultiplier] = useState(1);
     const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
-
+    const [volume, setVolume] = useState<number>(0.8); // Default volume at 80%
     console.log('songSrc' + songSrc);
 
     useEffect(() => {
@@ -106,7 +106,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             setProgress((currentTime / duration) * 100);
         }
     };
+  // Controler le changement de volume
+    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
 
+    // Mise à jour du volume de l'audio
+    if (audioPlayerRef.current?.audioEl.current) {
+      audioPlayerRef.current.audioEl.current.volume = newVolume;
+    }
+  };
     //Appel de fonction pour gérer les actions liées à la saisie de texte sur l'input
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         handleInputChangeUtil(
@@ -509,6 +518,24 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                             Quitter
                             </button>
                         </Link>
+                                            {/* Volume Control */}
+                    <div className={styles.volumeControl}>
+                        <Image 
+                        src="/assets/img/icon/volume.svg" 
+                        alt="Volume" 
+                        width={20} 
+                        height={20} 
+                        />
+                        <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={volume}
+                        onChange={handleVolumeChange}
+                        className={styles.volumeSlider}
+                        />
+                    </div>
                     </div>
                 </div>
             )}
@@ -524,7 +551,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         height={1000}
                         className={styles.logoJbh}
                     />
-
                     <div className={styles.echapInfoText}>
                         <span>
                         <Image
@@ -536,7 +562,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         <span>pour mettre en pause la partie</span>
                         </span>
                     </div>
-
                     <ReactAudioPlayer
                         src={songSrc}
                         controls
