@@ -684,3 +684,34 @@
     cursor: pointer;
   }
 } 
+.linePoints {
+  position: absolute;
+  color: $purple-heart;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  animation: fadeUpAndOut 2s ease-out forwards;
+}
+
+
+@keyframes fadeUpAndOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+

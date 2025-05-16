@@ -298,97 +298,100 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   // Affiche les paroles et le score final
   const renderLyrics = () => {
-    return lyrics.map((lyric, index) => {
-      const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
-      const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
-      const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
-      const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+  const lastValidatedIndex = currentLyricIndex - 1;
+  return lyrics.map((lyric, index) => {
+    const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+    const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+    const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+    const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
 
-      if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
-        return null;
-      }
+    if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
+      return null;
+    }
 
-      return (
-        <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
-          {index < currentLyricIndex && (
-            <p
-              className={`
-                ${styles.previous} 
-                ${index === currentLyricIndex ? styles.current : ''}
-                ${isBeforeFirst ? styles['--before-line'] : ''}
-                ${isFirstLine ? styles['--first-line'] : ''}
-              `}
-            >
-              {lyrics[index].text.split('').map((char, charIndex) => {
-                const userInputForLine = completedInputs[index] || '';
-                const userChar = userInputForLine[charIndex] || '';
-                const className = normalizeString(userChar) === normalizeString(char)
-                  ? styles.right
-                  : userChar === ''
-                    ? ''
-                    : styles.wrong;
-                return <span key={charIndex} className={className}>{char}</span>;
-              })}
+    return (
+      <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
+        {index < currentLyricIndex && (
+          <p
+            className={`
+              ${styles.previous} 
+              ${index === currentLyricIndex ? styles.current : ''}
+              ${isBeforeFirst ? styles['--before-line'] : ''}
+              ${isFirstLine ? styles['--first-line'] : ''}
+            `}
+            style={{ position: 'relative' }}
+          >
+            {lyrics[index].text.split('').map((char, charIndex) => {
+              const userInputForLine = completedInputs[index] || '';
+              const userChar = userInputForLine[charIndex] || '';
+              const className = normalizeString(userChar) === normalizeString(char)
+                ? styles.right
+                : userChar === ''
+                  ? ''
+                  : styles.wrong;
+              return <span key={charIndex} className={className}>{char}</span>;
+            })}
+            {/* Afficher les points de la ligne validée */}
+            {showLinePoints && index === lastValidatedIndex && (
+              <span className={styles.linePoints} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
+                +{linePoints} points
+              </span>
+            )}
+          </p>
+        )}
+
+        {index === currentLyricIndex && (
+          <div className={styles.currentLyricContainer}>
+            <Image priority
+              src="/assets/img/icon/arrow-right.svg"
+              alt="Music svg"
+              width={40}
+              height={40}
+              className={styles.arrowIcon}
+            />
+            {isCountdownActive &&
+              <div className={styles.countdown}>
+                <Image priority
+                  src="/assets/img/icon/timer.svg"
+                  alt="Music svg"
+                  width={40}
+                  height={40}
+                  className="countdown__icon"
+                />
+                <span className={styles.highlight}>{countdown}&nbsp;</span>
+                {countdown === 1 ? 'seconde' : 'secondes'}
+              </div>
+            }
+            <p className={styles.currentLyric}>
+              {getStyledText()}
             </p>
-          )}
+            <input
+              type="text"
+              value={userInput}
+              onChange={handleInputChange}
+              onPaste={handlePaste}
+              className={styles.textInput}
+              autoFocus
+              spellCheck={false}
+              ref={inputRef}
+            />
+            <div ref={caretRef} className={styles.caret}></div>
+          </div>
+        )}
 
-          {index === currentLyricIndex && (
-            <div className={styles.currentLyricContainer}>
-              <Image priority
-                src="/assets/img/icon/arrow-right.svg"
-                alt="Music svg"
-                width={40}
-                height={40}
-                className={styles.arrowIcon}
-              />
-              {isCountdownActive &&
-                <div className={styles.countdown}>
-                  <Image priority
-                    src="/assets/img/icon/timer.svg"
-                    alt="Music svg"
-                    width={40}
-                    height={40}
-                    className="countdown__icon"
-                  />
-                  <span className={styles.highlight}>{countdown}&nbsp;</span>
-                  {countdown === 1 ? 'seconde' : 'secondes'}
-                </div>
-              }
-              <p className={styles.currentLyric}>
-                {getStyledText()}
-              </p>
-              <input
-                type="text"
-                value={userInput}
-                onChange={handleInputChange}
-                onPaste={handlePaste}
-                className={styles.textInput}
-                autoFocus
-                spellCheck={false}
-                ref={inputRef}
-              />
-              <div ref={caretRef} className={styles.caret}></div>
-              {showLinePoints && (
-                <div className={styles.linePoints}>
-                  +{linePoints} points
-                </div>
-              )}
-            </div>
-          )}
-
-          {index > currentLyricIndex && (
-            <p className={`
-                ${styles.next}
-                ${isLastLine ? styles['--last-line'] : ''}
-                ${isBeforeLast ? styles['--before-line'] : ''}
-              `}>
-              {lyrics[index].text}
-            </p>
-          )}
-        </div>
-      );
-    });
-  };
+        {index > currentLyricIndex && (
+          <p className={`
+              ${styles.next}
+              ${isLastLine ? styles['--last-line'] : ''}
+              ${isBeforeLast ? styles['--before-line'] : ''}
+            `}>
+            {lyrics[index].text}
+          </p>
+        )}
+      </div>
+    );
+  });
+};
 
   const speedClass = multiplier === 4 ? styles.faster :
     multiplier >= 3 ? styles.fast :
