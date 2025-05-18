@@ -43,6 +43,7 @@
 
         h2 {
             color: $black;
+            margin: 0 0 0.6rem 0;
         }
 
         h3 {
@@ -277,5 +278,77 @@
 
     100% {
         transform: rotate(-360deg);
+    }
+}
+
+/* Style for the leaderboard to match the provided design */
+.leaderBord {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.leaderBoardItem {
+    padding: 3px;
+    border-radius: 999px;
+    background: linear-gradient(15deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+
+    .inner{
+        position: relative;
+        border-radius: 999px;
+        background: $white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: linear-gradient(135deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+        font-family: 'GoiaDisplay', sans-serif;
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 0.9rem 1rem 0.9rem 4.5rem;
+    }
+
+    .imageWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        position: absolute;
+        left: -5px;
+        padding: 3px;
+        border-radius: 999px;
+        background: linear-gradient(15deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+        margin-right: 1rem;
+    }
+
+    .itemAvatar {
+
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+    }
+
+    .itemUsername {
+        flex: 1;
+        text-transform: uppercase;
+
+        margin: 0;
+
+        background: linear-gradient(135deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -moz-text-fill-color: transparent;
+    }
+
+    .itemScore {
+        color: #000;
+        font-size: 1.2rem;
+        font-weight: bold;
     }
 }
