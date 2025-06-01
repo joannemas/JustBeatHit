@@ -26,6 +26,7 @@ export default function UploadSongPage() {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<SongFormData>({
         resolver: zodResolver(songSchema),
@@ -200,6 +201,26 @@ export default function UploadSongPage() {
         setLyrics(lines);
     };
 
+    const handleLrcFileChange = async (file: File) => {
+        if (!file) return;
+
+        await parseLRC(file);
+
+        const text = await file.text();
+
+        const artistMatch = text.match(/\[ar:(.*?)\]/);
+        const titleMatch = text.match(/\[ti:(.*?)\]/);
+
+        if (artistMatch) {
+            setValue('singer', artistMatch[1].trim());
+        }
+
+        if (titleMatch) {
+            setValue('title', titleMatch[1].trim());
+        }
+    };
+
+
     return (
         <main className="upload">
             <h1 className="text-3xl font-bold mb-6">Uploader une chanson</h1>
@@ -289,7 +310,7 @@ export default function UploadSongPage() {
                         {...register('lrc')}
                         onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (file) parseLRC(file);
+                            if (file) handleLrcFileChange(file);
                         }}
                     />
                     {typeof errors.lrc?.message === 'string' && (
