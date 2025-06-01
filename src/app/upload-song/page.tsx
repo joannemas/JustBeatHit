@@ -15,12 +15,9 @@ const songSchema = z.object({
     is_explicit: z.boolean(),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']),
     status: z.enum(['Live', 'Draft']),
-    mp3: z
-        .any()
-        .refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
-    lrc: z
-        .any()
-        .refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
+    mp3: z.any().refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
+    lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
+    cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
 });
 
 type SongFormData = z.infer<typeof songSchema>;
@@ -43,17 +40,19 @@ export default function UploadSongPage() {
     const [trimmedAudioUrl, setTrimmedAudioUrl] = useState<string | null>(null);
     const [isTrimming, setIsTrimming] = useState(false);
     const [hasInitialTrim, setHasInitialTrim] = useState(false);
-    const [isPreparing, setIsPreparing] = useState(false); // Nouveau flag
+    const [isPreparing, setIsPreparing] = useState(false);
+    const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
 
-        const { title, singer, is_explicit, difficulty, status, mp3, lrc } = data;
+        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover } = data;
         const folderPath = `${singer} - ${title}`.trim();
 
         const mp3File = mp3[0];
         const lrcFile = lrc[0];
+        const coverFile = cover[0];
         const duration = range.max - range.min;
         const trimmedMp3Blob = await trimMp3(mp3File, range.min, duration);
         const trimmedLrcBlob = await trimLrc(lrcFile, range.min, range.max);
@@ -84,6 +83,21 @@ export default function UploadSongPage() {
         if (lrcError) {
             console.error('Erreur à l’upload du LRC:', lrcError.message);
             alert("Échec de l'upload du fichier LRC");
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Upload de l'image cover
+        const { error: coverError } = await supabase.storage
+            .from('song')
+            .upload(`${folderPath}/cover.${coverFile.name.split('.').pop()}`, coverFile, {
+                cacheControl: '3600',
+                upsert: true,
+            });
+
+        if (coverError) {
+            console.error('Erreur à l’upload de la cover:', coverError.message);
+            alert("Échec de l'upload de l’image de couverture");
             setIsSubmitting(false);
             return;
         }
@@ -237,9 +251,31 @@ export default function UploadSongPage() {
                     {errors.status && <p>{errors.status.message}</p>}
                 </div>
 
+                <div className="upload-form__input">
+                    <label>Image de couverture</label>
+                    <input
+                        type="file"
+                        accept=".png,.jpg,.jpeg"
+                        {...register('cover')}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) setCoverPreview(URL.createObjectURL(file));
+                        }}
+                    />
+                    {typeof errors.cover?.message === 'string' && (
+                        <p className="text-red-500">{errors.cover.message}</p>
+                    )}
+                </div>
+
+                {coverPreview && (
+                    <div className="cover-preview">
+                        <img src={coverPreview} alt="Prévisualisation de la cover" width="150"/>
+                    </div>
+                )}
+
                 <div>
                     <label className="upload-form__input">Fichier MP3</label>
-                    <input type="file" accept=".mp3" {...register('mp3')} onChange={onMP3Change} />
+                    <input type="file" accept=".mp3" {...register('mp3')} onChange={onMP3Change}/>
                     {typeof errors.mp3?.message === 'string' && (
                         <p>{errors.mp3?.message}</p>
                     )}
@@ -263,10 +299,10 @@ export default function UploadSongPage() {
 
                 {audioUrl && (
                     <div className="audio-preview">
-                        {isPreparing  ? (
+                        {isPreparing ? (
                             <p>Préparation de l'extrait...</p>
                         ) : (
-                            <audio controls src={trimmedAudioUrl || audioUrl} />
+                            <audio controls src={trimmedAudioUrl || audioUrl}/>
                         )}
                     </div>
                 )}
@@ -293,7 +329,7 @@ export default function UploadSongPage() {
                                 onChange={(e) => {
                                     const newMin = Number(e.target.value);
                                     if (newMin < range.max - 30) {
-                                        setRange((prev) => ({ ...prev, min: newMin }));
+                                        setRange((prev) => ({...prev, min: newMin}));
                                     }
                                 }}
                             />
@@ -307,7 +343,7 @@ export default function UploadSongPage() {
                                 onChange={(e) => {
                                     const newMax = Number(e.target.value);
                                     if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
-                                        setRange((prev) => ({ ...prev, max: newMax }));
+                                        setRange((prev) => ({...prev, max: newMax}));
                                     }
                                 }}
                             />
@@ -320,7 +356,7 @@ export default function UploadSongPage() {
 
                 {lyrics.length > 0 && (
                     <div className="lyrics-preview">
-                        {lyrics.map(({ time, text }, i) => {
+                        {lyrics.map(({time, text}, i) => {
                             const isInRange = time >= range.min && time <= range.max;
                             return (
                                 <div
