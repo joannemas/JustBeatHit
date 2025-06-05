@@ -1,7 +1,7 @@
 "use server"
 
 import { AuthState } from "./auth";
-import { loginSchema, passwordSchema, registerAnonymeSchema, registerSchema } from "./validations";
+import { loginSchema, passwordSchema, registerAnonymeSchema, registerSchema, sendPasswordResetRequestSchema } from "./validations";
 import { redirect } from "next/navigation";
 
 import { revalidatePath } from 'next/cache'
@@ -154,8 +154,31 @@ export async function createPassword(prevState: AuthState | undefined, formData:
     const { error } = await supabase.auth.updateUser({password, data: {needPassword: false}})
 
     if (error) {
-        console.error(error)
+        console.warn(error)
+        if(error.code === "same_password"){
+            return { message: "Le nouveau mot de passe doit être différent de l'ancien mot de passe." }
+        }
         return { message: error.message }
     }
     redirect('/')
+}
+
+export async function sendPasswordResetRequest(prevState: AuthState | undefined, formData: FormData){
+    const supabase = createClient()
+    const parse = sendPasswordResetRequestSchema.safeParse({
+        email: formData.get("email") as string,
+    });
+
+    if (!parse.success) {
+        return { errors: parse.error.flatten().fieldErrors }
+    }
+
+    const { error, data } = await supabase.auth.resetPasswordForEmail(parse.data.email, {captchaToken: formData.get("h-captcha-response")?.toString()})
+
+    if (error) {
+        console.warn(error)
+        return { message: error.message }
+    }
+
+    return {message: "Un lien de réinitialisation vous a été envoyé par e-mail."}
 }
