@@ -10,6 +10,7 @@
     font-size: 1rem;
     font-weight: 400;
     background-color: white;
+    color: black;
     overflow: hidden;
     position: relative;
 }
@@ -119,7 +120,19 @@
     }
 }
 
+.formSuccess {
+    color: #39bd28;
+    font-size: 14px;
+    margin-top: 8px;
+
+    #form-success {
+        margin-top: 8px;
+    }
+}
+
 .link {
+    display: block;
+    margin-bottom: 8px;
     font-family: var(--font-inter);
     font-weight: 600;
     color: $purple-heart;
