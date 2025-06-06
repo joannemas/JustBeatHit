@@ -14,6 +14,6 @@ export default function ShareButton({score}: {score?: number | null}) {
     }
 
     return (
-        <button className={styles.btnSecondary} onClick={handleShare}>Partagé</button>
+        <button className={styles.btnSecondary} onClick={handleShare}>Partager</button>
     )
 }

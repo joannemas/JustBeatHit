@@ -57,6 +57,10 @@
     @include button($error-color);
 }
 
+.btnEchap {
+    @include buttonSecondary($transparent-color, $black);
+    color: $black;
+}
 
 .textInput {
     font-size: 1.75rem;
@@ -239,9 +243,14 @@
     position: absolute;
     text-transform: uppercase;
     color: #FFF6F1;
-    top: 37%;
+    top: 50%;
     transform: translateY(-50%);
     left: 3%;
+    max-width: 20vw;
+
+    h5 {
+        margin: 8px 0;
+    }
 }
 
 .logoJbh {
@@ -376,7 +385,7 @@
 .progressBar {
     width: 100%;
     height: 0;
-    background-color: $yellow;
+    background: $gradient;
     border-radius: 10px;
     transition: height 0.5s ease;
 }
@@ -544,16 +553,27 @@
 
 
 .pauseMenu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  right: -30vw; /* Hidden by default */
+  width: 30vw;
+  height: 100vh;
+  background-color: $white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  z-index: 1000;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; // Prevent interaction when hidden
+  opacity: 0;           // Optional: fade out with opacity
+  transition-property: right, opacity;
+  transition-duration: 0.4s;
+}
+
+.pauseMenuVisible {
+  right: 0;
+  pointer-events: auto;
+  opacity: 1;
 }
 
 .pauseMenuContent {
@@ -562,7 +582,8 @@
     text-align: center;
     display: flex;
     flex-direction: column;
-    border: $yellow 3px solid;
+    gap: 32px;
+    align-items: flex-end;
 }
 
 .pauseMmenu button {
@@ -570,3 +591,127 @@
     padding: 10px 20px;
     font-size: 16px;
 }
+
+.musicBarEchap {
+    position: absolute;
+    width: 65%;
+    top: 0;
+    height: auto;
+    z-index: -1;
+}
+
+.pauseTextIcon {
+    width: auto;
+    margin: 0 18px;
+}
+
+.animatedEchap {
+    width: 40vw;
+    height: 40vw;
+    z-index: -1;
+    opacity: 0.2;
+    background: linear-gradient(44deg, #8E43AD 3.69%, #AA387D 10.54%, #D63251 16.43%, #F7352D 45.78%, #FA9B4F 76.36%);
+    filter: blur(50px);
+    border-radius: 50%;
+    position: absolute;
+    bottom: -25%;
+    right: -15%;
+    animation: move-inverse 12s ease-in-out infinite, bounce 8s ease-in-out infinite, rotate-inverse 25s infinite;
+}
+
+.echapInfoText {
+    position: absolute;
+    height: auto;
+    left: 3%;
+    top: 20%;
+    max-width: 30vw;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-style: italic;
+    font-size: 14px;
+
+    span {
+        flex-wrap: wrap;
+        align-items: center;
+        line-height: 1.5;
+    
+        img {
+            flex-shrink: 0;
+            height: auto;
+            margin-right: 8px;
+            vertical-align: text-bottom;
+        }
+    
+    }
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 8px 12px;
+  border-radius: 20px;
+  z-index: 10;
+
+  img {
+    margin-right: 8px;
+  }
+}
+
+.volumeSlider {
+  -webkit-appearance: none;
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: #555;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+} 
+.linePoints {
+  position: absolute;
+  color: $purple-heart;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  animation: fadeUpAndOut 2s ease-out forwards;
+}
+
+
+@keyframes fadeUpAndOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
