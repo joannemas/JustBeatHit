@@ -1,13 +1,13 @@
 .backBtn {
-    position: absolute;
-    left: 4rem;
-    top: 3rem;
+    // position: absolute;
+    // left: 4rem;
+    // top: 3rem;
 }
 
 .container {
     text-align: center;
     padding: 20px;
-    background: #1D1D1D; //linear-gradient(-135deg, #FF6026, #C1208F);
+    background: #1D1D1D;
     min-height: 100vh;
     background-attachment: fixed;
     background-position: center;
@@ -15,12 +15,14 @@
 }
 
 .titleContainer {
-    background-color: #1D1D1D;
-    padding: 10px;
-    border: 3px solid #FFAB36;
-    display: inline-block;
-    border-radius: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    margin-top: 50px;
     margin-bottom: 20px;
+    gap: 20px;
+    padding: 0 20px;
 }
 
 .title {
@@ -47,79 +49,111 @@
 }
 
 .songCard {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    border-radius: 10px;
-    transition: transform 0.2s;
-    text-decoration: none;
-}
-
-.songCard:hover {
-    transform: scale(1.05);
-}
-
-.songTitle {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.songSinger {
-    font-size: 0.9em;
-    opacity: 0.8;
-}
-
-.songContent {
+    display: block;
     position: relative;
-    background-image: url('/assets/img/vinyl.png');
-    background-size: cover;
-    background-position: center;
-    border-radius: 50%;
-    width: 200px;
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-radius: 0.5rem;
     overflow: hidden;
-    transition: transform 0.5s ease-in-out;
+    text-decoration: none;
     cursor: pointer;
-    flex-direction: column;
-    padding: 20px;
-}
-
-.innerDisk {
-    position: absolute;
-    border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    z-index: 2;
-}
-
-.songContentText {
-    z-index: 3;
+  }
+  
+  .imageBack {
     position: relative;
-    text-align: center;
+    width: 100%;
+    height: 250px;
+  }
+  
+  .imageBack img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* assombrit l'image pour le contraste du texte */
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+    justify-content: space-between;
+    color: white;
+    text-align: center;
+  }
 
-.songCard:hover .songContent {
-    animation: spinText 5s linear infinite;
-}
+  .songContentText{
+    display: inline-flex;
+    justify-content: space-between;
+    padding: 1rem;
+    align-items: end;
 
-@keyframes spinText {
-    0% {
-        transform: rotate(0deg);
+    .SingerAndTitle{
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      
     }
-
-    100% {
-        transform: rotate(360deg);
+    .difficulty {
+      border-radius: 0.5rem;
+      font-weight: bold;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      color: white;
+      width: fit-content;
+      height: fit-content;
+      line-height: 1;
+      display: inline-block;
+      text-align: center;
     }
-}
+    p{
+      margin: 0.25rem;
+    }
+    
+    .facile {
+      background-color: #34d399;
+    }
+    
+    .moyen {
+      background-color: #f59e0b;
+    }
+    
+    .difficile {
+      background-color: #ef4444;
+    }
+    
+    .unknown {
+      background-color: #9ca3af;
+    }
+      
+  }
+  .musicStyle{
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 1rem;
+
+    .musicStyleItem{
+        padding: 0.5rem;
+        background-color: white;
+        color: #1D1D1D;
+        font-weight: bold;
+        border-radius: 0.25rem;
+        text-transform: uppercase;
+    }
+  }
+  
+  .songContentText h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .songContentText p {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+  
 
 .songTitle,
 .songSinger {
@@ -137,4 +171,138 @@
     margin: 5px 0;
     user-select: none;
     pointer-events: none;
+}
+.filterContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  position: relative;
+  padding: 20px;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownButton {
+  border: 1px solid white;
+  background: transparent;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.plus {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: #2c2c2c;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  z-index: 10;
+  width: max-content;
+  min-width: 150px;
+}
+
+.dropdownItem {
+  padding: 0.5rem 1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background-color: #444;
+  }
+}
+
+.selectedTags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterTag {
+  background-color: #f5f0ec;
+  color: black;
+  font-weight: bold;
+  font-style: italic;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+}
+
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 20px;
+}
+
+.searchInputGroup {
+  display: flex;
+  align-items: center;
+  background-color: #2c2c2c; // foncé
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  flex: 1;
+}
+
+.searchIcon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #aaa;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  flex: 1;
+  font-style: italic;
+  font-size: 0.9rem;
+
+  &::placeholder {
+    color: #aaa;
+    font-style: italic;
+  }
+}
+
+.addButton {
+  background-color: #f59e0b; // orange
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #ea8c00;
+  }
 }

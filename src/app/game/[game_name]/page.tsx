@@ -17,21 +17,21 @@ export default async function Page({ params: { game_name } }: { params: { game_n
     const { data: { user } } = await supabase.auth.getUser()
     const { data, error } = await supabaseAdmin.from("games").insert([{ game_name, user_id: user?.id! }]).select();
 
-    console.debug("data", data);
-    console.debug("error", error);
-
+    // console.debug("data", data);
+    // console.debug("error", error);
+    
     /** If user choose karakaku, then display song list */
     if (game_name === "karakaku") {
         return (
             <div className={styles.container}>
-                <a href="/" className={styles.backBtn}>
-                    <CircleArrowLeft size={52} color="white" />
-                </a>
-                <div className={styles.titleContainer}>
-                    <h1 className={styles.title}>KARAKAKU</h1>
-                </div>
-                <p className={styles.subtitle}>Sélectionnez votre musique</p>
+               <div className={styles.titleContainer}>
+                    <a href="/" className={styles.backBtn}>
+                        <CircleArrowLeft size={52} color="#f59e0b" />
+                    </a>
+                    <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
+               </div>
                 <SongList gameId={data ? data[0].id : undefined} />
+                {/* console */}
             </div>
         );
     }
