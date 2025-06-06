@@ -553,16 +553,27 @@
 
 
 .pauseMenu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 30vw;
-    height: 100vh;
-    background-color: $white;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  right: -30vw; /* Hidden by default */
+  width: 30vw;
+  height: 100vh;
+  background-color: $white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  z-index: 1000;
+  transition: right 0.3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; // Prevent interaction when hidden
+  opacity: 0;           // Optional: fade out with opacity
+  transition-property: right, opacity;
+  transition-duration: 0.4s;
+}
+
+.pauseMenuVisible {
+  right: 0;
+  pointer-events: auto;
+  opacity: 1;
 }
 
 .pauseMenuContent {
@@ -633,3 +644,74 @@
     
     }
 }
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 8px 12px;
+  border-radius: 20px;
+  z-index: 10;
+
+  img {
+    margin-right: 8px;
+  }
+}
+
+.volumeSlider {
+  -webkit-appearance: none;
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: #555;
+  outline: none;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+} 
+.linePoints {
+  position: absolute;
+  color: $purple-heart;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  animation: fadeUpAndOut 2s ease-out forwards;
+}
+
+
+@keyframes fadeUpAndOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
