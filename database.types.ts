@@ -167,6 +167,7 @@ export type Database = {
           status: Database["public"]["Enums"]["song_status"]
           title: string
           updated_at: string | null
+          music_style: string[]
         }
         Insert: {
           created_at?: string
@@ -178,6 +179,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["song_status"]
           title: string
           updated_at?: string | null
+          music_style: string[]
         }
         Update: {
           created_at?: string
@@ -189,6 +191,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["song_status"]
           title?: string
           updated_at?: string | null
+          music_style: string[]
         }
         Relationships: []
       }
