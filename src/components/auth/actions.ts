@@ -7,8 +7,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from 'next/cache'
 
 import { createAdminClient, createClient } from '@/lib/supabase/server'
-import { AuthError } from "@supabase/supabase-js";
-import { headers } from "next/headers";
 
 export async function logout() {
     const supabase = createClient()
@@ -68,6 +66,7 @@ export async function loginAnonymously(prevState: AuthState, captchaToken: strin
 
 export async function register(prevState: AuthState | undefined, formData: FormData) {
     const supabase = createClient()
+    const supabaseAdmin = createAdminClient()
 
     const parse = registerSchema.safeParse({
         email: formData.get("email") as string,
@@ -84,8 +83,8 @@ export async function register(prevState: AuthState | undefined, formData: FormD
     const avatar_url = `https://api.dicebear.com/9.x/adventurer/png?seed=${username}&radius=50&backgroundColor=b6e3f4,c0aede,d1d4f9&size=128`
 
     /* Check if the username is already used or not (we have exception in db function for this, but it doesn't return the error to front ) */
-    const { data } = await supabase.from('profiles').select('username').eq('username', username).maybeSingle()
-    if(data){
+    const {count} = await supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }).eq('username', username.trim());
+    if(count){
         return { message: 'Nom d\'utilisateur déjà utilisé' }
     }
 
@@ -96,7 +95,7 @@ export async function register(prevState: AuthState | undefined, formData: FormD
         if(error.code === 'email_not_confirmed'){
             return { message: error.message + ', veuillez vérifier vos emails' }
         }
-        return { message: error.message }
+        return { message: 'Une erreur est survenue, merci de réessayer'}
     }
 
     revalidatePath('/', 'layout')
