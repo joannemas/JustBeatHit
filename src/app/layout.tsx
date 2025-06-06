@@ -23,7 +23,7 @@ const inter = Inter({
 })
 export const metadata = {
   title: 'Just Beat Hit',
-  description: 'Jeux musicaux en ligne',
+  description: 'Joue en rythme, affronte d\'autres joueurs et fais exploser ton score dans ce jeu musical en ligne palpitant.',
   other: {
     google: 'notranslate',
   }
