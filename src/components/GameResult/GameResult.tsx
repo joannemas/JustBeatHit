@@ -94,13 +94,13 @@ export default async function GameResult({ gameId }: { gameId: string }) {
                 </ul>
                 <div className={styles.scoreDisplay}>
                     {/* <p>Nombre de lignes en pause : {pauseCount} pauses / {totalLines} lignes</p> */}
-                    <p>Vitesse de frappe : {gameData?.word_speed} mots par minute</p>
-                    <p>Précision d&apos;écriture : {gameData?.typing_accuracy}%</p>
                     {/* <p>Nombre de fautes : {data.mistakes} / {totalChars}</p> */}
                 </div>
 
                 <div className={styles.score}>
                 <div className={styles.score_display}>
+                    <p><span>{gameData?.word_speed} mots / minute</span><br/>Vitesse</p>
+                    <p><span>{gameData?.typing_accuracy}%</span><br/>Précision</p>
                 <div className={styles.scoreLine}>
                 <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
                     <p className={styles.actualScore}>{gameData?.score}</p>
@@ -110,18 +110,23 @@ export default async function GameResult({ gameId }: { gameId: string }) {
                 </div>
 
 
-                <h3>Bien joué !</h3>
-                <div className={styles.btnList}>
-                    {/* If the user is not the game owner, render challenge button */}
-                    {user?.id !== gameData?.user_id && <ReplayButton gameId={gameId}>Défié</ReplayButton>}
+                <div className={styles.btnContainerList}>
+                    <h3>Bien joué !</h3>
+                    <div className={styles.btnList}>
+                        {/* If the user is not the game owner, render challenge button */}
+                        {user?.id !== gameData?.user_id && <ReplayButton gameId={gameId}>Défier</ReplayButton>}
 
-                    {/* If the user is the game owner, render differents buttons */}
-                    {user?.id === gameData?.user_id && <ReplayButton gameId={gameId}>Recommencer</ReplayButton>}
-                    {user?.id === gameData?.user_id && <Link href="/game/karakaku">
-                        <button className={styles.btnEchap}>Choix des musiques</button>
-                    </Link>}
-                    {user?.id === gameData?.user_id && <ShareButton score={gameData?.score} />}
+                        {/* If the user is the game owner, render differents buttons */}
+                        {user?.id === gameData?.user_id && <ReplayButton gameId={gameId}>Recommencer</ReplayButton>}
+                        {user?.id === gameData?.user_id && <Link href="/game/karakaku">
+                            <button className={styles.btnEchap}>Choix des musiques</button>
+                        </Link>}
+                    </div>
+                    <div className={styles.btnList}>
+                        {user?.id === gameData?.user_id && <ShareButton score={gameData?.score} />}
+                    </div>
                 </div>
+
 
                 <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
 

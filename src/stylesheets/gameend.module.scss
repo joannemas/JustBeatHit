@@ -22,11 +22,10 @@
     display: flex;
     flex-direction: column;
     width: 60%;
-    height: 100vh;
     padding: 40px;
-    gap: 2rem;
     background-color: $white;
     color: $black;
+    justify-content: space-between;
     
     p{
         margin: 0 0 0.4rem 0;
@@ -39,6 +38,7 @@
         font-style: italic;
         text-transform: uppercase;
         font-family: 'GoiaDisplay', sans-serif;
+        margin: 10px 0;
     }
 
         h2 {
@@ -52,8 +52,16 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+}
 
+.btnContainerList {
+    margin: 10px;
+    z-index: 10;
+}
 
+.btnList:nth-of-type(2) {
+    margin-top: 15px;
+    z-index: 10;
 }
 
 .score {
@@ -93,6 +101,17 @@
 .score_display{
     align-items: flex-end;
     gap: 0.5rem;
+    z-index: 3;
+    font-weight: 500;
+
+    p > span {
+        background: linear-gradient(135deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -moz-text-fill-color: transparent;
+    }
 }
 
 .btnContainer {
@@ -104,6 +123,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    z-index: 10;
 }
 
 .btnPrimary {
@@ -289,6 +309,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 80%;
 }
 
 .leaderBoardItem {
@@ -305,7 +326,7 @@
         justify-content: space-between;
         color: linear-gradient(135deg, #A32CC4, #C1208F, #F1203C, #FF6026, #FFAB36);
         font-family: 'GoiaDisplay', sans-serif;
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: bold;
         padding: 0.9rem 1rem 0.9rem 4.5rem;
     }
@@ -351,4 +372,16 @@
         font-size: 1.2rem;
         font-weight: bold;
     }
+}
+
+.leaderBoardItem:nth-child(1) {
+    width: 100%;
+}
+
+.leaderBoardItem:nth-child(2) {
+    width: 90%;
+}
+
+.leaderBoardItem:nth-child(3) {
+    width: 80%;
 }

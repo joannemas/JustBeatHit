@@ -267,6 +267,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         }
     }, [isValidated, isGameOver, currentLyricIndex, lyrics.length])
 
+    const [accuracy, setAccuracy] = useState(100); // précision affichée en jeu
+
+    useEffect(() => {
+        const newAccuracy = calculateAccuracy(completedInputs, lyrics);
+        setAccuracy(newAccuracy);
+      }, [completedInputs, lyrics]);      
+    
+
     //Affiche les paroles et le score final
     const renderLyrics = () => {
         return lyrics.map((lyric, index) => {
@@ -632,6 +640,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                         </div>
                     </div>
                     <p className={styles.label}>Score</p>
+                    <p>Précision : {accuracy}%</p>
                 </div>
             )}
         </div>
