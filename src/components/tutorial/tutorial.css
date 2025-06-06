@@ -1,0 +1,31 @@
+/* Aggressive fix for button text duplication */
+.driver-popover.karakaku-tutorial-popover .driver-popover-btn * {
+  text-shadow: none !important;
+  position: static !important;
+  font-family: 'Goia', sans-serif !important;
+}
+
+.driver-popover.karakaku-tutorial-popover .driver-popover-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  backdrop-filter: blur(10px) !important;
+  text-shadow: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  font-family: 'Goia', sans-serif !important;
+  
+}
+
+/* Remove all pseudo-elements */
+.driver-popover.karakaku-tutorial-popover .driver-popover-btn::before,
+.driver-popover.karakaku-tutorial-popover .driver-popover-btn::after,
+.driver-popover.karakaku-tutorial-popover .driver-popover-next-btn::before,
+.driver-popover.karakaku-tutorial-popover .driver-popover-next-btn::after {
+  content: none !important;
+  display: none !important;
+}
