@@ -2,6 +2,7 @@ import { ANON_PATH, PUBLIC_PATH } from '@/middleware'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from './server'
 import { isBotRequest } from "@/utils/isBotRequest"
+import cloneCookies from '@/utils/cloneCookies'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -34,7 +35,9 @@ export async function updateSession(request: NextRequest) {
         const captchaUrl = new URL("/auth/verify-captcha", request.url)
         captchaUrl.searchParams.set("returnTo", returnTo)
         
-        return NextResponse.redirect(captchaUrl)
+        const redirectRes = NextResponse.redirect(captchaUrl);
+        cloneCookies(supabaseResponse, redirectRes)
+        return redirectRes
     }
 
     if (!isPublicPath) {
@@ -42,21 +45,27 @@ export async function updateSession(request: NextRequest) {
             // Pas d'utilisateur, redirection vers la page de connexion
             const url = request.nextUrl.clone();
             url.pathname = '/auth/login';
-            return NextResponse.redirect(url);
+            const redirectRes = NextResponse.redirect(url);
+            cloneCookies(supabaseResponse, redirectRes)
+            return redirectRes
         }
     
         if (user?.is_anonymous && !isAnonymPath) {
             // Utilisateur anonyme tentant d'accéder à une page non anonyme
             const url = request.nextUrl.clone();
             url.pathname = '/auth/login';
-            return NextResponse.redirect(url);
+            const redirectRes = NextResponse.redirect(url);
+            cloneCookies(supabaseResponse, redirectRes)
+            return redirectRes
         }
     }
     
     if(user && !user?.is_anonymous && (pathname === '/auth/login' || pathname === '/auth/register')){
         const url = request.nextUrl.clone();
         url.pathname = '/';
-        return NextResponse.redirect(url)
+        const redirectRes = NextResponse.redirect(url);
+        cloneCookies(supabaseResponse, redirectRes)
+        return redirectRes
     }
 
     if(isAnonymPath && user?.is_anonymous){
@@ -66,7 +75,9 @@ export async function updateSession(request: NextRequest) {
         if ((count == null || count >= 2) && data?.status !== 'finished') {
             const url = request.nextUrl.clone();
                 url.pathname = '/auth/login';
-                return NextResponse.redirect(url);
+                const redirectRes = NextResponse.redirect(url);
+                cloneCookies(supabaseResponse, redirectRes)
+                return redirectRes
         }
     }
     
@@ -84,4 +95,4 @@ export async function updateSession(request: NextRequest) {
     // of sync and terminate the user's session prematurely!
 
     return supabaseResponse
-}
+}  
