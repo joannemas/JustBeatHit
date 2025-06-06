@@ -17,6 +17,8 @@ import {
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 import { endGame, replayGame, startGame } from "@/app/game/actions";
+import '../tutorial/tutorial.css';
+import { useTutorial } from '../tutorial/usetutorial';
 
 interface KarakakuProps {
   songSrc: string;
@@ -59,12 +61,17 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [volume, setVolume] = useState<number>(0.8);
   const [linePoints, setLinePoints] = useState<number>(0);
   const [showLinePoints, setShowLinePoints] = useState<boolean>(false);
-  const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null); 
+  const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wasValidatedRef = useRef<boolean>(false);
 
-    useEffect(() => {
-        lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
-    }, [lyricSrc, charRefs]);
+  // Tutorial integration
+  const { startTutorial } = useTutorial();
+
+  console.log('songSrc' + songSrc);
+
+  useEffect(() => {
+    lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
+  }, [lyricSrc, charRefs]);
 
   useEffect(() => {
     caretUtils({
@@ -75,6 +82,20 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       caretRef
     });
   }, [userInput, currentLyricIndex, lyrics, charRefs, caretRef]);
+
+  // Show tutorial only on the very first visit ever
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Check if user has NEVER seen the tutorial before
+      const hasNeverSeenTutorial = !localStorage.getItem('karakaku-tutorial-seen');
+
+      if (hasNeverSeenTutorial && !isStarted && lyrics.length > 0) {
+        startTutorial();
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [startTutorial, isStarted, lyrics.length]);
 
   const handleTimeUpdateWrapper = () => {
     handleTimeUpdate(
@@ -215,6 +236,14 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     }, 200);
   };
 
+  // Tutorial button handler for manual trigger
+  const handleShowTutorial = () => {
+    setIsPausedMenuOpen(false);
+    setTimeout(() => {
+      startTutorial();
+    }, 300);
+  };
+
   const isHandlingLineSwitch = useRef(false);
 
   useEffect(() => {
@@ -304,100 +333,101 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   // Affiche les paroles et le score final
   const renderLyrics = () => {
-  const lastValidatedIndex = currentLyricIndex - 1;
-  return lyrics.map((lyric, index) => {
-    const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
-    const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
-    const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
-    const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+    const lastValidatedIndex = currentLyricIndex - 1;
+    return lyrics.map((lyric, index) => {
+      const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+      const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+      const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+      const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
 
-    if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
-      return null;
-    }
+      if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
+        return null;
+      }
 
-    return (
-      <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
-        {index < currentLyricIndex && (
-          <p
-            className={`
-              ${styles.previous} 
-              ${index === currentLyricIndex ? styles.current : ''}
-              ${isBeforeFirst ? styles['--before-line'] : ''}
-              ${isFirstLine ? styles['--first-line'] : ''}
-            `}
-            style={{ position: 'relative' }}
-          >
-            {lyrics[index].text.split('').map((char, charIndex) => {
-              const userInputForLine = completedInputs[index] || '';
-              const userChar = userInputForLine[charIndex] || '';
-              const className = normalizeString(userChar) === normalizeString(char)
-                ? styles.right
-                : userChar === ''
-                  ? ''
-                  : styles.wrong;
-              return <span key={charIndex} className={className}>{char}</span>;
-            })}
-            {/* Afficher les points de la ligne validée */}
-            {showLinePoints && index === lastValidatedIndex && (
-              <span className={styles.linePoints} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
-                +{linePoints} points
-              </span>
-            )}
-          </p>
-        )}
-
-        {index === currentLyricIndex && (
-          <div className={styles.currentLyricContainer}>
-            <Image priority
-              src="/assets/img/icon/arrow-right.svg"
-              alt="Music svg"
-              width={40}
-              height={40}
-              className={styles.arrowIcon}
-            />
-            {isCountdownActive &&
-              <div className={styles.countdown}>
-                <Image priority
-                  src="/assets/img/icon/timer.svg"
-                  alt="Music svg"
-                  width={40}
-                  height={40}
-                  className="countdown__icon"
-                />
-                <span className={styles.highlight}>{countdown}&nbsp;</span>
-                {countdown === 1 ? 'seconde' : 'secondes'}
-              </div>
-            }
-            <p className={styles.currentLyric}>
-              {getStyledText()}
+      return (
+        <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
+          {index < currentLyricIndex && (
+            <p
+              className={`
+                ${styles.previous} 
+                ${index === currentLyricIndex ? styles.current : ''}
+                ${isBeforeFirst ? styles['--before-line'] : ''}
+                ${isFirstLine ? styles['--first-line'] : ''}
+              `}
+              style={{ position: 'relative' }}
+            >
+              {lyrics[index].text.split('').map((char, charIndex) => {
+                const userInputForLine = completedInputs[index] || '';
+                const userChar = userInputForLine[charIndex] || '';
+                const className = normalizeString(userChar) === normalizeString(char)
+                  ? styles.right
+                  : userChar === ''
+                    ? ''
+                    : styles.wrong;
+                return <span key={charIndex} className={className}>{char}</span>;
+              })}
+              {/* Afficher les points de la ligne validée */}
+              {showLinePoints && index === lastValidatedIndex && (
+                <span className={styles.linePoints} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
+                  +{linePoints} points
+                </span>
+              )}
             </p>
-            <input
-              type="text"
-              value={userInput}
-              onChange={handleInputChange}
-              onPaste={handlePaste}
-              className={styles.textInput}
-              autoFocus
-              spellCheck={false}
-              ref={inputRef}
-            />
-            <div ref={caretRef} className={styles.caret}></div>
-          </div>
-        )}
+          )}
 
-        {index > currentLyricIndex && (
-          <p className={`
+          {index === currentLyricIndex && (
+            <div className={styles.currentLyricContainer}>
+              <Image priority
+                src="/assets/img/icon/arrow-right.svg"
+                alt="Music svg"
+                width={40}
+                height={40}
+                className={styles.arrowIcon}
+              />
+              {isCountdownActive &&
+                <div className={styles.countdown}>
+                  <Image priority
+                    src="/assets/img/icon/timer.svg"
+                    alt="Music svg"
+                    width={40}
+                    height={40}
+                    className="countdown__icon"
+                  />
+                  <span className={styles.highlight}>{countdown}&nbsp;</span>
+                  {countdown === 1 ? 'seconde' : 'secondes'}
+                </div>
+              }
+              <p className={styles.currentLyric}>
+                {getStyledText()}
+              </p>
+              <input
+                type="text"
+                value={userInput}
+                onChange={handleInputChange}
+                onPaste={handlePaste}
+                className={styles.textInput}
+                autoFocus
+                spellCheck={false}
+                ref={inputRef}
+                data-tutorial="input-field"
+              />
+              <div ref={caretRef} className={styles.caret}></div>
+            </div>
+          )}
+
+          {index > currentLyricIndex && (
+            <p className={`
               ${styles.next}
               ${isLastLine ? styles['--last-line'] : ''}
               ${isBeforeLast ? styles['--before-line'] : ''}
             `}>
-            {lyrics[index].text}
-          </p>
-        )}
-      </div>
-    );
-  });
-};
+              {lyrics[index].text}
+            </p>
+          )}
+        </div>
+      );
+    });
+  };
 
   const speedClass = multiplier === 4 ? styles.faster :
     multiplier >= 3 ? styles.fast :
@@ -448,7 +478,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     };
   }, [isGameOver, currentLyricIndex, isCountdownActive, lyrics.length]);
 
-  // ---- ADDED: Handle "R" for replay when sidebar is open ----
   useEffect(() => {
     if (!isPausedMenuOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -460,7 +489,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPausedMenuOpen]);
-  // ----------------------------------------------------------
 
   // Bouton Reprendre
   const handleResume = () => {
@@ -525,6 +553,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               Recommencer
             </button>
           </div>
+          <div>
+            <button className={styles.btnEchap} onClick={handleShowTutorial}>
+              <Image
+                src="/assets/img/icon/question-mark.svg"
+                alt="Question Mark"
+                width={24}
+                height={24}
+                className={`${styles.playIcon} ${styles.questionMarkIcon}`}
+              />
+              Guide
+            </button>
+          </div>
+
           <Link href="/">
             <button className={styles.btnEchap}>
               <Image
@@ -551,11 +592,11 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           </Link>
           {/* Volume Control */}
           <div className={styles.volumeControl}>
-            <Image 
-              src="/assets/img/icon/volume.svg" 
-              alt="Volume" 
-              width={20} 
-              height={20} 
+            <Image
+              src="/assets/img/icon/volume.svg"
+              alt="Volume"
+              width={20}
+              height={20}
             />
             <input
               type="range"
@@ -581,7 +622,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             height={1000}
             className={styles.logoJbh}
           />
-          <div className={styles.echapInfoText}>
+          <div className={styles.echapInfoText} data-tutorial="escape-info">
             <span>
               <Image
                 src="/assets/img/icon/echap-key.svg"
@@ -592,6 +633,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               <span>pour mettre en pause la partie</span>
             </span>
           </div>
+          {/* Question mark help button in top-right corner */}
+          <button
+            className={styles.helpButton}
+            onClick={startTutorial}
+            title="Afficher le tutoriel (Aide)"
+          >
+            ?
+          </button>
+
           <ReactAudioPlayer
             src={songSrc}
             controls
@@ -637,7 +687,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       </div>
 
       {!isGameOver && (
-        <div className={styles.score}>
+        <div className={styles.score} data-tutorial="score-display">
           <p
             className={styles.changeScore}
             key={lastScoreChange}
