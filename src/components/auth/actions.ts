@@ -1,7 +1,7 @@
 "use server"
 
 import { AuthState } from "./auth";
-import { loginSchema, passwordSchema, registerAnonymeSchema, registerSchema, sendPasswordResetRequestSchema } from "./validations";
+import { loginSchema, passwordSchema, registerAnonymeSchema, registerSchema, sendConfirmationSchema, sendPasswordResetRequestSchema } from "./validations";
 import { redirect } from "next/navigation";
 
 import { revalidatePath } from 'next/cache'
@@ -40,7 +40,7 @@ export async function login(prevState: AuthState | undefined, formData: FormData
     if (error) {
         console.error(error)
         if(error.code === 'email_not_confirmed'){
-            return { message: error.message + ', veuillez vérifier vos emails' }
+            redirect(`/auth/confirmation?email=${parse.data.email}`)
         }
         return { message: error.message }
     }
@@ -99,7 +99,7 @@ export async function register(prevState: AuthState | undefined, formData: FormD
     }
 
     revalidatePath('/', 'layout')
-    redirect('/auth/confirmation')
+    redirect(`/auth/confirmation?email=${parse.data.email}`)
 }
 
 export async function registerAnonyme(prevState: AuthState | undefined, formData: FormData) {
@@ -180,4 +180,31 @@ export async function sendPasswordResetRequest(prevState: AuthState | undefined,
     }
 
     return {message: "Un lien de réinitialisation vous a été envoyé par e-mail."}
+}
+
+export async function resendConfirmationEmail(prevState: AuthState | undefined, formData: FormData){
+    const supabase = createClient()
+    
+    const parse = sendConfirmationSchema.safeParse({
+        email: formData.get("email") as string,
+    });
+
+    if (!parse.success) {
+        return { errors: parse.error.flatten().fieldErrors }
+    }
+
+    const {email} = parse.data
+
+    const {error} = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+            captchaToken: formData.get("h-captcha-response")?.toString()
+        }
+    })
+        
+    if(!error){
+        return {message: "Confirmation envoyé avec succès."}
+    }
+    return {message: error.message}
 }
