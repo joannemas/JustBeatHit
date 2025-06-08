@@ -192,7 +192,6 @@ export async function resendConfirmationEmail(prevState: AuthState | undefined, 
     if (!parse.success) {
         return { errors: parse.error.flatten().fieldErrors }
     }
-
     const {email} = parse.data
 
     const {error} = await supabase.auth.resend({
