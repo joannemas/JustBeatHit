@@ -41,3 +41,7 @@ export const loginSchema = z.object({
 export const sendPasswordResetRequestSchema = z.object({
     email: z.string().email("L'email doit être une adresse e-mail valide")
 })
+
+export const sendConfirmationSchema = z.object({
+    email: z.string().email("L'email doit être une adresse e-mail valide")
+})
