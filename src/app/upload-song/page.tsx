@@ -7,13 +7,17 @@ import {useEffect, useState} from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
+import styles from "@/stylesheets/uploadSong.module.scss";
+import Image from "next/image";
+
+const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 
 // Schéma Zod pour valider le formulaire
 const songSchema = z.object({
     title: z.string().min(1, 'Le titre est requis'),
     singer: z.string().min(1, 'Le nom de l’artiste est requis'),
     is_explicit: z.boolean(),
-    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    difficulty: z.enum(difficultyLevels),
     status: z.enum(['Live', 'Draft']),
     mp3: z.any().refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
     lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
@@ -28,6 +32,8 @@ export default function UploadSongPage() {
         handleSubmit,
         setValue,
         formState: { errors },
+        watch,
+        trigger,
     } = useForm<SongFormData>({
         resolver: zodResolver(songSchema),
     });
@@ -38,12 +44,35 @@ export default function UploadSongPage() {
     const [range, setRange] = useState({ min: 0, max: 90 });
     const [lyrics, setLyrics] = useState<{ time: number; text: string }[]>([]);
     const [originalMp3File, setOriginalMp3File] = useState<File | null>(null);
+    const [lrcFile, setLrcFile] = useState<File | null>(null);
     const [trimmedAudioUrl, setTrimmedAudioUrl] = useState<string | null>(null);
     const [isTrimming, setIsTrimming] = useState(false);
     const [hasInitialTrim, setHasInitialTrim] = useState(false);
     const [isPreparing, setIsPreparing] = useState(false);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
+    const [coverFile, setCoverFile] = useState<File | null>(null);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isEditingArtist, setIsEditingArtist] = useState(false);
 
+    const validateField = async (field: 'title' | 'singer', value: string) => {
+        const trimmed = value.trim();
+
+        // On met à jour la valeur manuellement
+        setValue(field, trimmed);
+
+        // On déclenche la validation
+        const isValid = await trigger(field);
+
+        // Si le champ est valide, on ferme l’édition
+        if (isValid) {
+            if (field === 'title') setIsEditingTitle(false);
+            if (field === 'singer') setIsEditingArtist(false);
+        }
+    };
+
+
+    const title = watch('title');
+    const singer = watch('singer');
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
@@ -128,7 +157,7 @@ export default function UploadSongPage() {
     const onMP3Change = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setOriginalMp3File(file); // <-- ici
+            setOriginalMp3File(file);
             const url = URL.createObjectURL(file);
             setAudioUrl(url);
             const audio = new Audio(url);
@@ -206,132 +235,274 @@ export default function UploadSongPage() {
 
         await parseLRC(file);
 
+        setLrcFile(file);
+
         const text = await file.text();
 
         const artistMatch = text.match(/\[ar:(.*?)\]/);
         const titleMatch = text.match(/\[ti:(.*?)\]/);
 
         if (artistMatch) {
-            setValue('singer', artistMatch[1].trim());
+            setValue('singer', artistMatch[1].trim(), { shouldValidate: true });
         }
 
         if (titleMatch) {
-            setValue('title', titleMatch[1].trim());
+            setValue('title', titleMatch[1].trim(), { shouldValidate: true });
         }
     };
 
 
     return (
-        <main className="upload">
-            <h1 className="text-3xl font-bold mb-6">Uploader une chanson</h1>
+        <main className={styles.upload}>
+            <form onSubmit={handleSubmit(onSubmit)} className={styles.uploadForm}>
+                <div className={styles.stepOne}>
+                    <h2>Étape 1 : ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
+                        fichier <span className={styles.highlightTitle}>lrc</span></h2>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="upload-form">
-                <div className="upload-form__input">
-                    <label>Titre</label>
-                    <input
-                        type="text"
-                        {...register('title')}
-                    />
-                    {errors.title && <p>{errors.title.message}</p>}
-                </div>
+                    <div className={styles.fileInput}>
+                        <label htmlFor="mp3">Audio</label>
+                        <div className={`${styles.fileInput__display} ${originalMp3File ? styles.active : ''}`}>
+                            <input
+                                id="mp3"
+                                type="file"
+                                accept=".mp3"
+                                {...register('mp3')}
+                                onChange={onMP3Change}
+                            />
+                            <div className={styles.fileInput__plus}>
+                                <Image src={
+                                    originalMp3File
+                                        ? "/assets/img/icon/check-circle.svg"
+                                        : "/assets/img/icon/add-circle.svg"
+                                }
+                                       alt="status icon" width={50} height={50} aria-hidden="true"/>
+                            </div>
+                            <span className={styles.fileInput__extension}>
+                                {originalMp3File ? originalMp3File.name : '.mp3'}
+                            </span>
+                        </div>
 
-                <div className="upload-form__input">
-                    <label>Artiste</label>
-                    <input
-                        type="text"
-                        {...register('singer')}
-                    />
-                    {errors.singer && <p>{errors.singer.message}</p>}
-                </div>
-
-                <div className="upload-form__input">
-                    <label>
-                        <input type="checkbox" {...register('is_explicit')} />
-                        <span>Contenu explicite</span>
-                    </label>
-                </div>
-
-                <div className="upload-form__input">
-                    <label>Difficulté</label>
-                    <select {...register('difficulty')}>
-                        <option value="">-- Choisir --</option>
-                        <option value="Easy">Facile</option>
-                        <option value="Medium">Moyenne</option>
-                        <option value="Hard">Difficile</option>
-                    </select>
-                    {errors.difficulty && <p>{errors.difficulty.message}</p>}
-                </div>
-
-                <div className="upload-form__input">
-                    <label>Statut</label>
-                    <select {...register('status')}>
-                        <option value="">-- Choisir --</option>
-                        <option value="Live">Live</option>
-                        <option value="Draft">Brouillon</option>
-                    </select>
-                    {errors.status && <p>{errors.status.message}</p>}
-                </div>
-
-                <div className="upload-form__input">
-                    <label>Image de couverture</label>
-                    <input
-                        type="file"
-                        accept=".png,.jpg,.jpeg"
-                        {...register('cover')}
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) setCoverPreview(URL.createObjectURL(file));
-                        }}
-                    />
-                    {typeof errors.cover?.message === 'string' && (
-                        <p className="text-red-500">{errors.cover.message}</p>
-                    )}
-                </div>
-
-                {coverPreview && (
-                    <div className="cover-preview">
-                        <img src={coverPreview} alt="Prévisualisation de la cover" width="150"/>
-                    </div>
-                )}
-
-                <div>
-                    <label className="upload-form__input">Fichier MP3</label>
-                    <input type="file" accept=".mp3" {...register('mp3')} onChange={onMP3Change}/>
-                    {typeof errors.mp3?.message === 'string' && (
-                        <p>{errors.mp3?.message}</p>
-                    )}
-                </div>
-
-                <div className="upload-form__input">
-                    <label>Fichier LRC</label>
-                    <input
-                        type="file"
-                        accept=".lrc"
-                        {...register('lrc')}
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleLrcFileChange(file);
-                        }}
-                    />
-                    {typeof errors.lrc?.message === 'string' && (
-                        <p className="text-red-500">{errors.lrc?.message}</p>
-                    )}
-                </div>
-
-                {audioUrl && (
-                    <div className="audio-preview">
-                        {isPreparing ? (
-                            <p>Préparation de l'extrait...</p>
-                        ) : (
-                            <audio controls src={trimmedAudioUrl || audioUrl}/>
+                        {typeof errors.mp3?.message === 'string' && (
+                            <p className={styles.error}>{errors.mp3.message}</p>
                         )}
                     </div>
-                )}
 
+                    <div className={styles.fileInput}>
+                        <label htmlFor="mp3">Paroles</label>
+                        <div className={`${styles.fileInput__display} ${lrcFile ? styles.active : ''}`}>
+                            <input
+                                type="file"
+                                accept=".lrc"
+                                {...register('lrc')}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleLrcFileChange(file);
+                                }}
+                            />
+                            <div className={styles.fileInput__plus}>
+                                <Image src={
+                                    lrcFile
+                                        ? "/assets/img/icon/check-circle.svg"
+                                        : "/assets/img/icon/add-circle.svg"
+                                }
+                                       alt="status icon" width={50} height={50} aria-hidden="true"/>
+                            </div>
+                            <span className={styles.fileInput__extension}>
+                                {lrcFile ? lrcFile.name : '.lrc'}
+                            </span>
+                        </div>
 
-                {audioUrl && (
-                    <div className="double_range_slider_box">
-                        <div className="double_range_slider">
+                        {typeof errors.lrc?.message === 'string' && (
+                            <p>{errors.lrc?.message}</p>
+                        )}
+                    </div>
+
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi architecto,
+                        asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic itaque
+                        laborum magni modi mollitia necessitatibus nostrum odio odit optio pariatur, qui quia recusandae
+                        repellat saepe sapiente tempora tempore totam ut vel velit vero voluptate voluptatum.
+                    </p>
+
+                </div>
+
+                <div className={styles.stepTwo}>
+                    <h2>étape 2 : ajouter des <span className="highlight-title">informations complémentaires</span></h2>
+
+                    <div className={styles.stepTwo__inputs}>
+                        <div className={styles.fileInput}>
+                            <label>Cover</label>
+                            <div className={`${styles.fileInput__display} ${coverFile ? styles.active : ''}`}>
+                                {coverPreview &&
+                                    <img src={coverPreview} alt="cover" className={styles.fileInput__background}/>}
+                                <input
+                                    type="file"
+                                    accept=".png,.jpg,.jpeg"
+                                    {...register('cover')}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setCoverFile(file);
+                                            setCoverPreview(URL.createObjectURL(file));
+                                        }
+                                    }}
+                                />
+                                <div className={styles.fileInput__plus}>
+                                    <Image src={
+                                        coverFile
+                                            ? "/assets/img/icon/check-circle.svg"
+                                            : "/assets/img/icon/add-circle.svg"
+                                    }
+                                           alt="status icon" width={50} height={50} aria-hidden="true"/>
+                                </div>
+                                <span className={styles.fileInput__extension}>
+                                {coverFile ? coverFile.name : '.png, .jpg, .jpeg'}
+                            </span>
+                            </div>
+
+                            {typeof errors.cover?.message === 'string' && (
+                                <p>{errors.cover.message}</p>
+                            )}
+                        </div>
+
+                        <div className={styles.uploadForm__input}>
+                            <label>Titre</label>
+                            <div className={styles.uploadForm__input__edit}>
+                                {isEditingTitle || !title ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            defaultValue={title}
+                                            onBlur={(e) => validateField('title', e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    validateField('title', (e.target as HTMLInputElement).value);
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                        <Image
+                                            src="/assets/img/icon/check-circle.svg"
+                                            alt="valider"
+                                            width={20}
+                                            height={20}
+                                            aria-hidden="true"
+                                            onClick={() => {
+                                                const input = document.querySelector<HTMLInputElement>('input[name="title"]');
+                                                if (input) validateField('title', input.value);
+                                            }}
+                                        />
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className={styles.displayText}>{title}</span>
+                                        <Image
+                                            src="/assets/img/icon/edit-icon.svg"
+                                            alt="éditer"
+                                            width={20}
+                                            height={20}
+                                            aria-hidden="true"
+                                            onClick={() => setIsEditingTitle(true)}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                            {errors.title && <p>{errors.title.message}</p>}
+                        </div>
+
+                        <div className={styles.uploadForm__input}>
+                            <label>Artiste</label>
+                            <div className={styles.uploadForm__input__edit}>
+                                {isEditingArtist || !singer ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            defaultValue={singer}
+                                            onBlur={(e) => validateField('singer', e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    validateField('singer', (e.target as HTMLInputElement).value);
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                        <Image
+                                            src="/assets/img/icon/check-circle.svg"
+                                            alt="valider"
+                                            width={20}
+                                            height={20}
+                                            aria-hidden="true"
+                                            onClick={() => {
+                                                const input = document.querySelector<HTMLInputElement>('input[name="singer"]');
+                                                if (input) validateField('singer', input.value);
+                                            }}
+                                        />
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className={styles.displayText}>{singer}</span>
+                                        <Image
+                                            src="/assets/img/icon/edit-icon.svg"
+                                            alt="éditer"
+                                            width={20}
+                                            height={20}
+                                            aria-hidden="true"
+                                            onClick={() => setIsEditingArtist(true)}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                            {errors.singer && <p>{errors.singer.message}</p>}
+                        </div>
+
+                        <div className={styles.uploadForm__checkbox}>
+                            <label>Contenu explicite</label>
+                            <input type="checkbox" {...register('is_explicit')} />
+                        </div>
+
+                        <div className={styles.uploadForm__input}>
+                            <label className={styles.uploadForm__label}>Difficulté</label>
+                            <div className={styles.difficultyChoices}>
+                                {difficultyLevels.map((level) => (
+                                    <button
+                                        key={level}
+                                        type="button"
+                                        className={`${styles.difficultyButton} ${
+                                            watch('difficulty') === level ? styles.active : ''
+                                        } ${styles[level.toLowerCase()]}`}
+                                        onClick={() => setValue('difficulty', level)}
+                                    >
+                                        {level}
+                                    </button>
+                                ))}
+                            </div>
+                            {errors.difficulty && <p>{errors.difficulty.message}</p>}
+                        </div>
+
+                        <div className={styles.uploadForm__input}>
+                            <label>Statut</label>
+                            <select {...register('status')}>
+                                <option value="">-- Choisir --</option>
+                                <option value="Live">Live</option>
+                                <option value="Draft">Brouillon</option>
+                            </select>
+                            {errors.status && <p>{errors.status.message}</p>}
+                        </div>
+
+                        {audioUrl && (
+                            <div className={styles.audioPreview}>
+                                {isPreparing ? (
+                                    <p>Préparation de l'extrait...</p>
+                                ) : (
+                                    <audio controls src={trimmedAudioUrl || audioUrl}/>
+                                )}
+                            </div>
+                        )}
+
+                        {audioUrl && (
+                            <div className="double_range_slider_box">
+                                <div className="double_range_slider">
                             <span
                                 className="range_track"
                                 style={{
@@ -340,65 +511,81 @@ export default function UploadSongPage() {
                                 }}
                             ></span>
 
-                            <input
-                                type="range"
-                                className="min"
-                                min={0}
-                                max={Math.max(audioDuration - 30, 1)}
-                                value={range.min}
-                                step={0.1}
-                                onChange={(e) => {
-                                    const newMin = Number(e.target.value);
-                                    if (newMin < range.max - 30) {
-                                        setRange((prev) => ({...prev, min: newMin}));
-                                    }
-                                }}
-                            />
-                            <input
-                                type="range"
-                                className="max"
-                                min={30}
-                                max={audioDuration}
-                                value={range.max}
-                                step={0.1}
-                                onChange={(e) => {
-                                    const newMax = Number(e.target.value);
-                                    if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
-                                        setRange((prev) => ({...prev, max: newMax}));
-                                    }
-                                }}
-                            />
+                                    <input
+                                        type="range"
+                                        className="min"
+                                        min={0}
+                                        max={Math.max(audioDuration - 30, 1)}
+                                        value={range.min}
+                                        step={0.1}
+                                        onChange={(e) => {
+                                            const newMin = Number(e.target.value);
+                                            if (newMin < range.max - 30) {
+                                                setRange((prev) => ({...prev, min: newMin}));
+                                            }
+                                        }}
+                                    />
+                                    <input
+                                        type="range"
+                                        className="max"
+                                        min={30}
+                                        max={audioDuration}
+                                        value={range.max}
+                                        step={0.1}
+                                        onChange={(e) => {
+                                            const newMax = Number(e.target.value);
+                                            if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
+                                                setRange((prev) => ({...prev, max: newMax}));
+                                            }
+                                        }}
+                                    />
 
-                            <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
-                            <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
-                        </div>
-                    </div>
-                )}
-
-                {lyrics.length > 0 && (
-                    <div className="lyrics-preview">
-                        {lyrics.map(({time, text}, i) => {
-                            const isInRange = time >= range.min && time <= range.max;
-                            return (
-                                <div
-                                    key={i}
-                                    className={isInRange ? 'highlight' : 'deleted'}
-                                >
-                                    [{time.toFixed(2)}] {text}
+                                    <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
+                                    <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        )}
                     </div>
-                )}
+
+
+                    <div className={styles.stepTwo__lyrics}>
+                        {lyrics.length > 0 && (
+                            <div className={styles.stepTwo__lyrics__preview}>
+                                {lyrics.map(({time, text}, i) => {
+                                    const isInRange = time >= range.min && time <= range.max;
+                                    return (
+                                        <div
+                                            key={i}
+                                            className={isInRange ? styles.highlight : styles.deleted}
+                                        >
+                                            [{time.toFixed(2)}] {text}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                </div>
 
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="submit-btn"
+                    className={`${styles.submitButton} ${isSubmitting ? styles.disabled : ''}`}
                 >
-                    {isSubmitting ? 'Envoi en cours...' : 'Ajouter la chanson'}
+                    {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
                 </button>
             </form>
+
+            <div className={styles.stepper}>
+
+                {/*<button*/}
+                {/*    type="submit"*/}
+                {/*    disabled={isSubmitting}*/}
+                {/*    className={`${styles.submitButton} ${isSubmitting ? styles.disabled : ''}`}*/}
+                {/*>*/}
+                {/*    {isSubmitting ? 'Envoi en cours...' : 'Ajouter la chanson'}*/}
+                {/*</button>*/}
+            </div>
         </main>
     );
 }
