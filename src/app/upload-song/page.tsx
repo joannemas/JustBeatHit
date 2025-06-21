@@ -9,6 +9,7 @@ import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
 import styles from "@/stylesheets/uploadSong.module.scss";
 import Image from "next/image";
+import {transform} from "esbuild";
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 
@@ -267,7 +268,7 @@ export default function UploadSongPage() {
 
                 {currentStep === 1 && (
                     <div className={styles.stepOne}>
-                        <h2>Étape 1 : ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
+                        <h2>Étape 1 . ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
                             fichier <span className={styles.highlightTitle}>lrc</span></h2>
 
                         <div className={styles.stepOne__filesWrapper}>
@@ -349,6 +350,14 @@ export default function UploadSongPage() {
                             repellat saepe sapiente tempora tempore totam ut vel velit vero voluptate voluptatum.
                         </p>
 
+                        <button
+                            type="button"
+                            className={styles.stepButton}
+                            onClick={() => setCurrentStep(2)}
+                        >
+                            <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>
+                            Suivant
+                        </button>
                     </div>
                 )}
 
@@ -565,6 +574,14 @@ export default function UploadSongPage() {
                                         </div>
                                     </div>
                                 )}
+                                <button
+                                    type="button"
+                                    className={styles.stepButton}
+                                    onClick={() =>  setCurrentStep(1)}
+                                >
+                                    <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true" style={{ transform: "rotate(180deg)" }} />
+                                    Précédent
+                                </button>
                             </div>
 
                             <div className={styles.stepTwo__wrapper__lyrics}>
@@ -586,7 +603,6 @@ export default function UploadSongPage() {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 )}
                 {/*<div className={styles.formSlider}>*/}
@@ -594,26 +610,28 @@ export default function UploadSongPage() {
 
                 {/*    </div>*/}
                 {/*</div>*/}
-                <button
-                    type="button"
-                    className={styles.stepToggleButton}
-                    onClick={() => currentStep === 1 ? setCurrentStep(2) : setCurrentStep(1)}
-                >
-                    Suivant
-                </button>
+                {/*<button*/}
+                {/*    type="button"*/}
+                {/*    className={styles.stepButton}*/}
+                {/*    onClick={() => currentStep === 1 ? setCurrentStep(2) : setCurrentStep(1)}*/}
+                {/*>*/}
+                {/*    {currentStep === 1 ? 'Suivant' : 'Précédent'}*/}
+                {/*</button>*/}
             </form>
 
             <div className={styles.stepper}>
 
-                <h2>Étape 1 : ajouter le fichier et le fichier lrc</h2>
+                <h2 className={styles.highlightTitle}>Étape 1 . ajouter les fichiers MP3 et LRC</h2>
                 <div className={styles.lineBreak}></div>
-                <h2>Étape 2 : ajouter des informations complémentaires</h2>
+                <h2 className={currentStep === 2 ? styles.highlightTitle : ''}>Étape 2 . ajouter des informations complémentaires</h2>
 
                 <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className={`${styles.submitButton} ${isSubmitting ? styles.disabled : ''}`}
+                    disabled={isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty')}
+                    className={`${styles.submitButton}`}
                 >
+                    {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') && <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
+
                     {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
                 </button>
             </div>
