@@ -2,22 +2,42 @@
 @import './mixins.scss';
 
 .upload{
-  padding: 64px;
   font-family: 'GoiaDisplay', sans-serif;
+  display: flex;
+  height: 100vh;
+
+  .navbar{
+    width: 20%;
+    background-color: $purple-heart;
+  }
 
   .uploadForm {
+    padding: 0 64px;
+    width: 60%;
+    height: 100%;
+
     h2 {
       font-family: 'GoiaDisplay', sans-serif;
-      font-size: 40px;
+      font-size: 32px;
       font-style: italic;
       font-weight: 700;
       text-transform: uppercase;
+    }
+
+    .highlightTitle {
+      background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      padding-right: 4px;
     }
 
     .fileInput {
       display: flex;
       flex-direction: column;
       gap: 16px;
+      width: 50%;
+      margin-bottom: 20px;
 
       label {
         font-family: 'GoiaDisplay', sans-serif;
@@ -30,7 +50,7 @@
 
       &__display {
         position: relative;
-        height: 200px;
+        height: 195px;
         border-radius: 4px;
         border: 1px solid rgba(255, 246, 241, 0.30);
         background-color: $background-color;
@@ -99,8 +119,8 @@
     &__input {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 36px;
+      gap: 8px;
+      margin-bottom: 20px;
 
       &__edit{
         display: flex;
@@ -111,7 +131,7 @@
           font-family: 'GoiaDisplay', sans-serif;
           font-style: italic;
           font-weight: 700;
-          font-size: 32px;
+          font-size: 26px;
           color: $white;
         }
 
@@ -150,13 +170,49 @@
           border-color: $yellow;
         }
       }
+
+      select {
+        width: 100%;
+        padding: 12px 16px;
+        background-color: $background-color;
+        border: 1px solid rgba(255, 246, 241, 0.30);
+        border-radius: 8px;
+        color: $white;
+        font-size: 16px;
+        appearance: none;
+        background-image: url('/assets/img/icon/arrow-down.svg');
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+        cursor: pointer;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: 'GoiaDisplay', sans-serif;
+        font-style: italic;
+        font-weight: 700;
+        text-transform: uppercase;
+
+        &:hover {
+          border-color: $yellow;
+        }
+
+        &:focus {
+          border-color: $yellow;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+        }
+
+        option {
+          background-color: #1a1a1a;
+          color: $white;
+        }
+      }
     }
 
     &__checkbox{
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 36px;
+      margin-bottom: 20px;
 
       label {
         font-family: 'GoiaDisplay', sans-serif;
@@ -180,6 +236,7 @@
     .difficultyChoices {
       display: flex;
       gap: 16px;
+      flex-wrap: wrap;
     }
 
     .difficultyButton {
@@ -218,6 +275,7 @@
   }
 
   .submitButton {
+    width: 100%;
     padding: 16px 32px;
     background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
     border: 0px solid transparent;
@@ -235,4 +293,134 @@
       filter: brightness(0.8);
     }
   }
+
+  .stepOne{
+    //height: 90%;
+    &__filesWrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+  }
+
+  .stepTwo {
+    height: 90%;
+
+    &__wrapper {
+      display: flex;
+      gap: 16px;
+      height: 85%;
+      //margin-top: 32px;
+
+      &__inputs {
+        width: 70%;
+
+        .fileInput{
+          width: 80%;
+
+          &__display {
+            height: 130px;
+          }
+        }
+      }
+
+      &__lyrics {
+        position: relative;
+        height: 100%;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 4px;
+          width: 1px;
+          background-color: rgba(255, 246, 241, 0.30);
+          z-index: 0;
+          // Remonter le contenu au-dessus de la ligne
+          > * {
+            position: relative;
+            z-index: 1;
+          }
+        }
+
+        &__preview {
+          height: 100%;
+          overflow-y: scroll;
+          direction: rtl;
+          text-align: left;
+          padding: 0 36px;
+
+
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: transparent;
+          }
+
+          // Scrollbar Firefox
+          scrollbar-width: thin;
+          scrollbar-color: $yellow transparent;
+
+          h3{
+            font-size: 20px;
+            font-style: italic;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: $yellow;
+          }
+
+          div {
+            padding: 20px 0;
+          }
+        }
+
+      }
+    }
+  }
+
+  .stepper {
+    width: 20%;
+    border-left: 1px solid $white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+    gap: 16px;
+
+    .lineBreak{
+      width: 2px;
+      background-color: $white;
+      height: 50px;
+    }
+  }
+
+  //.formSlider {
+  //  overflow: hidden;
+  //  height: 100%;
+  //  position: relative;
+  //}
+  //
+  //.stepsWrapper {
+  //  display: flex;
+  //  flex-direction: column;
+  //  transition: transform 0.6s ease;
+  //  will-change: transform;
+  //
+  //  &.slideUp {
+  //    transform: translateY(-100vh);
+  //  }
+  //
+  //  > div {
+  //    min-height: 100%;
+  //    width: 100%;
+  //    flex-shrink: 0;
+  //  }
+  //}
+
 }

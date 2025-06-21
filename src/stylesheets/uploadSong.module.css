@@ -1,0 +1,449 @@
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Goia";
+  src: url("/fonts/Goia/Goia-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Regular.otf") format("truetype");
+  font-weight: 100 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-SemiBold.otf") format("truetype");
+  font-weight: 500 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "GoiaDisplay";
+  src: url("/fonts/GoiaDisplay/GoiaDisplay-Bold.otf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+}
+.upload {
+  font-family: "GoiaDisplay", sans-serif;
+  display: flex;
+  height: 100vh;
+}
+.upload .navbar {
+  width: 20%;
+  background-color: #A32CC4;
+}
+.upload .uploadForm {
+  padding: 0 64px;
+  width: 60%;
+  height: 100%;
+}
+.upload .uploadForm h2 {
+  font-family: "GoiaDisplay", sans-serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.upload .uploadForm .highlightTitle {
+  background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 4px;
+}
+.upload .uploadForm .fileInput {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 50%;
+  margin-bottom: 20px;
+}
+.upload .uploadForm .fileInput label {
+  font-family: "GoiaDisplay", sans-serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #FFAB36;
+}
+.upload .uploadForm .fileInput__display {
+  position: relative;
+  height: 195px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 246, 241, 0.3);
+  background-color: #252525;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.upload .uploadForm .fileInput__display input[type=file] {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+.upload .uploadForm .fileInput__plus {
+  font-size: 2rem;
+  color: #fff;
+  z-index: 1;
+}
+.upload .uploadForm .fileInput__extension {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  color: #fff;
+  font-weight: bold;
+  opacity: 0.8;
+  z-index: 1;
+  font-size: 14px;
+  font-style: italic;
+  text-transform: uppercase;
+}
+.upload .uploadForm .fileInput__background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  filter: brightness(0.5);
+}
+.upload .uploadForm .fileInput .error {
+  color: #ff4d4f;
+  font-size: 0.875rem;
+}
+.upload .uploadForm .fileInput .active {
+  border-color: #FFAB36;
+  background-color: #2b2b00;
+}
+.upload .uploadForm .fileInput .active .fileInput__extension {
+  color: #FFAB36;
+}
+.upload .uploadForm__input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.upload .uploadForm__input__edit {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.upload .uploadForm__input__edit .displayText {
+  font-family: "GoiaDisplay", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 26px;
+  color: #FFF6F1;
+}
+.upload .uploadForm__input__edit img {
+  border: 1px solid rgba(255, 246, 241, 0.3);
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+.upload .uploadForm__input__edit img:hover {
+  filter: brightness(0.9);
+}
+.upload .uploadForm__input label {
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #FFAB36;
+}
+.upload .uploadForm__input input[type=text] {
+  padding: 8px;
+  border: 1px solid rgba(255, 246, 241, 0.3);
+  border-radius: 8px;
+  background-color: #252525;
+  color: #FFF6F1;
+  font-size: 16px;
+  font-family: "Goia", sans-serif;
+  max-width: 270px;
+}
+.upload .uploadForm__input input[type=text]:focus {
+  outline: none;
+  border-color: #FFAB36;
+}
+.upload .uploadForm__input select {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #252525;
+  border: 1px solid rgba(255, 246, 241, 0.3);
+  border-radius: 8px;
+  color: #FFF6F1;
+  font-size: 16px;
+  appearance: none;
+  background-image: url("/assets/img/icon/arrow-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: "GoiaDisplay", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.upload .uploadForm__input select:hover {
+  border-color: #FFAB36;
+}
+.upload .uploadForm__input select:focus {
+  border-color: #FFAB36;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+}
+.upload .uploadForm__input select option {
+  background-color: #1a1a1a;
+  color: #FFF6F1;
+}
+.upload .uploadForm__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.upload .uploadForm__checkbox label {
+  font-family: "GoiaDisplay", sans-serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #FFAB36;
+}
+.upload .uploadForm__checkbox input[type=checkbox] {
+  cursor: pointer;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  accent-color: #FFAB36;
+}
+.upload .uploadForm .difficultyChoices {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.upload .uploadForm .difficultyButton {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: none;
+  color: #FFF6F1;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  text-transform: uppercase;
+  font-family: "GoiaDisplay", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+}
+.upload .uploadForm .difficultyButton:hover {
+  filter: brightness(0.9);
+}
+.upload .uploadForm .difficultyButton.active {
+  outline: 3px solid #FFF6F1;
+}
+.upload .uploadForm .facile {
+  background-color: #2CC448;
+}
+.upload .uploadForm .moyen {
+  background-color: #FFAB36;
+}
+.upload .uploadForm .difficile {
+  background-color: #F1203C;
+}
+.upload .uploadForm .impossible {
+  background-color: #A32CC4;
+}
+.upload .submitButton {
+  width: 100%;
+  padding: 16px 32px;
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+  border: 0px solid transparent;
+  color: #FFF6F1;
+  font-family: "GoiaDisplay", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.upload .submitButton:hover {
+  filter: brightness(0.8);
+}
+.upload .stepOne__filesWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.upload .stepTwo {
+  height: 90%;
+}
+.upload .stepTwo__wrapper {
+  display: flex;
+  gap: 16px;
+  height: 85%;
+}
+.upload .stepTwo__wrapper__inputs {
+  width: 70%;
+}
+.upload .stepTwo__wrapper__inputs .fileInput {
+  width: 80%;
+}
+.upload .stepTwo__wrapper__inputs .fileInput__display {
+  height: 130px;
+}
+.upload .stepTwo__wrapper__lyrics {
+  position: relative;
+  height: 100%;
+}
+.upload .stepTwo__wrapper__lyrics::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background-color: rgba(255, 246, 241, 0.3);
+  z-index: 0;
+}
+.upload .stepTwo__wrapper__lyrics::before > * {
+  position: relative;
+  z-index: 1;
+}
+.upload .stepTwo__wrapper__lyrics__preview {
+  height: 100%;
+  overflow-y: scroll;
+  direction: rtl;
+  text-align: left;
+  padding: 0 36px;
+  scrollbar-width: thin;
+  scrollbar-color: #FFAB36 transparent;
+}
+.upload .stepTwo__wrapper__lyrics__preview::-webkit-scrollbar {
+  width: 6px;
+}
+.upload .stepTwo__wrapper__lyrics__preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+.upload .stepTwo__wrapper__lyrics__preview h3 {
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #FFAB36;
+}
+.upload .stepTwo__wrapper__lyrics__preview div {
+  padding: 20px 0;
+}
+.upload .stepper {
+  width: 20%;
+  border-left: 1px solid #FFF6F1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+  gap: 16px;
+}
+.upload .stepper .lineBreak {
+  width: 2px;
+  background-color: #FFF6F1;
+  height: 50px;
+}
+
+/*# sourceMappingURL=uploadSong.module.css.map */

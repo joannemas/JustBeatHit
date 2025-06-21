@@ -53,6 +53,12 @@ export default function UploadSongPage() {
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [isEditingArtist, setIsEditingArtist] = useState(false);
+    const [currentStep, setCurrentStep] = useState(1);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const validateField = async (field: 'title' | 'singer', value: string) => {
         const trimmed = value.trim();
@@ -254,255 +260,269 @@ export default function UploadSongPage() {
 
     return (
         <main className={styles.upload}>
+            <div className={styles.navbar}>
+                test
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className={styles.uploadForm}>
-                <div className={styles.stepOne}>
-                    <h2>Étape 1 : ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
-                        fichier <span className={styles.highlightTitle}>lrc</span></h2>
 
-                    <div className={styles.fileInput}>
-                        <label htmlFor="mp3">Audio</label>
-                        <div className={`${styles.fileInput__display} ${originalMp3File ? styles.active : ''}`}>
-                            <input
-                                id="mp3"
-                                type="file"
-                                accept=".mp3"
-                                {...register('mp3')}
-                                onChange={onMP3Change}
-                            />
-                            <div className={styles.fileInput__plus}>
-                                <Image src={
-                                    originalMp3File
-                                        ? "/assets/img/icon/check-circle.svg"
-                                        : "/assets/img/icon/add-circle.svg"
-                                }
-                                       alt="status icon" width={50} height={50} aria-hidden="true"/>
-                            </div>
-                            <span className={styles.fileInput__extension}>
+                {currentStep === 1 && (
+                    <div className={styles.stepOne}>
+                        <h2>Étape 1 : ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
+                            fichier <span className={styles.highlightTitle}>lrc</span></h2>
+
+                        <div className={styles.stepOne__filesWrapper}>
+                            <div className={styles.fileInput}>
+                                <label htmlFor="mp3">Audio</label>
+                                <div className={`${styles.fileInput__display} ${originalMp3File ? styles.active : ''}`}>
+                                    <input
+                                        id="mp3"
+                                        type="file"
+                                        accept=".mp3"
+                                        {...register('mp3')}
+                                        onChange={onMP3Change}
+                                    />
+                                    <div className={styles.fileInput__plus}>
+                                        <Image src={
+                                            originalMp3File
+                                                ? "/assets/img/icon/check-circle.svg"
+                                                : "/assets/img/icon/add-circle.svg"
+                                        }
+                                               alt="status icon" width={50} height={50} aria-hidden="true"/>
+                                    </div>
+                                    <span className={styles.fileInput__extension}>
                                 {originalMp3File ? originalMp3File.name : '.mp3'}
                             </span>
-                        </div>
+                                </div>
 
-                        {typeof errors.mp3?.message === 'string' && (
-                            <p className={styles.error}>{errors.mp3.message}</p>
-                        )}
-                    </div>
-
-                    <div className={styles.fileInput}>
-                        <label htmlFor="mp3">Paroles</label>
-                        <div className={`${styles.fileInput__display} ${lrcFile ? styles.active : ''}`}>
-                            <input
-                                type="file"
-                                accept=".lrc"
-                                {...register('lrc')}
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleLrcFileChange(file);
-                                }}
-                            />
-                            <div className={styles.fileInput__plus}>
-                                <Image src={
-                                    lrcFile
-                                        ? "/assets/img/icon/check-circle.svg"
-                                        : "/assets/img/icon/add-circle.svg"
-                                }
-                                       alt="status icon" width={50} height={50} aria-hidden="true"/>
+                                {typeof errors.mp3?.message === 'string' && (
+                                    <p className={styles.error}>{errors.mp3.message}</p>
+                                )}
                             </div>
-                            <span className={styles.fileInput__extension}>
+
+                            <div className={styles.fileInput}>
+                                <label htmlFor="mp3">Paroles</label>
+                                <div className={`${styles.fileInput__display} ${lrcFile ? styles.active : ''}`}>
+                                    <input
+                                        type="file"
+                                        accept=".lrc"
+                                        {...register('lrc')}
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleLrcFileChange(file);
+                                        }}
+                                    />
+                                    <div className={styles.fileInput__plus}>
+                                        <Image src={
+                                            lrcFile
+                                                ? "/assets/img/icon/check-circle.svg"
+                                                : "/assets/img/icon/add-circle.svg"
+                                        }
+                                               alt="status icon" width={50} height={50} aria-hidden="true"/>
+                                    </div>
+                                    <span className={styles.fileInput__extension}>
                                 {lrcFile ? lrcFile.name : '.lrc'}
                             </span>
-                        </div>
-
-                        {typeof errors.lrc?.message === 'string' && (
-                            <p>{errors.lrc?.message}</p>
-                        )}
-                    </div>
-
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi architecto,
-                        asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic itaque
-                        laborum magni modi mollitia necessitatibus nostrum odio odit optio pariatur, qui quia recusandae
-                        repellat saepe sapiente tempora tempore totam ut vel velit vero voluptate voluptatum.
-                    </p>
-
-                </div>
-
-                <div className={styles.stepTwo}>
-                    <h2>étape 2 : ajouter des <span className="highlight-title">informations complémentaires</span></h2>
-
-                    <div className={styles.stepTwo__inputs}>
-                        <div className={styles.fileInput}>
-                            <label>Cover</label>
-                            <div className={`${styles.fileInput__display} ${coverFile ? styles.active : ''}`}>
-                                {coverPreview &&
-                                    <img src={coverPreview} alt="cover" className={styles.fileInput__background}/>}
-                                <input
-                                    type="file"
-                                    accept=".png,.jpg,.jpeg"
-                                    {...register('cover')}
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                            setCoverFile(file);
-                                            setCoverPreview(URL.createObjectURL(file));
-                                        }
-                                    }}
-                                />
-                                <div className={styles.fileInput__plus}>
-                                    <Image src={
-                                        coverFile
-                                            ? "/assets/img/icon/check-circle.svg"
-                                            : "/assets/img/icon/add-circle.svg"
-                                    }
-                                           alt="status icon" width={50} height={50} aria-hidden="true"/>
                                 </div>
-                                <span className={styles.fileInput__extension}>
-                                {coverFile ? coverFile.name : '.png, .jpg, .jpeg'}
-                            </span>
-                            </div>
 
-                            {typeof errors.cover?.message === 'string' && (
-                                <p>{errors.cover.message}</p>
-                            )}
-                        </div>
-
-                        <div className={styles.uploadForm__input}>
-                            <label>Titre</label>
-                            <div className={styles.uploadForm__input__edit}>
-                                {isEditingTitle || !title ? (
-                                    <>
-                                        <input
-                                            type="text"
-                                            defaultValue={title}
-                                            onBlur={(e) => validateField('title', e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    validateField('title', (e.target as HTMLInputElement).value);
-                                                }
-                                            }}
-                                            autoFocus
-                                        />
-                                        <Image
-                                            src="/assets/img/icon/check-circle.svg"
-                                            alt="valider"
-                                            width={20}
-                                            height={20}
-                                            aria-hidden="true"
-                                            onClick={() => {
-                                                const input = document.querySelector<HTMLInputElement>('input[name="title"]');
-                                                if (input) validateField('title', input.value);
-                                            }}
-                                        />
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className={styles.displayText}>{title}</span>
-                                        <Image
-                                            src="/assets/img/icon/edit-icon.svg"
-                                            alt="éditer"
-                                            width={20}
-                                            height={20}
-                                            aria-hidden="true"
-                                            onClick={() => setIsEditingTitle(true)}
-                                        />
-                                    </>
+                                {typeof errors.lrc?.message === 'string' && (
+                                    <p>{errors.lrc?.message}</p>
                                 )}
                             </div>
-                            {errors.title && <p>{errors.title.message}</p>}
-                        </div>
-
-                        <div className={styles.uploadForm__input}>
-                            <label>Artiste</label>
-                            <div className={styles.uploadForm__input__edit}>
-                                {isEditingArtist || !singer ? (
-                                    <>
-                                        <input
-                                            type="text"
-                                            defaultValue={singer}
-                                            onBlur={(e) => validateField('singer', e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    validateField('singer', (e.target as HTMLInputElement).value);
-                                                }
-                                            }}
-                                            autoFocus
-                                        />
-                                        <Image
-                                            src="/assets/img/icon/check-circle.svg"
-                                            alt="valider"
-                                            width={20}
-                                            height={20}
-                                            aria-hidden="true"
-                                            onClick={() => {
-                                                const input = document.querySelector<HTMLInputElement>('input[name="singer"]');
-                                                if (input) validateField('singer', input.value);
-                                            }}
-                                        />
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className={styles.displayText}>{singer}</span>
-                                        <Image
-                                            src="/assets/img/icon/edit-icon.svg"
-                                            alt="éditer"
-                                            width={20}
-                                            height={20}
-                                            aria-hidden="true"
-                                            onClick={() => setIsEditingArtist(true)}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                            {errors.singer && <p>{errors.singer.message}</p>}
-                        </div>
-
-                        <div className={styles.uploadForm__checkbox}>
-                            <label>Contenu explicite</label>
-                            <input type="checkbox" {...register('is_explicit')} />
-                        </div>
-
-                        <div className={styles.uploadForm__input}>
-                            <label className={styles.uploadForm__label}>Difficulté</label>
-                            <div className={styles.difficultyChoices}>
-                                {difficultyLevels.map((level) => (
-                                    <button
-                                        key={level}
-                                        type="button"
-                                        className={`${styles.difficultyButton} ${
-                                            watch('difficulty') === level ? styles.active : ''
-                                        } ${styles[level.toLowerCase()]}`}
-                                        onClick={() => setValue('difficulty', level)}
-                                    >
-                                        {level}
-                                    </button>
-                                ))}
-                            </div>
-                            {errors.difficulty && <p>{errors.difficulty.message}</p>}
                         </div>
 
                         <div className={styles.uploadForm__input}>
                             <label>Statut</label>
                             <select {...register('status')}>
-                                <option value="">-- Choisir --</option>
+                                <option value="" disabled selected hidden>-- Choisir --</option>
                                 <option value="Live">Live</option>
                                 <option value="Draft">Brouillon</option>
                             </select>
                             {errors.status && <p>{errors.status.message}</p>}
                         </div>
 
-                        {audioUrl && (
-                            <div className={styles.audioPreview}>
-                                {isPreparing ? (
-                                    <p>Préparation de l'extrait...</p>
-                                ) : (
-                                    <audio controls src={trimmedAudioUrl || audioUrl}/>
-                                )}
-                            </div>
-                        )}
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi
+                            architecto,
+                            asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic
+                            itaque
+                            laborum magni modi mollitia necessitatibus nostrum odio odit optio pariatur, qui quia
+                            recusandae
+                            repellat saepe sapiente tempora tempore totam ut vel velit vero voluptate voluptatum.
+                        </p>
 
-                        {audioUrl && (
-                            <div className="double_range_slider_box">
-                                <div className="double_range_slider">
+                    </div>
+                )}
+
+                {currentStep === 2 && (
+                    <div className={styles.stepTwo}>
+                        <h2>étape 2 : ajouter
+                            des <span className={styles.highlightTitle}>informations complémentaires</span></h2>
+
+                        <div className={styles.stepTwo__wrapper}>
+                            <div className={styles.stepTwo__wrapper__inputs}>
+                                <div className={styles.fileInput}>
+                                    <label>Cover</label>
+                                    <div className={`${styles.fileInput__display} ${coverFile ? styles.active : ''}`}>
+                                        {coverPreview &&
+                                            <img src={coverPreview} alt="cover" className={styles.fileInput__background}/>}
+                                        <input
+                                            type="file"
+                                            accept=".png,.jpg,.jpeg"
+                                            {...register('cover')}
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setCoverFile(file);
+                                                    setCoverPreview(URL.createObjectURL(file));
+                                                }
+                                            }}
+                                        />
+                                        <div className={styles.fileInput__plus}>
+                                            <Image src={
+                                                coverFile
+                                                    ? "/assets/img/icon/check-circle.svg"
+                                                    : "/assets/img/icon/add-circle.svg"
+                                            }
+                                                   alt="status icon" width={50} height={50} aria-hidden="true"/>
+                                        </div>
+                                        <span className={styles.fileInput__extension}>
+                                {coverFile ? coverFile.name : '.png, .jpg, .jpeg'}
+                            </span>
+                                    </div>
+
+                                    {typeof errors.cover?.message === 'string' && (
+                                        <p>{errors.cover.message}</p>
+                                    )}
+                                </div>
+
+                                <div className={styles.uploadForm__input}>
+                                    <label>Titre</label>
+                                    <div className={styles.uploadForm__input__edit}>
+                                        {isEditingTitle || !title ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={title}
+                                                    onBlur={(e) => validateField('title', e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            validateField('title', (e.target as HTMLInputElement).value);
+                                                        }
+                                                    }}
+                                                    autoFocus={isMounted && isEditingTitle}
+                                                />
+                                                <Image
+                                                    src="/assets/img/icon/check-circle.svg"
+                                                    alt="valider"
+                                                    width={20}
+                                                    height={20}
+                                                    aria-hidden="true"
+                                                    onClick={() => {
+                                                        const input = document.querySelector<HTMLInputElement>('input[name="title"]');
+                                                        if (input) validateField('title', input.value);
+                                                    }}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className={styles.displayText}>{title}</span>
+                                                <Image
+                                                    src="/assets/img/icon/edit-icon.svg"
+                                                    alt="éditer"
+                                                    width={20}
+                                                    height={20}
+                                                    aria-hidden="true"
+                                                    onClick={() => setIsEditingTitle(true)}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                    {errors.title && <p>{errors.title.message}</p>}
+                                </div>
+
+                                <div className={styles.uploadForm__input}>
+                                    <label>Artiste</label>
+                                    <div className={styles.uploadForm__input__edit}>
+                                        {isEditingArtist || !singer ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    defaultValue={singer}
+                                                    onBlur={(e) => validateField('singer', e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            validateField('singer', (e.target as HTMLInputElement).value);
+                                                        }
+                                                    }}
+                                                    autoFocus={isMounted && isEditingArtist}
+                                                />
+                                                <Image
+                                                    src="/assets/img/icon/check-circle.svg"
+                                                    alt="valider"
+                                                    width={20}
+                                                    height={20}
+                                                    aria-hidden="true"
+                                                    onClick={() => {
+                                                        const input = document.querySelector<HTMLInputElement>('input[name="singer"]');
+                                                        if (input) validateField('singer', input.value);
+                                                    }}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className={styles.displayText}>{singer}</span>
+                                                <Image
+                                                    src="/assets/img/icon/edit-icon.svg"
+                                                    alt="éditer"
+                                                    width={20}
+                                                    height={20}
+                                                    aria-hidden="true"
+                                                    onClick={() => setIsEditingArtist(true)}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                    {errors.singer && <p>{errors.singer.message}</p>}
+                                </div>
+
+                                <div className={styles.uploadForm__checkbox}>
+                                    <label>Contenu explicite</label>
+                                    <input type="checkbox" {...register('is_explicit')} />
+                                </div>
+
+                                <div className={styles.uploadForm__input}>
+                                    <label className={styles.uploadForm__label}>Difficulté</label>
+                                    <div className={styles.difficultyChoices}>
+                                        {difficultyLevels.map((level) => (
+                                            <button
+                                                key={level}
+                                                type="button"
+                                                className={`${styles.difficultyButton} ${
+                                                    watch('difficulty') === level ? styles.active : ''
+                                                } ${styles[level.toLowerCase()]}`}
+                                                onClick={() => setValue('difficulty', level)}
+                                            >
+                                                {level}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {errors.difficulty && <p>{errors.difficulty.message}</p>}
+                                </div>
+
+                                {audioUrl && (
+                                    <div className={styles.audioPreview}>
+                                        {isPreparing ? (
+                                            <p>Préparation de l'extrait...</p>
+                                        ) : (
+                                            <audio controls src={trimmedAudioUrl || audioUrl}/>
+                                        )}
+                                    </div>
+                                )}
+
+                                {audioUrl && (
+                                    <div className="double_range_slider_box">
+                                        <div className="double_range_slider">
                             <span
                                 className="range_track"
                                 style={{
@@ -511,61 +531,83 @@ export default function UploadSongPage() {
                                 }}
                             ></span>
 
-                                    <input
-                                        type="range"
-                                        className="min"
-                                        min={0}
-                                        max={Math.max(audioDuration - 30, 1)}
-                                        value={range.min}
-                                        step={0.1}
-                                        onChange={(e) => {
-                                            const newMin = Number(e.target.value);
-                                            if (newMin < range.max - 30) {
-                                                setRange((prev) => ({...prev, min: newMin}));
-                                            }
-                                        }}
-                                    />
-                                    <input
-                                        type="range"
-                                        className="max"
-                                        min={30}
-                                        max={audioDuration}
-                                        value={range.max}
-                                        step={0.1}
-                                        onChange={(e) => {
-                                            const newMax = Number(e.target.value);
-                                            if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
-                                                setRange((prev) => ({...prev, max: newMax}));
-                                            }
-                                        }}
-                                    />
+                                            <input
+                                                type="range"
+                                                className="min"
+                                                min={0}
+                                                max={Math.max(audioDuration - 30, 1)}
+                                                value={range.min}
+                                                step={0.1}
+                                                onChange={(e) => {
+                                                    const newMin = Number(e.target.value);
+                                                    if (newMin < range.max - 30) {
+                                                        setRange((prev) => ({...prev, min: newMin}));
+                                                    }
+                                                }}
+                                            />
+                                            <input
+                                                type="range"
+                                                className="max"
+                                                min={30}
+                                                max={audioDuration}
+                                                value={range.max}
+                                                step={0.1}
+                                                onChange={(e) => {
+                                                    const newMax = Number(e.target.value);
+                                                    if (newMax > range.min + 30 && newMax <= audioDuration && newMax - range.min <= 90) {
+                                                        setRange((prev) => ({...prev, max: newMax}));
+                                                    }
+                                                }}
+                                            />
 
-                                    <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
-                                    <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-
-                    <div className={styles.stepTwo__lyrics}>
-                        {lyrics.length > 0 && (
-                            <div className={styles.stepTwo__lyrics__preview}>
-                                {lyrics.map(({time, text}, i) => {
-                                    const isInRange = time >= range.min && time <= range.max;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={isInRange ? styles.highlight : styles.deleted}
-                                        >
-                                            [{time.toFixed(2)}] {text}
+                                            <div className="minvalue">Début : {range.min.toFixed(2)}s</div>
+                                            <div className="maxvalue">Fin : {range.max.toFixed(2)}s</div>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                )}
                             </div>
-                        )}
+
+                            <div className={styles.stepTwo__wrapper__lyrics}>
+                                {lyrics.length > 0 && (
+                                    <div className={styles.stepTwo__wrapper__lyrics__preview}>
+                                        <h3>Paroles</h3>
+                                        {lyrics.map(({time, text}, i) => {
+                                            const isInRange = time >= range.min && time <= range.max;
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    className={isInRange ? styles.highlight : styles.deleted}
+                                                >
+                                                    [{time.toFixed(2)}] {text}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                     </div>
-                </div>
+                )}
+                {/*<div className={styles.formSlider}>*/}
+                {/*    <div className={`${styles.stepsWrapper} ${currentStep === 2 ? styles.slideUp : ''}`}>*/}
+
+                {/*    </div>*/}
+                {/*</div>*/}
+                <button
+                    type="button"
+                    className={styles.stepToggleButton}
+                    onClick={() => currentStep === 1 ? setCurrentStep(2) : setCurrentStep(1)}
+                >
+                    Suivant
+                </button>
+            </form>
+
+            <div className={styles.stepper}>
+
+                <h2>Étape 1 : ajouter le fichier et le fichier lrc</h2>
+                <div className={styles.lineBreak}></div>
+                <h2>Étape 2 : ajouter des informations complémentaires</h2>
 
                 <button
                     type="submit"
@@ -574,17 +616,6 @@ export default function UploadSongPage() {
                 >
                     {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
                 </button>
-            </form>
-
-            <div className={styles.stepper}>
-
-                {/*<button*/}
-                {/*    type="submit"*/}
-                {/*    disabled={isSubmitting}*/}
-                {/*    className={`${styles.submitButton} ${isSubmitting ? styles.disabled : ''}`}*/}
-                {/*>*/}
-                {/*    {isSubmitting ? 'Envoi en cours...' : 'Ajouter la chanson'}*/}
-                {/*</button>*/}
             </div>
         </main>
     );
