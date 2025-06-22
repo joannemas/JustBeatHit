@@ -20,260 +20,267 @@
   }
 
   .uploadForm {
-    padding: 0 64px;
-    width: 60%;
-    height: 100%;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 
-    h2 {
-      font-family: 'GoiaDisplay', sans-serif;
-      font-size: 32px;
-      font-style: italic;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .fileInput {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 50%;
-      margin-bottom: 20px;
-
-      label {
+    &__display {
+      padding: 0 64px;
+      width: 60%;
+      height: 100%;
+      h2 {
         font-family: 'GoiaDisplay', sans-serif;
-        font-size: 20px;
+        font-size: 32px;
         font-style: italic;
         font-weight: 700;
         text-transform: uppercase;
-        color: $yellow;
       }
 
-      &__display {
-        position: relative;
-        height: 195px;
-        border-radius: 4px;
-        border: 1px solid rgba(255, 246, 241, 0.30);
-        background-color: $background-color;
+      .fileInput {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+        flex-direction: column;
+        gap: 16px;
+        width: 50%;
+        margin-bottom: 20px;
 
-        input[type="file"] {
-          opacity: 0;
+        label {
+          font-family: 'GoiaDisplay', sans-serif;
+          font-size: 20px;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: $yellow;
+        }
+
+        &__display {
+          position: relative;
+          height: 195px;
+          border-radius: 4px;
+          border: 1px solid rgba(255, 246, 241, 0.30);
+          background-color: $background-color;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+
+          input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            z-index: 2;
+          }
+        }
+
+        &__plus {
+          font-size: 2rem;
+          color: #fff;
+          z-index: 1;
+        }
+
+        &__extension {
+          position: absolute;
+          bottom: 8px;
+          right: 12px;
+          color: #fff;
+          font-weight: bold;
+          opacity: 0.8;
+          z-index: 1;
+          font-size: 14px;
+          font-style: italic;
+          text-transform: uppercase;
+        }
+
+        &__background {
           position: absolute;
           width: 100%;
           height: 100%;
-          cursor: pointer;
+          object-fit: cover;
           top: 0;
           left: 0;
-          z-index: 2;
-        }
-      }
-
-      &__plus {
-        font-size: 2rem;
-        color: #fff;
-        z-index: 1;
-      }
-
-      &__extension {
-        position: absolute;
-        bottom: 8px;
-        right: 12px;
-        color: #fff;
-        font-weight: bold;
-        opacity: 0.8;
-        z-index: 1;
-        font-size: 14px;
-        font-style: italic;
-        text-transform: uppercase;
-      }
-
-      &__background {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        filter: brightness(0.5);
-      }
-
-      .error {
-        color: #ff4d4f;
-        font-size: 0.875rem;
-      }
-
-      .active {
-        border-color: $yellow;
-        background-color: #2b2b00;
-
-        .fileInput__extension {
-          color: $yellow;
-        }
-      }
-    }
-
-    &__input {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
-
-      &__edit{
-        display: flex;
-        align-items: center;
-        gap: 16px;
-
-        .displayText {
-          font-family: 'GoiaDisplay', sans-serif;
-          font-style: italic;
-          font-weight: 700;
-          font-size: 26px;
-          color: $white;
+          z-index: 1;
+          filter: brightness(0.5);
         }
 
-        img {
-          border: 1px solid rgba(255, 246, 241, 0.30);
-          padding: 4px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.1s ease-in-out;
+        .error {
+          color: #ff4d4f;
+          font-size: 0.875rem;
+        }
 
-          &:hover {
-            filter: brightness(0.9);
+        .active {
+          border-color: $yellow;
+          background-color: #2b2b00;
+
+          .fileInput__extension {
+            color: $yellow;
           }
         }
       }
 
-      label{
-        font-size: 20px;
-        font-style: italic;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: $yellow;
-      }
+      &__input {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+
+        &__edit{
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .displayText {
+            font-family: 'GoiaDisplay', sans-serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 26px;
+            color: $white;
+          }
+
+          img {
+            border: 1px solid rgba(255, 246, 241, 0.30);
+            padding: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+
+            &:hover {
+              filter: brightness(0.9);
+            }
+          }
+        }
+
+        label{
+          font-size: 20px;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: $yellow;
+        }
 
 
-      input[type="text"] {
-        padding: 8px;
-        border: 1px solid rgba(255, 246, 241, 0.30);
-        border-radius: 8px;
-        background-color: $background-color;
-        color: $white;
-        font-size: 16px;
-        font-family: 'Goia', sans-serif;
-        max-width: 270px;
-        &:focus {
-          outline: none;
-          border-color: $yellow;
+        input[type="text"] {
+          padding: 8px;
+          border: 1px solid rgba(255, 246, 241, 0.30);
+          border-radius: 8px;
+          background-color: $background-color;
+          color: $white;
+          font-size: 16px;
+          font-family: 'Goia', sans-serif;
+          max-width: 270px;
+          &:focus {
+            outline: none;
+            border-color: $yellow;
+          }
+        }
+
+        select {
+          width: 100%;
+          padding: 12px 16px;
+          background-color: $background-color;
+          border: 1px solid rgba(255, 246, 241, 0.30);
+          border-radius: 8px;
+          color: $white;
+          font-size: 16px;
+          appearance: none;
+          background-image: url('/assets/img/icon/arrow-down.svg');
+          background-repeat: no-repeat;
+          background-position: right 1rem center;
+          background-size: 1rem;
+          cursor: pointer;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          font-family: 'GoiaDisplay', sans-serif;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+
+          &:hover {
+            border-color: $yellow;
+          }
+
+          &:focus {
+            border-color: $yellow;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+          }
+
+          option {
+            background-color: #1a1a1a;
+            color: $white;
+          }
         }
       }
 
-      select {
-        width: 100%;
-        padding: 12px 16px;
-        background-color: $background-color;
-        border: 1px solid rgba(255, 246, 241, 0.30);
-        border-radius: 8px;
+      &__checkbox{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+
+        label {
+          font-family: 'GoiaDisplay', sans-serif;
+          font-size: 20px;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: $yellow;
+        }
+
+        input[type="checkbox"] {
+          cursor: pointer;
+          border-radius: 4px;
+          width: 24px;
+          height: 24px;
+          accent-color: $yellow;
+
+        }
+      }
+
+      .difficultyChoices {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .difficultyButton {
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: none;
         color: $white;
-        font-size: 16px;
-        appearance: none;
-        background-image: url('/assets/img/icon/arrow-down.svg');
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        background-size: 1rem;
         cursor: pointer;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.1s ease-in-out;
+        text-transform: uppercase;
         font-family: 'GoiaDisplay', sans-serif;
         font-style: italic;
         font-weight: 700;
-        text-transform: uppercase;
 
         &:hover {
-          border-color: $yellow;
+          filter: brightness(0.9);
         }
 
-        &:focus {
-          border-color: $yellow;
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
-        }
-
-        option {
-          background-color: #1a1a1a;
-          color: $white;
+        &.active {
+          outline: 3px solid $white;
         }
       }
-    }
 
-    &__checkbox{
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-
-      label {
-        font-family: 'GoiaDisplay', sans-serif;
-        font-size: 20px;
-        font-style: italic;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: $yellow;
+      .facile {
+        background-color: $emerald-green;
       }
-
-      input[type="checkbox"] {
-        cursor: pointer;
-        border-radius: 4px;
-        width: 24px;
-        height: 24px;
-        accent-color: $yellow;
-
+      .moyen {
+        background-color: $yellow;
       }
-    }
-
-    .difficultyChoices {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .difficultyButton {
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: none;
-      color: $white;
-      cursor: pointer;
-      transition: all 0.1s ease-in-out;
-      text-transform: uppercase;
-      font-family: 'GoiaDisplay', sans-serif;
-      font-style: italic;
-      font-weight: 700;
-
-      &:hover {
-        filter: brightness(0.9);
+      .difficile {
+        background-color: $red-ribbon;
       }
-
-      &.active {
-        outline: 3px solid $white;
+      .impossible {
+        background-color: $purple-heart;
       }
-    }
-
-    .facile {
-      background-color: $emerald-green;
-    }
-    .moyen {
-      background-color: $yellow;
-    }
-    .difficile {
-      background-color: $red-ribbon;
-    }
-    .impossible {
-      background-color: $purple-heart;
     }
   }
+
+
 
   .submitButton {
     display: flex;
@@ -307,7 +314,10 @@
   }
 
   .stepOne{
-    //height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
     &__filesWrapper {
       width: 100%;
       display: flex;
@@ -317,13 +327,15 @@
   }
 
   .stepTwo {
-    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
 
     &__wrapper {
       display: flex;
       gap: 16px;
-      height: 85%;
-      //margin-top: 32px;
+      max-height: 70%;
 
       &__inputs {
         width: 50%;
@@ -419,6 +431,7 @@
   .stepButton {
     display: flex;
     align-items: center;
+    width: fit-content;
     gap: 4px;
     padding: 16px 64px;
     background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
@@ -437,27 +450,4 @@
       filter: brightness(0.8);
     }
   }
-
-  //.formSlider {
-  //  overflow: hidden;
-  //  height: 100%;
-  //  position: relative;
-  //}
-  //
-  //.stepsWrapper {
-  //  display: flex;
-  //  flex-direction: column;
-  //  transition: transform 0.6s ease;
-  //  will-change: transform;
-  //
-  //  &.slideUp {
-  //    transform: translateY(-100vh);
-  //  }
-  //
-  //  > div {
-  //    min-height: 100%;
-  //    width: 100%;
-  //    flex-shrink: 0;
-  //  }
-  //}
 }
