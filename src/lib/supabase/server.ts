@@ -2,6 +2,8 @@ import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 import { Database } from "~/database.types"
+import jwt from "jsonwebtoken"
+import { CustomClaims } from "./types"
 
 export function createClient() {
     const cookieStore = cookies()
@@ -41,4 +43,25 @@ export function createAdminClient() {
             },
         }
     )
+}
+
+export async function getSessionWithClaims() {
+    const supabase = createClient()
+  const { data: { session }, error } = await supabase.auth.getSession()
+
+  if (error || !session?.access_token) {
+    return {
+      session: null,
+      claims: null,
+      error,
+    }
+  }
+
+  const claims = jwt.decode(session.access_token) as CustomClaims | null
+
+  return {
+    session,
+    claims,
+    error: null,
+  }
 }

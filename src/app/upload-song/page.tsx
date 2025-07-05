@@ -526,7 +526,7 @@ export default function UploadSongPage() {
                                     {audioUrl && (
                                         <div className={styles.audioPreview}>
                                             {isPreparing ? (
-                                                <p>Préparation de l'extrait...</p>
+                                                <p>Préparation de l&apos;extrait...</p>
                                             ) : (
                                                 <audio controls src={trimmedAudioUrl || audioUrl}/>
                                             )}
