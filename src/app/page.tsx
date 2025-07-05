@@ -42,9 +42,9 @@ export default async function Page() {
               <Image
                 src="/assets/img/karakaku-preview.png"
                 alt="Karakaku game preview"
-                width={100}
+                width={400}
                 height={100}
-                style={{ objectFit: 'contain', objectPosition: 'right center', zIndex: 0 }}
+                style={{ objectPosition: 'right center', zIndex: 0 }}
                 className={styles.gamePreview}
               />
             </div>
