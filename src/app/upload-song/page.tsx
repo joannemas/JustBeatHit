@@ -9,7 +9,6 @@ import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
 import styles from "@/stylesheets/uploadSong.module.scss";
 import Image from "next/image";
-import {transform} from "esbuild";
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 

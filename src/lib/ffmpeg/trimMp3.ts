@@ -1,10 +1,10 @@
 // src/lib/ffmpeg/trimAudio.ts
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
-
-const ffmpeg = new FFmpeg();
-
 export const trimMp3 = async (file: File, start: number, duration: number): Promise<Blob> => {
+    const { FFmpeg } = await import('@ffmpeg/ffmpeg');
+    const { fetchFile } = await import('@ffmpeg/util');
+
+    const ffmpeg = new FFmpeg();
+
     if (!ffmpeg.loaded) {
         await ffmpeg.load();
     }
