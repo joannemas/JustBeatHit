@@ -63,6 +63,7 @@
     gap: 15px;
 
     .gameCard {
+      position: relative;
       background-color: $black;
       border-radius: 20px;
       color: $white;
@@ -77,6 +78,7 @@
         flex-direction: column;
         justify-content: flex-end;
         padding: 30px;
+        min-height: 150px;
       }
 
 
@@ -102,6 +104,7 @@
         margin:0px;
         text-align: left;
         width: 100%;
+        z-index: 1;
       }
 
       h2 {
@@ -142,4 +145,62 @@
 
 .gameList > .gameCard:first-of-type > :first-child {
   width: 50%;            
+}
+
+.badge {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+  z-index: 5;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.badgeNew {
+  background: $reverse-gradient;
+  color: $white;
+  border: 1px solid $white;
+}
+
+.badgeSoon {
+  background-color: $white;
+  color: $black;
+  border: 1px solid $black;
+}
+
+
+.animatedSphere {
+  width: 400px;
+  height: 400px;
+  opacity: 0.4;
+  filter: blur(50px);
+  border-radius: 50%;
+  position: absolute;
+  top: -20px;
+  right: -55%;
+  z-index: 0;
+  animation: moveBounce 5s ease-in-out infinite, rotate 30s linear infinite;
+}
+
+.animatedSphere--yellow {
+  background: $yellow;
+  left: -55%;
+}
+
+
+.animatedSphere--orange {
+  background: $orange;
+}
+
+.animatedSphere--purple {
+  background: $purple-heart;
+}
+
+@keyframes moveBounce {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(55px, -80px); }
 }

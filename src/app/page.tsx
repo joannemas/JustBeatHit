@@ -44,6 +44,7 @@ export default async function Page() {
           <div className={styles.gameList}>
             <Link href="/game/karakaku" className={styles.gameCard}>
             <div>
+                <span className={`${styles.badge} ${styles.badgeNew}`}>Nouveau</span>
                 <h2>Karakaku</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta vitesse de frappe !</p>
             </div>
@@ -52,9 +53,10 @@ export default async function Page() {
                 src="/assets/img/karakaku-preview.png"
                 alt="Karakaku game preview"
                 fill
-                style={{ objectPosition: 'left center', objectFit: 'cover', zIndex: 0 }}
+                style={{ objectPosition: 'left center', objectFit: 'cover', zIndex: 1 }}
                 className={styles.gamePreview}
               />
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--yellow']}`}></div>
             </div>
 
             </Link>
@@ -62,18 +64,20 @@ export default async function Page() {
             <div className={styles.rowCards}>
             <Link href="/game/paroles-en-tete" className={styles.gameCard}>
               <div>
+                <span className={`${styles.badge} ${styles.badgeSoon}`}>Bientôt disponible</span>
                 <h2>Paroles en tête</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta mémoire !</p>
               </div>
-              <div className={styles.animatedSphere}></div>
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--purple']}`}></div>
             </Link>
 
             <Link href="/game/blind-test" className={styles.gameCard}>
               <div>
+                <span className={`${styles.badge} ${styles.badgeSoon}`}>Bientôt disponible</span>
                 <h2>Blind test</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta culture musicale !</p>
               </div>
-              <div className={styles.animatedSphere}></div>
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--orange']}`}></div>
             </Link>
             </div>
             
