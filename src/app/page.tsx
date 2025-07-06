@@ -47,13 +47,12 @@ export default async function Page() {
                 <h2>Karakaku</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta vitesse de frappe !</p>
             </div>
-            <div>
+            <div className={styles.imgPreview}>
               <Image
                 src="/assets/img/karakaku-preview.png"
                 alt="Karakaku game preview"
-                width={400}
-                height={100}
-                style={{ objectPosition: 'right center', zIndex: 0 }}
+                fill
+                style={{ objectPosition: 'left center', objectFit: 'cover', zIndex: 0 }}
                 className={styles.gamePreview}
               />
             </div>

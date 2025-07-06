@@ -52,11 +52,7 @@
     width: 100%;
 
     .gameCard {
-      flex: 1;
-      min-width: 0;
-      flex-direction: column;
-      justify-content: flex-end;  
-      height: 200px;
+      min-height: 230px;
     }
   }
 
@@ -74,6 +70,7 @@
       display: flex;
       align-items: stretch;
       overflow: hidden;
+      width: 100%;
 
       div:first-of-type {
         display: flex;
@@ -84,13 +81,13 @@
 
 
       &:first-child {
-        div:nth-of-type(2) {
+        .imgPreview {
           max-width: 50%;
-        }
-  
-        div > img {
-          width: 400px;
-          height: 100%;
+          position: relative;
+          width: 50%;            
+          height: auto;
+          aspect-ratio: 2 / 1;
+          min-height: 100px;
         }
       
       }
@@ -141,4 +138,8 @@
     }
   }
 
+}
+
+.gameList > .gameCard:first-of-type > :first-child {
+  width: 50%;            
 }
