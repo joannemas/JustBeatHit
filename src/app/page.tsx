@@ -7,10 +7,19 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function Page() {
 
-  const supabase = createClient()
+  const supabase = createClient();
 
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('profiles').select('*').eq('id', user?.id!).single()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log("user", user);
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user?.id!)
+    .single();
+  console.log("data", data);
+  console.log("error", error);
 
   return (
     <div className={styles.home}>
@@ -26,11 +35,11 @@ export default async function Page() {
       </div>
 
       <div className={styles.homeContent}>
-      {/* {data ?
-        <h1>Content de te voir {data.username} !</h1>
+      {data ?
+        <h1>Content de te revoir {data.username} !</h1>
       :
         <h1>Bienvenue sur Just Beat Hit, <a href={`/auth/register`} className={styles.registerLink}>inscris toi</a> pour jouer !</h1>
-      } */}
+      }
         <div className={styles.homeContentContainer}>
           <div className={styles.gameList}>
             <Link href="/game/karakaku" className={styles.gameCard}>
