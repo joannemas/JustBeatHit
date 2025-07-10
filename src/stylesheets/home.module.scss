@@ -2,117 +2,205 @@
 @import './variables.scss';
 
 .home {
-  width: calc(100% - 40px);
-  padding: 0 20px;
+  margin-left: 20vw;
+  background-color: $white;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  position: relative;
 
-  li {
-    list-style: none;
-    text-transform: uppercase;
+  .homeContentContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
   }
 
-  .headerHomepage {
-    position: relative;
-    width: 100%;
-    height: 75vh;
+  .musicDecoration {
+    height: auto;
+    position: absolute;
+    width: 200px;
+    margin-left: 5vw;
+  }
 
-    .headerHomepageContent {
-      height: 100%;
+  .vinylDecoration {
+    height: auto;
+    position: absolute;
+    width: 200px;
+    bottom: -50px;
+    right: 5vw;
+  }
+
+  .homeContent{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+
+    h1 {
+      @include textColorGradient;
+      text-transform: uppercase;
+      font-style: italic;
+      font-family: 'Goia', sans-serif;
+      margin-left: 30px;
+    }
+  }
+
+  .rowCards {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+
+    .gameCard {
+      min-height: 230px;
+    }
+  }
+
+  .gameList {
+    display: flex;
+    max-width: 65%;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    .gameCard {
       position: relative;
-      display: inline-flex;
-      justify-content: space-between;
+      background-color: $black;
+      border-radius: 20px;
+      color: $white;
+      text-decoration: none;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
       width: 100%;
-    }
 
-    ul {
-      &:nth-of-type(1) {
+      div:first-of-type {
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        width: 30%;
-        padding: 0;
-
-        li {
-          padding-bottom: 100px;
-        }
-
-        h3 {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          font-size: 32px;
-
-          span {
-            display: block;
-
-            &:first-child {
-              margin-bottom: 0.5rem;
-            }
-          }
-        }
+        padding: 30px;
+        min-height: 150px;
       }
 
-      &:nth-of-type(2) {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: flex-end;
-        width: 60%;
-        gap: 10px;
 
-        li {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-
-          &:nth-of-type(2) button {
-            @include button($sandy-color);
-          }
-
-          &:nth-of-type(3) button {
-            @include button($error-color);
-          }
-
-          &:nth-of-type(4) button {
-            @include button($primary-color);
-          }
+      &:first-child {
+        .imgPreview {
+          max-width: 50%;
+          position: relative;
+          width: 50%;            
+          height: auto;
+          aspect-ratio: 2 / 1;
+          min-height: 100px;
         }
+      
+      }
+      
+      h2, p {
+        text-decoration: none;
+        color: $white;
+        font-weight: 700;
+        font-style: italic;
+        text-transform: uppercase;
+        font-family: 'Goia', sans-serif;
+        margin:0px;
+        text-align: left;
+        width: 100%;
+        z-index: 1;
       }
 
-    }
-
-    .logo {
-      position: absolute;
-      width: 30%;
-      left: 35%;
-      height: fit-content;
+      h2 {
+        font-size: 2rem;
+        margin: 8px 0;
+      }
+      p {
+        font-size: 0.8rem;
+      }
     }
   }
 
-  .boatImage {
-    border-radius: 1.5rem;
-    width: 100%;
+  .challengeWrapper {
+    background: $reverse-gradient;
+    padding: 4px;
+    border-radius: 20px;
+    width: 30%;
   }
 
-  .description {
-    text-align: center;
-    font-size: 28px;
+  .challengeList {
+    color: $black;
+    background-color: $white;
+    height: 100%;
+    border-radius: 16px;
+    display: flex;
+
+    h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      font-style: italic;
+      text-transform: uppercase;
+      font-family: 'Goia', sans-serif;
+      margin: 20px;
+    }
   }
+
 }
 
-.startButton {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-
-  @include button($primary-color);
+.gameList > .gameCard:first-of-type > :first-child {
+  width: 50%;            
 }
 
-.feedback {
-  p {
-    padding: 20px 0;
-  }
+.badge {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+  z-index: 5;
+  text-transform: uppercase;
+  font-style: italic;
+}
 
-  .btnFeedback {
-    @include button(#F1203C);
-  }
+.badgeNew {
+  background: $reverse-gradient;
+  color: $white;
+  border: 1px solid $white;
+}
+
+.badgeSoon {
+  background-color: $white;
+  color: $black;
+  border: 1px solid $black;
+}
+
+
+.animatedSphere {
+  width: 400px;
+  height: 400px;
+  opacity: 0.4;
+  filter: blur(50px);
+  border-radius: 50%;
+  position: absolute;
+  top: -20px;
+  right: -55%;
+  z-index: 0;
+  animation: moveBounce 5s ease-in-out infinite, rotate 30s linear infinite;
+}
+
+.animatedSphere--yellow {
+  background: $yellow;
+  left: -55%;
+}
+
+
+.animatedSphere--orange {
+  background: $orange;
+}
+
+.animatedSphere--purple {
+  background: $purple-heart;
+}
+
+@keyframes moveBounce {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(55px, -80px); }
 }
