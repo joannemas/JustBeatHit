@@ -1,14 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-
 import ReactAudioPlayer from 'react-audio-player';
 import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import styles from '@/stylesheets/karakaku.module.scss';
-
 import Link from 'next/link';
 import Image from 'next/image';
-
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
 import {
@@ -20,7 +17,6 @@ import {
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 import { endGame, replayGame, startGame } from "@/app/game/actions";
-
 import '../tutorial/tutorial.css';
 import { useTutorial } from '../tutorial/usetutorial';
 
@@ -34,10 +30,8 @@ interface KarakakuProps {
 }
 
 const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId, gameName }) => {
-  // EXTREME MODE MODAL STATE
   const [showModeModal, setShowModeModal] = useState(true);
   const [mode, setMode] = useState<"normal" | "extreme">("normal");
-
   const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
   const [userInput, setUserInput] = useState<string>('');
   const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -55,7 +49,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [incorrectCharacters, setIncorrectCharacters] = useState<number>(0);
   const [totalCharacters, setTotalCharacters] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
-  const [gameOverTransition, setGameOverTransition] = useState(false); // NEW: for fade/overlay
+  const [gameOverTransition, setGameOverTransition] = useState(false);
   const [isMusicFinished, setIsMusicFinished] = useState<boolean>(false);
   const [lyrics, setLyrics] = useState<LyricLine[]>([]);
   const [totalLines, setTotalLines] = useState<number>(0);
@@ -63,7 +57,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
   const [completedInputs, setCompletedInputs] = useState<string[]>([]);
   const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
-
   const [progress, setProgress] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
   const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
@@ -71,12 +64,17 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [volume, setVolume] = useState<number>(0.8);
   const [linePoints, setLinePoints] = useState<number>(0);
   const [showLinePoints, setShowLinePoints] = useState<boolean>(false);
-
   const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wasValidatedRef = useRef<boolean>(false);
 
-  // Tutorial integration
-  const { startTutorial } = useTutorial();
+  const [showTimerForTutorial, setShowTimerForTutorial] = useState(false);
+  const currentLyricRef = useRef<HTMLDivElement>(null);
+  const [timerMockPos, setTimerMockPos] = useState<{ top: number; left: number } | null>(null);
+
+  const { startTutorial } = useTutorial({
+    onStart: () => setShowTimerForTutorial(true),
+    onEnd: () => setShowTimerForTutorial(false),
+  });
 
   useEffect(() => {
     lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -92,7 +90,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     });
   }, [userInput, currentLyricIndex, lyrics, charRefs, caretRef]);
 
-  // Show tutorial only on the very first visit ever
   useEffect(() => {
     const timer = setTimeout(() => {
       const hasNeverSeenTutorial = !localStorage.getItem('karakaku-tutorial-seen');
@@ -100,9 +97,23 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         startTutorial();
       }
     }, 3000);
-
     return () => clearTimeout(timer);
   }, [startTutorial, isStarted, lyrics.length]);
+  // Sync mock timer position with current lyric line
+  useEffect(() => {
+    if (!showTimerForTutorial || !currentLyricRef.current) {
+      setTimerMockPos(null);
+      return;
+    }
+    const lyricRect = currentLyricRef.current.getBoundingClientRect();
+    const parentRect = document.querySelector(`.${styles.karakaku}`)?.getBoundingClientRect();
+    if (parentRect) {
+      setTimerMockPos({
+        top: lyricRect.top - parentRect.top + currentLyricRef.current.offsetHeight / 2,
+        left: lyricRect.right - parentRect.left + 10
+      });
+    }
+  }, [showTimerForTutorial, currentLyricIndex, lyrics]);
 
   const handleTimeUpdateWrapper = () => {
     handleTimeUpdate(
@@ -124,7 +135,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       setIsMusicFinished,
       setIsCountdownActive
     );
-
     if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
       const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
       const duration = audioPlayerRef.current.audioEl.current.duration;
@@ -135,9 +145,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    if (audioPlayerRef.current?.audioEl.current) {
-      audioPlayerRef.current.audioEl.current.volume = newVolume;
-    }
   };
 
   const calculateLinePoints = (input: string, lyricText: string, hasErrors: boolean, currentMultiplier: number) => {
@@ -180,7 +187,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     wasValidatedRef.current = isValidated;
   }, [isValidated, currentLyricIndex, userInput, lyrics, hasErrors, multiplier]);
 
-  // EXTREME MODE: instant death on error
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChangeUtil(
       e,
@@ -242,7 +248,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     });
   };
 
-  // Fade out on normal game end (not just extreme mode)
   useEffect(() => {
     if (
       currentLyricIndex === lyrics.length - 1 &&
@@ -267,7 +272,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     }, 200);
   };
 
-  // Tutorial button handler for manual trigger
   const handleShowTutorial = () => {
     setIsPausedMenuOpen(false);
     setTimeout(() => {
@@ -276,6 +280,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   };
 
   const isHandlingLineSwitch = useRef(false);
+
   useEffect(() => {
     if (isCountdownActive) {
       setCountdown(10);
@@ -343,7 +348,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   useEffect(() => {
     if (isStarted) { startGame(gameId) }
-  }, [isStarted, gameId])
+  }, [isStarted, gameId]);
 
   useEffect(() => {
     if ((currentLyricIndex === lyrics.length - 1 && isValidated) && isGameOver) {
@@ -361,49 +366,22 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   }, [completedInputs, lyrics]);
 
 
-  // Affiche les paroles et le score final
   const renderLyrics = () => {
-    const lastValidatedIndex = currentLyricIndex - 1;
     return lyrics.map((lyric, index) => {
-      const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
-      const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
-      const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
-      const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
       if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
         return null;
       }
       return (
         <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
           {index < currentLyricIndex && (
-            <p
-              className={`
-                ${styles.previous} 
-                ${index === currentLyricIndex ? styles.current : ''}
-                ${isBeforeFirst ? styles['--before-line'] : ''}
-                ${isFirstLine ? styles['--first-line'] : ''}
-              `}
-              style={{ position: 'relative' }}
-            >
-              {lyrics[index].text.split('').map((char, charIndex) => {
-                const userInputForLine = completedInputs[index] || '';
-                const userChar = userInputForLine[charIndex] || '';
-                const className = normalizeString(userChar) === normalizeString(char)
-                  ? styles.right
-                  : userChar === ''
-                    ? ''
-                    : styles.wrong;
-                return <span key={charIndex} className={className}>{char}</span>;
-              })}
-              {/* Afficher les points de la ligne validée */}
-              {showLinePoints && index === lastValidatedIndex && (
-                <span className={styles.linePoints} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
-                  +{linePoints} points
-                </span>
-              )}
-            </p>
+            <p className={styles.previous}>{lyrics[index].text}</p>
           )}
           {index === currentLyricIndex && (
-            <div className={styles.currentLyricContainer}>
+            <div
+              className={styles.currentLyricContainer}
+              ref={showTimerForTutorial ? currentLyricRef : undefined}
+              style={{ position: "relative", width: "100%" }}
+            >
               <Image priority
                 src="/assets/img/icon/arrow-right.svg"
                 alt="Music svg"
@@ -411,9 +389,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 height={40}
                 className={styles.arrowIcon}
               />
-              {isCountdownActive &&
-                <div className={styles.countdown}>
-                  <Image priority
+              {isCountdownActive && (
+                <div
+                  className={styles.countdown}
+                  data-tutorial="timer-info"
+                  style={{
+                    position: "absolute",
+                    right: "-70px",
+                    top: "50%",
+                    transform: "translateY(-50%)"
+                  }}
+                >
+                  <Image
+                    priority
                     src="/assets/img/icon/timer.svg"
                     alt="Music svg"
                     width={40}
@@ -423,10 +411,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                   <span className={styles.highlight}>{countdown}&nbsp;</span>
                   {countdown === 1 ? 'seconde' : 'secondes'}
                 </div>
-              }
-              <p className={styles.currentLyric}>
-                {getStyledText()}
-              </p>
+              )}
+              <p className={styles.currentLyric}>{getStyledText()}</p>
               <input
                 type="text"
                 value={userInput}
@@ -442,13 +428,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             </div>
           )}
           {index > currentLyricIndex && (
-            <p className={`
-              ${styles.next}
-              ${isLastLine ? styles['--last-line'] : ''}
-              ${isBeforeLast ? styles['--before-line'] : ''}
-            `}>
-              {lyrics[index].text}
-            </p>
+            <p className={styles.next}>{lyrics[index].text}</p>
           )}
         </div>
       );
@@ -473,7 +453,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     return match ? match[0] : "";
   }
 
-  // Pause ECHAP
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isGameOver) {
@@ -515,7 +494,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPausedMenuOpen]);
 
-  // Bouton Reprendre
   const handleResume = () => {
     setIsPausedMenuOpen(false);
     const audio = audioPlayerRef.current?.audioEl.current;
@@ -528,36 +506,67 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     inputRef.current?.focus();
   };
 
-  // === RENDER ===
   return (
-    <div className={styles.karakaku}>
-      {/* EXTREME MODE MODAL */}
+    <div className={styles.karakaku} style={{ position: "relative" }}>
+      {showTimerForTutorial && timerMockPos && (
+        <div
+          className={styles.countdown}
+          data-tutorial="timer-info"
+          style={{
+            position: 'absolute',
+            left: timerMockPos.left,
+            top: timerMockPos.top,
+            transform: 'translateY(-50%)',
+            zIndex: 3000,
+            pointerEvents: 'none'
+          }}
+        >
+          <Image
+            priority
+            src="/assets/img/icon/timer.svg"
+            alt="Music svg"
+            width={40}
+            height={40}
+            className="countdown__icon"
+          />
+          <span className={styles.highlight}>10&nbsp;</span>
+          secondes
+        </div>
+      )}
+
       {showModeModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <h3>Mode de jeu</h3>
-            <p>Choisissez votre mode :</p>
-            <div className='flex'>
+            <h3 className={styles.modalTitle}>Mode de jeu</h3>
+            <p className={styles.modalText}>Choisissez votre mode :</p>
+            <div className={styles.modalButtonRow}>
               <button
-                className={styles.btnPrimary}
+                className={styles.btnModeNormal}
                 onClick={() => {
                   setMode("normal");
                   setShowModeModal(false);
-                }}
-              >Normal</button>
+                  audioPlayerRef.current?.audioEl.current?.play();
+                  setIsStarted(true);
+                  inputRef.current?.focus();
+                }}>
+                Normal
+              </button>
               <button
-                className={styles.btnPrimary}
+                className={styles.btnModeExtreme}
                 onClick={() => {
                   setMode("extreme");
                   setShowModeModal(false);
-                }}
-              >Extrême</button>
+                  audioPlayerRef.current?.audioEl.current?.play();
+                  setIsStarted(true);
+                  inputRef.current?.focus();
+                }}>
+                Extrême
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* GAME OVER TRANSITION OVERLAY */}
       {gameOverTransition && (
         <div className={styles.gameOverOverlay}>
           <div className={styles.gameOverText}>
@@ -566,196 +575,180 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         </div>
       )}
 
-      {/* MAIN GAME UI, BLOCKED UNTIL MODE IS CHOSEN */}
-      {!showModeModal && (
-        <div
-          className={styles.gameArea}
-          style={{
-            opacity: gameOverTransition ? 0 : 1,
-            transition: 'opacity 0.7s'
-          }}
-        >
-          <div className={`${styles.pauseMenu} ${isPausedMenuOpen ? styles.pauseMenuVisible : ''}`}>
-            {/* ...pause menu... */}
-            <Image
-              src="/assets/img/MusicBar.svg"
-              alt="Music Bar"
-              width={300}
-              height={300}
-              className={styles.musicBarEchap}
-            />
-            <div className={`${styles.animatedEchap}`}></div>
-            <div className={styles.pauseMenuContent}>
-              {/* ...buttons... */}
-              <div>
+      <div
+        className={styles.gameArea}
+        style={{
+          opacity: gameOverTransition ? 0 : 1,
+          transition: 'opacity 0.7s'
+        }}
+      >
+        <div className={`${styles.pauseMenu} ${isPausedMenuOpen ? styles.pauseMenuVisible : ''}`}>
+          <Image
+            src="/assets/img/MusicBar.svg"
+            alt="Music Bar"
+            width={300}
+            height={300}
+            className={styles.musicBarEchap}
+          />
+          <div className={`${styles.animatedEchap}`}></div>
+          <div className={styles.pauseMenuContent}>
+            <div>
+              <Image
+                src="/assets/img/icon/icon-echap.svg"
+                alt="Pause"
+                width={100}
+                height={24}
+                className={styles.pauseTextIcon}
+              />
+              <button className={styles.btnEchap} onClick={handleResume}>
                 <Image
-                  src="/assets/img/icon/icon-echap.svg"
-                  alt="Pause"
-                  width={100}
+                  src="/assets/img/icon/arrow-right-black.svg"
+                  alt="Play"
+                  width={24}
                   height={24}
-                  className={styles.pauseTextIcon}
+                  className={styles.playIcon}
                 />
-                <button className={styles.btnEchap} onClick={handleResume}>
-                  <Image
-                    src="/assets/img/icon/arrow-right-black.svg"
-                    alt="Play"
-                    width={24}
-                    height={24}
-                    className={styles.playIcon}
-                  />
-                  Reprendre
-                </button>
-              </div>
-              <div>
+                Reprendre
+              </button>
+            </div>
+            <div>
+              <Image
+                src="/assets/img/icon/icon-r.svg"
+                alt="Reprendre"
+                width={100}
+                height={24}
+                className={styles.pauseTextIcon}
+              />
+              <button className={styles.btnEchap} onClick={handleReplay}>
                 <Image
-                  src="/assets/img/icon/icon-r.svg"
-                  alt="Reprendre"
-                  width={100}
+                  src="/assets/img/icon/refresh.svg"
+                  alt="Play"
+                  width={24}
                   height={24}
-                  className={styles.pauseTextIcon}
+                  className={styles.playIcon}
                 />
-                <button className={styles.btnEchap} onClick={handleReplay}>
-                  <Image
-                    src="/assets/img/icon/refresh.svg"
-                    alt="Play"
-                    width={24}
-                    height={24}
-                    className={styles.playIcon}
-                  />
-                  Recommencer
-                </button>
-              </div>
-              <div>
-                <button className={styles.btnEchap} onClick={handleShowTutorial}>
-                  <Image
-                    src="/assets/img/icon/question-mark.svg"
-                    alt="Question Mark"
-                    width={24}
-                    height={24}
-                    className={`${styles.playIcon} ${styles.questionMarkIcon}`}
-                  />
-                  Guide
-                </button>
-              </div>
-              <Link href="/">
-                <button className={styles.btnEchap}>
-                  <Image
-                    src="/assets/img/icon/settings.svg"
-                    alt="Play"
-                    width={24}
-                    height={24}
-                    className={styles.playIcon}
-                  />
-                  Options
-                </button>
-              </Link>
-              <Link href="/">
-                <button className={styles.btnEchap}>
-                  <Image
-                    src="/assets/img/icon/arrow-left.svg"
-                    alt="Play"
-                    width={24}
-                    height={24}
-                    className={styles.playIcon}
-                  />
-                  Quitter
-                </button>
-              </Link>
-              {/* Volume Control */}
-              <div className={styles.volumeControl}>
+                Recommencer
+              </button>
+            </div>
+            <div>
+              <button className={styles.btnEchap} onClick={handleShowTutorial}>
                 <Image
-                  src="/assets/img/icon/volume.svg"
-                  alt="Volume"
-                  width={20}
-                  height={20}
+                  src="/assets/img/icon/question-mark.svg"
+                  alt="Question Mark"
+                  width={24}
+                  height={24}
+                  className={`${styles.playIcon} ${styles.questionMarkIcon}`}
                 />
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className={styles.volumeSlider}
+                Guide
+              </button>
+            </div>
+            <Link href="/">
+              <button className={styles.btnEchap}>
+                <Image
+                  src="/assets/img/icon/settings.svg"
+                  alt="Play"
+                  width={24}
+                  height={24}
+                  className={styles.playIcon}
                 />
-              </div>
+                Options
+              </button>
+            </Link>
+            <Link href="/">
+              <button className={styles.btnEchap}>
+                <Image
+                  src="/assets/img/icon/arrow-left.svg"
+                  alt="Play"
+                  width={24}
+                  height={24}
+                  className={styles.playIcon}
+                />
+                Quitter
+              </button>
+            </Link>
+            <div className={styles.volumeControl}>
+              <Image
+                src="/assets/img/icon/volume.svg"
+                alt="Volume"
+                width={20}
+                height={20}
+              />
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className={styles.volumeSlider}
+              />
             </div>
           </div>
+        </div>
 
-          {!isGameOver && (
-            <>
-              <div className={styles.animatedBackground}></div>
-              <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
-              <Image priority
-                src="/assets/img/logo-jbh.png"
-                alt="Logo Just Beat Hit"
-                width={1000}
-                height={1000}
-                className={styles.logoJbh}
-              />
-              <div className={styles.echapInfoText} data-tutorial="escape-info">
-                <span>
-                  <Image
-                    src="/assets/img/icon/echap-key.svg"
-                    alt="Music svg"
-                    width={50}
-                    height={50}
-                  />
-                  <span>pour mettre en pause la partie</span>
-                </span>
-              </div>
-              {/* Question mark help button in top-right corner */}
-              <button
-                className={styles.helpButton}
-                onClick={startTutorial}
-                title="Afficher le tutoriel (Aide)"
-              >
-                ?
-              </button>
-              <ReactAudioPlayer
-                src={songSrc}
-                controls
-                ref={audioPlayerRef}
-                onListen={handleTimeUpdateWrapper}
-                listenInterval={100}
-                volume={volume}
-              />
-              {/* Opacity 0 car si on retire le bouton, le player ne se lance pas */}
-              {!isStarted && (
-                <div className={styles.btnContainer}>
-                  <button
-                    onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                    className={styles.btnPrimary} style={{ display: 'none' }}>
-                    {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
-                  </button>
-                </div>
-              )}
-              <div className={styles.progressBarBackground}>
-                <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
-              </div>
-              <div className={styles.titleSong}>
+        {!isGameOver && (
+          <>
+            <div className={styles.animatedBackground}></div>
+            <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
+            <Image priority
+              src="/assets/img/logo-jbh.png"
+              alt="Logo Just Beat Hit"
+              width={1000}
+              height={1000}
+              className={styles.logoJbh}
+            />
+            <div className={styles.echapInfoText} data-tutorial="escape-info">
+              <span>
                 <Image
-                  src="/assets/img/icon/down-round-arrow.svg"
-                  alt="Arrow svg"
-                  width={30}
-                  height={30}
-                  className={styles.musicIcon}
+                  src="/assets/img/icon/echap-key.svg"
+                  alt="Music svg"
+                  width={50}
+                  height={50}
                 />
-                <h5>{singer} - {title}</h5>
-              </div>
-              <Image priority
-                src="/assets/img/vinyl-jbh.svg"
-                alt="Vinyl svg"
-                width={1000}
-                height={1000}
-                className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive ? styles['--playing'] : styles['--paused']}`}
+                <span>pour mettre en pause la partie</span>
+              </span>
+            </div>
+            <button
+              className={styles.helpButton}
+              onClick={startTutorial}
+              title="Afficher le tutoriel (Aide)"
+            >
+              ?
+            </button>
+            <ReactAudioPlayer
+              src={songSrc}
+              controls
+              ref={audioPlayerRef}
+              onListen={handleTimeUpdateWrapper}
+              listenInterval={100}
+              volume={volume}
+            />
+            <div className={styles.progressBarBackground}>
+              <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
+            </div>
+            <div className={styles.titleSong}>
+              <Image
+                src="/assets/img/icon/down-round-arrow.svg"
+                alt="Arrow svg"
+                width={30}
+                height={30}
+                className={styles.musicIcon}
               />
-            </>
-          )}
+              <h5>{singer} - {title}</h5>
+            </div>
+            <Image priority
+              src="/assets/img/vinyl-jbh.svg"
+              alt="Vinyl svg"
+              width={1000}
+              height={1000}
+              className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive ? styles['--playing'] : styles['--paused']}`}
+            />
+          </>
+        )}
 
-          <div className={styles.lyrics}>
-            {renderLyrics()}
-          </div>
+        <div className={styles.lyrics}>
+          {renderLyrics()}
+        </div>
 
           {!isGameOver && (
             <div className={styles.score} data-tutorial="score-display">

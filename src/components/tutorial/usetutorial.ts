@@ -2,7 +2,12 @@ import { useEffect, useRef } from 'react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-export const useTutorial = () => {
+type TutorialOptions = {
+  onStart?: () => void;
+  onEnd?: () => void;
+};
+
+export const useTutorial = (options: TutorialOptions = {}) => {
   const driverRef = useRef<any>(null);
 
   useEffect(() => {
@@ -22,26 +27,37 @@ export const useTutorial = () => {
       popoverOffset: 10,
       onDestroyed: () => {
         localStorage.setItem('karakaku-tutorial-seen', 'true');
+        if (options.onEnd) options.onEnd();
       }
     });
-
     return () => {
       if (driverRef.current) {
         driverRef.current.destroy();
       }
     };
+    // eslint-disable-next-line
   }, []);
 
   const startTutorial = () => {
     if (!driverRef.current) return;
+    if (options.onStart) options.onStart();
 
     const steps = [
       {
         element: '[data-tutorial="input-field"]',
         popover: {
           title: '🎵 Zone de Saisie',
-          description: 'Écrivez ici les paroles de la chanson en suivant le rythme. Tapez exactement ce qui est affiché pour marquer des points!',
+          description: 'Écrivez ici les paroles de la chanson en suivant le rythme. Tapez exactement ce qui est affiché pour marquer des points! Pas besoin de taper les espaces ni les caractères spéciaux.',
           side: 'top',
+          align: 'center'
+        }
+      },
+      {
+        element: '[data-tutorial="timer-info"]',
+        popover: {
+          title: '⏳ Compte à rebours',
+          description: "Ce compteur indique le temps restant pour compléter la ligne en cours. Attention, si le temps expire, vous perdez des points !",
+          side: 'right',
           align: 'center'
         }
       },
@@ -58,13 +74,12 @@ export const useTutorial = () => {
         element: '[data-tutorial="score-display"]',
         popover: {
           title: '🏆 Affichage du Score',
-          description: 'Votre score s\'affiche ici en temps réel. Plus vous tapez vite et sans erreur, plus votre multiplicateur augmente!',
+          description: "Votre score s'affiche ici en temps réel. Plus vous tapez vite et sans erreur, plus votre multiplicateur augmente!",
           side: 'left',
           align: 'center'
         }
       }
     ];
-
     driverRef.current.setSteps(steps);
     driverRef.current.drive();
   };
