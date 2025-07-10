@@ -654,7 +654,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 Options
               </button>
             </Link>
-            <Link href="/">
+            <Link href="/game/karakaku">
               <button className={styles.btnEchap}>
                 <Image
                   src="/assets/img/icon/arrow-left.svg"
