@@ -358,13 +358,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     }
   }, [isValidated, isGameOver, currentLyricIndex, lyrics.length])
 
-  const [accuracy, setAccuracy] = useState(100); // précision affichée en jeu
+    const [accuracy, setAccuracy] = useState(100); // précision affichée en jeu
 
   useEffect(() => {
     const newAccuracy = calculateAccuracy(completedInputs, lyrics);
     setAccuracy(newAccuracy);
   }, [completedInputs, lyrics]);
-
+  
 
   const renderLyrics = () => {
     return lyrics.map((lyric, index) => {
@@ -750,54 +750,55 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           {renderLyrics()}
         </div>
 
-          {!isGameOver && (
-            <div className={styles.score} data-tutorial="score-display">
-              <p
-                className={styles.changeScore}
-                key={lastScoreChange}
-                style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }}>
-                {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-              </p>
-              <div className={styles.score_display}>
-                <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
-                  <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                      <linearGradient id="gradient-default">
-                        <stop offset="0%" stopColor="#fff" stopOpacity="1" />
-                        <stop offset="80%" stopColor="#fff" stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="gradient-medium">
-                        <stop offset="0%" stopColor="#FFAB36" stopOpacity="1" />
-                        <stop offset="80%" stopColor="#FFAB36" stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="gradient-fast">
-                        <stop offset="0%" stopColor="#FF6026" stopOpacity="1" />
-                        <stop offset="80%" stopColor="#FF6026" stopOpacity="0" />
-                      </linearGradient>
-                      <linearGradient id="gradient-faster">
-                        <stop offset="0%" stopColor="#F1203C" stopOpacity="1" />
-                        <stop offset="80%" stopColor="#F1203C" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
-                      stroke={`url(#${getGradientId()})`}
-                      strokeLinecap="round" strokeDasharray="143, 188" />
-                    <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3" />
-                  </svg>
-                  <span>x {roundToOneDecimals(multiplier)}</span>
-                </div>
-                <div className={styles.scoreLine}>
-                  <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-                  <p className={styles.actualScore}>{score}</p>
-                </div>
+        {!isGameOver && (
+          <div className={styles.score} data-tutorial="score-display">
+            <p
+              className={styles.changeScore}
+              key={lastScoreChange}
+              style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }}>
+              {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+            </p>
+            <div className={styles.score_display}>
+              <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
+                <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="gradient-default">
+                      <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+                      <stop offset="80%" stopColor="#fff" stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="gradient-medium">
+                      <stop offset="0%" stopColor="#FFAB36" stopOpacity="1" />
+                      <stop offset="80%" stopColor="#FFAB36" stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="gradient-fast">
+                      <stop offset="0%" stopColor="#FF6026" stopOpacity="1" />
+                      <stop offset="80%" stopColor="#FF6026" stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="gradient-faster">
+                      <stop offset="0%" stopColor="#F1203C" stopOpacity="1" />
+                      <stop offset="80%" stopColor="#F1203C" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
+                    stroke={`url(#${getGradientId()})`}
+                    strokeLinecap="round" strokeDasharray="143, 188" />
+                  <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3" />
+                </svg>
+                <span>x {roundToOneDecimals(multiplier)}</span>
               </div>
-              <p className={styles.label}>Score</p>
-              <p>Précision : {accuracy}%</p>
+              <div className={styles.scoreLine}>
+                <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
+                <p className={styles.actualScore}>{score}</p>
+              </div>
             </div>
-          )}
-        </div>
-      );
+            <p className={styles.label}>Score</p>
+            <p>Précision : {accuracy}%</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-      export default Karakaku;
+export default Karakaku;
