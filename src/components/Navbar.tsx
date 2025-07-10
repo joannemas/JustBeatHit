@@ -1,11 +1,22 @@
+"use client"
+
 import NavLink from './NavLink'
 import styles from '@/stylesheets/navbar.module.scss'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/server'
+import {supabase} from "@/lib/supabase/client";
+import {useEffect, useState} from "react";
 
-export default async function Navbar() {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+export default function Navbar() {
+    const [user, setUser] = useState<any>(null);
+    
+    useEffect(()=>{
+        const fetchUser = async () => {
+            const {data: {user}} = await supabase.auth.getUser()
+            setUser(user)
+        }
+        fetchUser()
+    }, [])
+    
 
     return (
         <div className={styles.navbar}>

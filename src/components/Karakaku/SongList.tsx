@@ -48,7 +48,6 @@ export default function SongList({ gameId }: { gameId?: string }) {
 
   return (
     <div>
-      <Navbar />
       {/* Barre de recherche */}
         <div className={styles.searchBarWrapper}>
             <div className={styles.searchInputGroup}>
