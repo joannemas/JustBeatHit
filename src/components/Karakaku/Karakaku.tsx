@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+
 import ReactAudioPlayer from 'react-audio-player';
 import { LyricLine, parseLRC } from '@/utils/LrcParser';
 import styles from '@/stylesheets/karakaku.module.scss';
+
 import Link from 'next/link';
 import Image from 'next/image';
+
 import { lyricsDisplayUtils, normalizeString } from './utils/lyricsDisplayUtils';
 import { caretUtils } from "./utils/caretUtils";
 import {
@@ -17,6 +20,7 @@ import {
 import { handlePlayPauseClick, handleTimeUpdate } from "./utils/timeManagerUtils";
 import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils/inputManagerUtils';
 import { endGame, replayGame, startGame } from "@/app/game/actions";
+
 import '../tutorial/tutorial.css';
 import { useTutorial } from '../tutorial/usetutorial';
 
@@ -30,6 +34,10 @@ interface KarakakuProps {
 }
 
 const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId, gameName }) => {
+  // EXTREME MODE MODAL STATE
+  const [showModeModal, setShowModeModal] = useState(true);
+  const [mode, setMode] = useState<"normal" | "extreme">("normal");
+
   const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
   const [userInput, setUserInput] = useState<string>('');
   const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -47,6 +55,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [incorrectCharacters, setIncorrectCharacters] = useState<number>(0);
   const [totalCharacters, setTotalCharacters] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [gameOverTransition, setGameOverTransition] = useState(false); // NEW: for fade/overlay
   const [isMusicFinished, setIsMusicFinished] = useState<boolean>(false);
   const [lyrics, setLyrics] = useState<LyricLine[]>([]);
   const [totalLines, setTotalLines] = useState<number>(0);
@@ -54,6 +63,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
   const [completedInputs, setCompletedInputs] = useState<string[]>([]);
   const { totalErrors, totalChars } = calculateErrorsAndTotal(completedInputs, lyrics);
+
   const [progress, setProgress] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
   const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
@@ -61,13 +71,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [volume, setVolume] = useState<number>(0.8);
   const [linePoints, setLinePoints] = useState<number>(0);
   const [showLinePoints, setShowLinePoints] = useState<boolean>(false);
+
   const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wasValidatedRef = useRef<boolean>(false);
 
   // Tutorial integration
   const { startTutorial } = useTutorial();
-
-  console.log('songSrc' + songSrc);
 
   useEffect(() => {
     lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
@@ -86,9 +95,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   // Show tutorial only on the very first visit ever
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Check if user has NEVER seen the tutorial before
       const hasNeverSeenTutorial = !localStorage.getItem('karakaku-tutorial-seen');
-
       if (hasNeverSeenTutorial && !isStarted && lyrics.length > 0) {
         startTutorial();
       }
@@ -117,6 +124,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       setIsMusicFinished,
       setIsCountdownActive
     );
+
     if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
       const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
       const duration = audioPlayerRef.current.audioEl.current.duration;
@@ -172,6 +180,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     wasValidatedRef.current = isValidated;
   }, [isValidated, currentLyricIndex, userInput, lyrics, hasErrors, multiplier]);
 
+  // EXTREME MODE: instant death on error
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleInputChangeUtil(
       e,
@@ -184,7 +193,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       setScore,
       setLastScoreChange,
       setIncorrectCharacters,
-      setHasErrors,
+      (error: boolean) => {
+        setHasErrors(error);
+        if (mode === "extreme" && error && !isGameOver && !gameOverTransition) {
+          setGameOverTransition(true);
+          setTimeout(() => {
+            setIsGameOver(true);
+            setGameOverTransition(false);
+            setIsStarted(false);
+            audioPlayerRef.current?.audioEl.current?.pause();
+            endGame({ score, mistakes: 1, typing_accuracy: 0, word_speed: 0 }, gameName, gameId);
+          }, 1200);
+        }
+      },
       isValidated,
       setIsValidated,
       completedInputs,
@@ -221,12 +242,22 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     });
   };
 
+  // Fade out on normal game end (not just extreme mode)
   useEffect(() => {
-    if (currentLyricIndex === lyrics.length - 1 && (isValidated && isMusicFinished)) {
-      setIsStarted(false);
-      setIsGameOver(true);
+    if (
+      currentLyricIndex === lyrics.length - 1 &&
+      (isValidated && isMusicFinished) &&
+      !isGameOver &&
+      !gameOverTransition
+    ) {
+      setGameOverTransition(true);
+      setTimeout(() => {
+        setIsStarted(false);
+        setIsGameOver(true);
+        setGameOverTransition(false);
+      }, 1200);
     }
-  }, [currentLyricIndex, isValidated, lyrics.length, isMusicFinished]);
+  }, [currentLyricIndex, isValidated, lyrics.length, isMusicFinished, isGameOver, gameOverTransition]);
 
   const handleReplay = () => {
     replayGame(gameId);
@@ -245,7 +276,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   };
 
   const isHandlingLineSwitch = useRef(false);
-
   useEffect(() => {
     if (isCountdownActive) {
       setCountdown(10);
@@ -323,13 +353,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     }
   }, [isValidated, isGameOver, currentLyricIndex, lyrics.length])
 
-    const [accuracy, setAccuracy] = useState(100); // précision affichée en jeu
+  const [accuracy, setAccuracy] = useState(100); // précision affichée en jeu
 
-    useEffect(() => {
-        const newAccuracy = calculateAccuracy(completedInputs, lyrics);
-        setAccuracy(newAccuracy);
-      }, [completedInputs, lyrics]);      
-    
+  useEffect(() => {
+    const newAccuracy = calculateAccuracy(completedInputs, lyrics);
+    setAccuracy(newAccuracy);
+  }, [completedInputs, lyrics]);
+
 
   // Affiche les paroles et le score final
   const renderLyrics = () => {
@@ -339,11 +369,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
       const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
       const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
-
       if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
         return null;
       }
-
       return (
         <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
           {index < currentLyricIndex && (
@@ -374,7 +402,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               )}
             </p>
           )}
-
           {index === currentLyricIndex && (
             <div className={styles.currentLyricContainer}>
               <Image priority
@@ -414,7 +441,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               <div ref={caretRef} className={styles.caret}></div>
             </div>
           )}
-
           {index > currentLyricIndex && (
             <p className={`
               ${styles.next}
@@ -471,7 +497,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         });
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -503,237 +528,283 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     inputRef.current?.focus();
   };
 
+  // === RENDER ===
   return (
     <div className={styles.karakaku}>
-      <div className={`${styles.pauseMenu} ${isPausedMenuOpen ? styles.pauseMenuVisible : ''}`}>
-        <Image
-          src="/assets/img/MusicBar.svg"
-          alt="Music Bar"
-          width={300}
-          height={300}
-          className={styles.musicBarEchap}
-        />
-        <div className={`${styles.animatedEchap}`}></div>
-        <div className={styles.pauseMenuContent}>
-          <div>
-            <Image
-              src="/assets/img/icon/icon-echap.svg"
-              alt="Pause"
-              width={100}
-              height={24}
-              className={styles.pauseTextIcon}
-            />
-            <button className={styles.btnEchap} onClick={handleResume}>
-              <Image
-                src="/assets/img/icon/arrow-right-black.svg"
-                alt="Play"
-                width={24}
-                height={24}
-                className={styles.playIcon}
-              />
-              Reprendre
-            </button>
-          </div>
-          <div>
-            <Image
-              src="/assets/img/icon/icon-r.svg"
-              alt="Reprendre"
-              width={100}
-              height={24}
-              className={styles.pauseTextIcon}
-            />
-            <button className={styles.btnEchap} onClick={handleReplay}>
-              <Image
-                src="/assets/img/icon/refresh.svg"
-                alt="Play"
-                width={24}
-                height={24}
-                className={styles.playIcon}
-              />
-              Recommencer
-            </button>
-          </div>
-          <div>
-            <button className={styles.btnEchap} onClick={handleShowTutorial}>
-              <Image
-                src="/assets/img/icon/question-mark.svg"
-                alt="Question Mark"
-                width={24}
-                height={24}
-                className={`${styles.playIcon} ${styles.questionMarkIcon}`}
-              />
-              Guide
-            </button>
-          </div>
-
-          <Link href="/">
-            <button className={styles.btnEchap}>
-              <Image
-                src="/assets/img/icon/settings.svg"
-                alt="Play"
-                width={24}
-                height={24}
-                className={styles.playIcon}
-              />
-              Options
-            </button>
-          </Link>
-          <Link href="/">
-            <button className={styles.btnEchap}>
-              <Image
-                src="/assets/img/icon/arrow-left.svg"
-                alt="Play"
-                width={24}
-                height={24}
-                className={styles.playIcon}
-              />
-              Quitter
-            </button>
-          </Link>
-          {/* Volume Control */}
-          <div className={styles.volumeControl}>
-            <Image
-              src="/assets/img/icon/volume.svg"
-              alt="Volume"
-              width={20}
-              height={20}
-            />
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-              className={styles.volumeSlider}
-            />
+      {/* EXTREME MODE MODAL */}
+      {showModeModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3>Mode de jeu</h3>
+            <p>Choisissez votre mode :</p>
+            <div className='flex'>
+              <button
+                className={styles.btnPrimary}
+                onClick={() => {
+                  setMode("normal");
+                  setShowModeModal(false);
+                }}
+              >Normal</button>
+              <button
+                className={styles.btnPrimary}
+                onClick={() => {
+                  setMode("extreme");
+                  setShowModeModal(false);
+                }}
+              >Extrême</button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {!isGameOver && (
-        <>
-          <div className={styles.animatedBackground}></div>
-          <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
-          <Image priority
-            src="/assets/img/logo-jbh.png"
-            alt="Logo Just Beat Hit"
-            width={1000}
-            height={1000}
-            className={styles.logoJbh}
-          />
-          <div className={styles.echapInfoText} data-tutorial="escape-info">
-            <span>
-              <Image
-                src="/assets/img/icon/echap-key.svg"
-                alt="Music svg"
-                width={50}
-                height={50}
-              />
-              <span>pour mettre en pause la partie</span>
-            </span>
+      {/* GAME OVER TRANSITION OVERLAY */}
+      {gameOverTransition && (
+        <div className={styles.gameOverOverlay}>
+          <div className={styles.gameOverText}>
+            Mort Subite (×_×;）
           </div>
-          {/* Question mark help button in top-right corner */}
-          <button
-            className={styles.helpButton}
-            onClick={startTutorial}
-            title="Afficher le tutoriel (Aide)"
-          >
-            ?
-          </button>
+        </div>
+      )}
 
-          <ReactAudioPlayer
-            src={songSrc}
-            controls
-            onListen={handleTimeUpdateWrapper}
-            ref={audioPlayerRef}
-            listenInterval={100}
-          />
-          {/* Opacity 0 car si on retire le bouton, le player ne se lance pas */}
-          {!isStarted && (
-            <div className={styles.btnContainer}>
+      {/* MAIN GAME UI, BLOCKED UNTIL MODE IS CHOSEN */}
+      {!showModeModal && (
+        <div
+          className={styles.gameArea}
+          style={{
+            opacity: gameOverTransition ? 0 : 1,
+            transition: 'opacity 0.7s'
+          }}
+        >
+          <div className={`${styles.pauseMenu} ${isPausedMenuOpen ? styles.pauseMenuVisible : ''}`}>
+            {/* ...pause menu... */}
+            <Image
+              src="/assets/img/MusicBar.svg"
+              alt="Music Bar"
+              width={300}
+              height={300}
+              className={styles.musicBarEchap}
+            />
+            <div className={`${styles.animatedEchap}`}></div>
+            <div className={styles.pauseMenuContent}>
+              {/* ...buttons... */}
+              <div>
+                <Image
+                  src="/assets/img/icon/icon-echap.svg"
+                  alt="Pause"
+                  width={100}
+                  height={24}
+                  className={styles.pauseTextIcon}
+                />
+                <button className={styles.btnEchap} onClick={handleResume}>
+                  <Image
+                    src="/assets/img/icon/arrow-right-black.svg"
+                    alt="Play"
+                    width={24}
+                    height={24}
+                    className={styles.playIcon}
+                  />
+                  Reprendre
+                </button>
+              </div>
+              <div>
+                <Image
+                  src="/assets/img/icon/icon-r.svg"
+                  alt="Reprendre"
+                  width={100}
+                  height={24}
+                  className={styles.pauseTextIcon}
+                />
+                <button className={styles.btnEchap} onClick={handleReplay}>
+                  <Image
+                    src="/assets/img/icon/refresh.svg"
+                    alt="Play"
+                    width={24}
+                    height={24}
+                    className={styles.playIcon}
+                  />
+                  Recommencer
+                </button>
+              </div>
+              <div>
+                <button className={styles.btnEchap} onClick={handleShowTutorial}>
+                  <Image
+                    src="/assets/img/icon/question-mark.svg"
+                    alt="Question Mark"
+                    width={24}
+                    height={24}
+                    className={`${styles.playIcon} ${styles.questionMarkIcon}`}
+                  />
+                  Guide
+                </button>
+              </div>
+              <Link href="/">
+                <button className={styles.btnEchap}>
+                  <Image
+                    src="/assets/img/icon/settings.svg"
+                    alt="Play"
+                    width={24}
+                    height={24}
+                    className={styles.playIcon}
+                  />
+                  Options
+                </button>
+              </Link>
+              <Link href="/">
+                <button className={styles.btnEchap}>
+                  <Image
+                    src="/assets/img/icon/arrow-left.svg"
+                    alt="Play"
+                    width={24}
+                    height={24}
+                    className={styles.playIcon}
+                  />
+                  Quitter
+                </button>
+              </Link>
+              {/* Volume Control */}
+              <div className={styles.volumeControl}>
+                <Image
+                  src="/assets/img/icon/volume.svg"
+                  alt="Volume"
+                  width={20}
+                  height={20}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  className={styles.volumeSlider}
+                />
+              </div>
+            </div>
+          </div>
+
+          {!isGameOver && (
+            <>
+              <div className={styles.animatedBackground}></div>
+              <div className={`${styles.animatedBackground} ${styles['--inverse']}`}></div>
+              <Image priority
+                src="/assets/img/logo-jbh.png"
+                alt="Logo Just Beat Hit"
+                width={1000}
+                height={1000}
+                className={styles.logoJbh}
+              />
+              <div className={styles.echapInfoText} data-tutorial="escape-info">
+                <span>
+                  <Image
+                    src="/assets/img/icon/echap-key.svg"
+                    alt="Music svg"
+                    width={50}
+                    height={50}
+                  />
+                  <span>pour mettre en pause la partie</span>
+                </span>
+              </div>
+              {/* Question mark help button in top-right corner */}
               <button
-                onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
-                className={styles.btnPrimary} style={{ display: 'none' }}>
-                {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                className={styles.helpButton}
+                onClick={startTutorial}
+                title="Afficher le tutoriel (Aide)"
+              >
+                ?
               </button>
+              <ReactAudioPlayer
+                src={songSrc}
+                controls
+                ref={audioPlayerRef}
+                onListen={handleTimeUpdateWrapper}
+                listenInterval={100}
+                volume={volume}
+              />
+              {/* Opacity 0 car si on retire le bouton, le player ne se lance pas */}
+              {!isStarted && (
+                <div className={styles.btnContainer}>
+                  <button
+                    onClick={() => handlePlayPauseClick(audioPlayerRef, setIsStarted, setIsCountdownActive, setCountdown)}
+                    className={styles.btnPrimary} style={{ display: 'none' }}>
+                    {audioPlayerRef.current?.audioEl.current?.paused ? 'Play' : 'Pause'}
+                  </button>
+                </div>
+              )}
+              <div className={styles.progressBarBackground}>
+                <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
+              </div>
+              <div className={styles.titleSong}>
+                <Image
+                  src="/assets/img/icon/down-round-arrow.svg"
+                  alt="Arrow svg"
+                  width={30}
+                  height={30}
+                  className={styles.musicIcon}
+                />
+                <h5>{singer} - {title}</h5>
+              </div>
+              <Image priority
+                src="/assets/img/vinyl-jbh.svg"
+                alt="Vinyl svg"
+                width={1000}
+                height={1000}
+                className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive ? styles['--playing'] : styles['--paused']}`}
+              />
+            </>
+          )}
+
+          <div className={styles.lyrics}>
+            {renderLyrics()}
+          </div>
+
+          {!isGameOver && (
+            <div className={styles.score} data-tutorial="score-display">
+              <p
+                className={styles.changeScore}
+                key={lastScoreChange}
+                style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }}>
+                {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
+              </p>
+              <div className={styles.score_display}>
+                <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
+                  <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="gradient-default">
+                        <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+                        <stop offset="80%" stopColor="#fff" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="gradient-medium">
+                        <stop offset="0%" stopColor="#FFAB36" stopOpacity="1" />
+                        <stop offset="80%" stopColor="#FFAB36" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="gradient-fast">
+                        <stop offset="0%" stopColor="#FF6026" stopOpacity="1" />
+                        <stop offset="80%" stopColor="#FF6026" stopOpacity="0" />
+                      </linearGradient>
+                      <linearGradient id="gradient-faster">
+                        <stop offset="0%" stopColor="#F1203C" stopOpacity="1" />
+                        <stop offset="80%" stopColor="#F1203C" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
+                      stroke={`url(#${getGradientId()})`}
+                      strokeLinecap="round" strokeDasharray="143, 188" />
+                    <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3" />
+                  </svg>
+                  <span>x {roundToOneDecimals(multiplier)}</span>
+                </div>
+                <div className={styles.scoreLine}>
+                  <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
+                  <p className={styles.actualScore}>{score}</p>
+                </div>
+              </div>
+              <p className={styles.label}>Score</p>
+              <p>Précision : {accuracy}%</p>
             </div>
           )}
-          <div className={styles.progressBarBackground}>
-            <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
-          </div>
-          <div className={styles.titleSong}>
-            <Image
-              src="/assets/img/icon/down-round-arrow.svg"
-              alt="Arrow svg"
-              width={30}
-              height={30}
-              className={styles.musicIcon}
-            />
-            <h5>{singer} - {title}</h5>
-          </div>
-          <Image priority
-            src="/assets/img/vinyl-jbh.svg"
-            alt="Vinyl svg"
-            width={1000}
-            height={1000}
-            className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive ? styles['--playing'] : styles['--paused']}`}
-          />
-        </>
-      )}
-
-      <div className={styles.lyrics}>
-        {renderLyrics()}
-      </div>
-
-      {!isGameOver && (
-        <div className={styles.score} data-tutorial="score-display">
-          <p
-            className={styles.changeScore}
-            key={lastScoreChange}
-            style={{ display: lastScoreChange === 0 ? 'none' : 'inline-block' }}>
-            {lastScoreChange > 0 ? `+${lastScoreChange}` : lastScoreChange}
-          </p>
-          <div className={styles.score_display}>
-            <div className={`${styles.multiplier} ${speedClass} ${isStarted ? styles['playing'] : ''}`}>
-              <svg className={styles.spin_multiplier} viewBox="0 0 66 66"
-                xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="gradient-default">
-                    <stop offset="0%" stopColor="#fff" stopOpacity="1" />
-                    <stop offset="80%" stopColor="#fff" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="gradient-medium">
-                    <stop offset="0%" stopColor="#FFAB36" stopOpacity="1" />
-                    <stop offset="80%" stopColor="#FFAB36" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="gradient-fast">
-                    <stop offset="0%" stopColor="#FF6026" stopOpacity="1" />
-                    <stop offset="80%" stopColor="#FF6026" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="gradient-faster">
-                    <stop offset="0%" stopColor="#F1203C" stopOpacity="1" />
-                    <stop offset="80%" stopColor="#F1203C" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <circle className="path" fill="transparent" strokeWidth="4" cx="33" cy="33" r="30"
-                  stroke={`url(#${getGradientId()})`}
-                  strokeLinecap="round" strokeDasharray="143, 188" />
-                <circle className={styles.spin_multiplier_dot} cx="33" cy="3" r="3" />
-              </svg>
-              <span>x {roundToOneDecimals(multiplier)}</span>
-            </div>
-            <div className={styles.scoreLine}>
-              <Image src="/assets/img/icon/score-line.svg" alt="Score" width={24} height={24} />
-              <p className={styles.actualScore}>{score}</p>
-            </div>
-          </div>
-          <p className={styles.label}>Score</p>
-                    <p>Précision : {accuracy}%</p>
         </div>
-      )}
-    </div>
-  );
+      );
 };
 
-export default Karakaku;
+      export default Karakaku;
