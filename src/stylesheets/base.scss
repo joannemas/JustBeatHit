@@ -12,6 +12,12 @@ audio {
   display: none;
 }
 
+.audio-preview {
+  audio{
+    display: block;
+  }
+}
+
 .spinner {
   animation: spin 1s linear infinite;
 }
@@ -24,4 +30,58 @@ audio {
   to {
     transform: rotate(360deg);
   }
+}
+
+.double_range_slider_box {
+  margin-top: 20px;
+
+  audio {
+    display: block;
+    margin: 0 auto;
+  }
+
+  .double_range_slider {
+    position: relative;
+    height: 50px;
+
+    input[type='range'] {
+      position: absolute;
+      width: 100%;
+      pointer-events: none;
+      -webkit-appearance: none;
+      background: none;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      pointer-events: all;
+      width: 16px;
+      height: 16px;
+      background: #007bff;
+      border-radius: 50%;
+      -webkit-appearance: none;
+    }
+
+    .range_track {
+      position: absolute;
+      height: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #007bff;
+      border-radius: 3px;
+    }
+
+    .minvalue,
+    .maxvalue {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  }
+}
+
+.highlight {
+  color: #ECAC64;
+}
+
+.deleted {
+  color: rgba(255, 0, 0, 0.38);
 }

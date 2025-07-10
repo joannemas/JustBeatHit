@@ -62,11 +62,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null); 
   const wasValidatedRef = useRef<boolean>(false);
 
-  console.log('songSrc' + songSrc);
-
-  useEffect(() => {
-    lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
-  }, [lyricSrc, charRefs]);
+    useEffect(() => {
+        lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
+    }, [lyricSrc, charRefs]);
 
   useEffect(() => {
     caretUtils({
