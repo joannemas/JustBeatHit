@@ -3,7 +3,6 @@ import { updateSession } from '@/lib/supabase/middleware'
 
 // Public path regex
 export const PUBLIC_PATH = [
-    /^\/$/,                    // Allow "/"
     /^\/auth(\/.*)?$/,         // Allow "/auth" and all that follows "/auth/..."
 ]
 
