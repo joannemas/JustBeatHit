@@ -280,7 +280,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   };
 
   const isHandlingLineSwitch = useRef(false);
-
+  useEffect(() => {
+    if (isPausedMenuOpen) {
+      inputRef.current?.blur();
+    } else {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+  }, [isPausedMenuOpen]);
   useEffect(() => {
     if (isCountdownActive) {
       setCountdown(10);
@@ -423,6 +431,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 spellCheck={false}
                 ref={inputRef}
                 data-tutorial="input-field"
+                disabled={isPausedMenuOpen}
               />
               <div ref={caretRef} className={styles.caret}></div>
             </div>
@@ -565,7 +574,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
         </div>
       )}
 
-      {gameOverTransition && (
+      {gameOverTransition && mode === "extreme" && (
         <div className={styles.gameOverOverlay}>
           <div className={styles.gameOverText}>
             Mort Subite (×_×;）
