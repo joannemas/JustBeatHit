@@ -38,7 +38,18 @@ export default function Navbar() {
             <NavLink href="/game/blind-test">Blind test</NavLink>
             {user && <NavLink href="/profil">Profil</NavLink>}
             {user && <NavLink href="/options">Options</NavLink>}
-            {user && <NavLink href="/auth/logout">Déconnexion</NavLink>}
+            {user && <li className={styles.navItem}>
+                <a onClick={async (e) => {
+                    e.preventDefault()
+                    await supabase.auth.signOut()
+                    setUser(null)
+                    window.location.href = "/"
+                    }}
+                    style={{ cursor: 'pointer' }}>
+                    Déconnexion
+                </a>
+            </li>}
+
         </ul>
 
         <div className={styles.decorationNavbar}></div>
