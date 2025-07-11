@@ -9,6 +9,7 @@ import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
 import styles from "@/stylesheets/uploadSong.module.scss";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 
@@ -260,9 +261,7 @@ export default function UploadSongPage() {
 
     return (
         <main className={styles.upload}>
-            <div className={styles.navbar}>
-                test
-            </div>
+            <Navbar/>
             <form onSubmit={handleSubmit(onSubmit)} className={styles.uploadForm}>
                 <div className={styles.uploadForm__display}>
                     {currentStep === 1 && (
