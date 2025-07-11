@@ -9,6 +9,7 @@ import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
 import styles from "@/stylesheets/uploadSong.module.scss";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 
@@ -22,6 +23,7 @@ const songSchema = z.object({
     mp3: z.any().refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
     lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
     cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
+    is_premium: z.boolean(),
 });
 
 type SongFormData = z.infer<typeof songSchema>;
@@ -76,14 +78,13 @@ export default function UploadSongPage() {
         }
     };
 
-
     const title = watch('title');
     const singer = watch('singer');
 
     const onSubmit = async (data: SongFormData) => {
         setIsSubmitting(true);
 
-        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover } = data;
+        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover, is_premium } = data;
         const folderPath = `${singer} - ${title}`.trim();
 
         const mp3File = mp3[0];
@@ -147,6 +148,7 @@ export default function UploadSongPage() {
                 is_explicit,
                 difficulty,
                 status,
+                is_premium
             });
 
         if (insertError) {
@@ -260,9 +262,7 @@ export default function UploadSongPage() {
 
     return (
         <main className={styles.upload}>
-            <div className={styles.navbar}>
-                test
-            </div>
+            <Navbar/>
             <form onSubmit={handleSubmit(onSubmit)} className={styles.uploadForm}>
                 <div className={styles.uploadForm__display}>
                     {currentStep === 1 && (
@@ -341,15 +341,17 @@ export default function UploadSongPage() {
                                     {errors.status && <p>{errors.status.message}</p>}
                                 </div>
 
+                                <div className={styles.uploadForm__display__checkbox}>
+                                    <label>Chanson Premium ?</label>
+                                    <input type="checkbox" {...register('is_premium')} />
+                                </div>
+
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi
                                     architecto,
                                     asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic
                                     itaque
                                     laborum magni modi mollitia necessitatibus nostrum odio odit optio pariatur, qui
-                                    quia
-                                    recusandae
-                                    repellat saepe sapiente tempora tempore totam ut vel velit vero voluptate
-                                    voluptatum.
+                                    quia.
                                 </p>
                             </div>
 
@@ -358,7 +360,7 @@ export default function UploadSongPage() {
                                 className={styles.stepButton}
                                 onClick={() => setCurrentStep(2)}
                             >
-                                <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>
+                            <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>
                                 Suivant
                             </button>
                         </div>
