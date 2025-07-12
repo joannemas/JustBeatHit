@@ -35,13 +35,13 @@
       .fileInput {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 8px;
         width: 50%;
         margin-bottom: 20px;
 
         label {
           font-family: 'GoiaDisplay', sans-serif;
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -149,7 +149,7 @@
         }
 
         label{
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -217,7 +217,7 @@
 
         label {
           font-family: 'GoiaDisplay', sans-serif;
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -238,40 +238,51 @@
         display: flex;
         gap: 16px;
         flex-wrap: wrap;
-      }
 
-      .difficultyButton {
-        padding: 8px 12px;
-        border-radius: 4px;
-        border: none;
-        color: $white;
-        cursor: pointer;
-        transition: all 0.1s ease-in-out;
-        text-transform: uppercase;
-        font-family: 'GoiaDisplay', sans-serif;
-        font-style: italic;
-        font-weight: 700;
+        .difficultyButton {
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: none;
+          color: $white;
+          cursor: pointer;
+          transition: all 0.1s ease-in-out;
+          text-transform: uppercase;
+          font-family: 'GoiaDisplay', sans-serif;
+          font-style: italic;
+          font-weight: 700;
 
-        &:hover {
-          filter: brightness(0.9);
+          &:hover {
+            filter: brightness(0.9);
+          }
+
+          &.active {
+            outline: 3px solid $white;
+          }
         }
 
-        &.active {
-          outline: 3px solid $white;
+        .facile {
+          background-color: $emerald-green;
         }
-      }
+        .moyen {
+          background-color: $yellow;
+        }
+        .difficile {
+          background-color: $red-ribbon;
+        }
+        .impossible {
+          background-color: $purple-heart;
+        }
+        .draft {
+          background-color: $white;
+          color: $black;
 
-      .facile {
-        background-color: $emerald-green;
-      }
-      .moyen {
-        background-color: $yellow;
-      }
-      .difficile {
-        background-color: $red-ribbon;
-      }
-      .impossible {
-        background-color: $purple-heart;
+          &.active {
+            outline: 3px solid $yellow;
+          }
+        }
+        .live {
+          background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+        }
       }
     }
   }
@@ -334,6 +345,58 @@
       max-height: 70%;
 
       &__inputs {
+        width: 100%;
+
+        .fileInput{
+          width: 60%;
+          display: flex;
+          flex-direction: column;
+
+          &__display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+
+    &__buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .songInfo {
+      display: flex;
+      align-items: stretch; // Important pour que les enfants s'étirent sur la même hauteur
+      gap: 20px;
+      width: 100%;
+    }
+
+    .songTextInfos{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .stepThree {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+
+    &__wrapper {
+      display: flex;
+      gap: 16px;
+      max-height: 70%;
+
+      &__inputs {
         width: 50%;
 
         .fileInput{
@@ -345,10 +408,14 @@
         }
       }
 
+      &__info{
+        width: 40%;
+      }
+
       &__lyrics {
         position: relative;
         height: 100%;
-        width: 50%;
+        width: 60%;
 
 
         &::before {
@@ -356,7 +423,7 @@
           position: absolute;
           top: 0;
           bottom: 0;
-          left: 4px;
+          right: 4px;
           width: 1px;
           background-color: rgba(255, 246, 241, 0.30);
           z-index: 0;
@@ -370,9 +437,7 @@
         &__preview {
           height: 100%;
           overflow-y: scroll;
-          direction: rtl;
-          text-align: left;
-          padding: 0 36px;
+          padding: 0 16px;
 
 
           &::-webkit-scrollbar {
@@ -388,7 +453,7 @@
           scrollbar-color: $yellow transparent;
 
           h3{
-            font-size: 20px;
+            font-size: 18px;
             font-style: italic;
             font-weight: 700;
             text-transform: uppercase;
@@ -400,7 +465,11 @@
           }
 
           .highlight {
-            color: $yellow;
+            background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-right: 4px;
           }
 
           .deleted {

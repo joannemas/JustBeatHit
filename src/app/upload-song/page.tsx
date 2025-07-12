@@ -12,6 +12,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
+const statusOptions = ['Draft', 'Live'] as const;
 
 // Schéma Zod pour valider le formulaire
 const songSchema = z.object({
@@ -19,7 +20,7 @@ const songSchema = z.object({
     singer: z.string().min(1, 'Le nom de l’artiste est requis'),
     is_explicit: z.boolean(),
     difficulty: z.enum(difficultyLevels),
-    status: z.enum(['Live', 'Draft']),
+    status: z.enum(statusOptions),
     mp3: z.any().refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
     lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
     cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
@@ -291,8 +292,8 @@ export default function UploadSongPage() {
                                                        alt="status icon" width={50} height={50} aria-hidden="true"/>
                                             </div>
                                             <span className={styles.fileInput__extension}>
-                                {originalMp3File ? originalMp3File.name : '.mp3'}
-                            </span>
+                                                {originalMp3File ? originalMp3File.name : '.mp3'}
+                                            </span>
                                         </div>
 
                                         {typeof errors.mp3?.message === 'string' && (
@@ -331,21 +332,6 @@ export default function UploadSongPage() {
                                     </div>
                                 </div>
 
-                                <div className={styles.uploadForm__display__input}>
-                                    <label>Statut</label>
-                                    <select {...register('status')}>
-                                        <option value="" disabled selected hidden>-- Choisir --</option>
-                                        <option value="Live">Live</option>
-                                        <option value="Draft">Brouillon</option>
-                                    </select>
-                                    {errors.status && <p>{errors.status.message}</p>}
-                                </div>
-
-                                <div className={styles.uploadForm__display__checkbox}>
-                                    <label>Chanson Premium ?</label>
-                                    <input type="checkbox" {...register('is_premium')} />
-                                </div>
-
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi
                                     architecto,
                                     asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic
@@ -368,11 +354,10 @@ export default function UploadSongPage() {
 
                     {currentStep === 2 && (
                         <div className={styles.stepTwo}>
-                            <h2>étape 2 : ajouter des <span className={styles.highlightTitle}>informations complémentaires</span>
-                            </h2>
+                            <h2>étape 2 : ajouter des <span className={styles.highlightTitle}>informations complémentaires</span></h2>
 
-                            <div className={styles.stepTwo__wrapper}>
-                                <div className={styles.stepTwo__wrapper__inputs}>
+                            <div className={styles.stepTwo__wrapper__inputs}>
+                                <div className={styles.songInfo}>
                                     <div className={styles.fileInput}>
                                         <label>Cover</label>
                                         <div className={`${styles.fileInput__display} ${coverFile ? styles.active : ''}`}>
@@ -408,142 +393,210 @@ export default function UploadSongPage() {
                                         )}
                                     </div>
 
-                                    <div className={styles.uploadForm__display__input}>
-                                        <label>Titre</label>
-                                        <div className={styles.uploadForm__display__input__edit}>
-                                            {isEditingTitle || !title ? (
-                                                <>
-                                                    <input
-                                                        type="text"
-                                                        defaultValue={title}
-                                                        onBlur={(e) => validateField('title', e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                validateField('title', (e.target as HTMLInputElement).value);
-                                                            }
-                                                        }}
-                                                        autoFocus={isMounted && isEditingTitle}
-                                                    />
-                                                    <Image
-                                                        src="/assets/img/icon/check-circle.svg"
-                                                        alt="valider"
-                                                        width={20}
-                                                        height={20}
-                                                        aria-hidden="true"
-                                                        onClick={() => {
-                                                            const input = document.querySelector<HTMLInputElement>('input[name="title"]');
-                                                            if (input) validateField('title', input.value);
-                                                        }}
-                                                    />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span className={styles.displayText}>{title}</span>
-                                                    <Image
-                                                        src="/assets/img/icon/edit-icon.svg"
-                                                        alt="éditer"
-                                                        width={20}
-                                                        height={20}
-                                                        aria-hidden="true"
-                                                        onClick={() => setIsEditingTitle(true)}
-                                                    />
-                                                </>
-                                            )}
+                                    <div className={styles.songTextInfos}>
+                                        <div className={styles.uploadForm__display__input}>
+                                            <label>Titre</label>
+                                            <div className={styles.uploadForm__display__input__edit}>
+                                                {isEditingTitle || !title ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            defaultValue={title}
+                                                            onBlur={(e) => validateField('title', e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault();
+                                                                    validateField('title', (e.target as HTMLInputElement).value);
+                                                                }
+                                                            }}
+                                                            autoFocus={isMounted && isEditingTitle}
+                                                        />
+                                                        <Image
+                                                            src="/assets/img/icon/check-circle.svg"
+                                                            alt="valider"
+                                                            width={20}
+                                                            height={20}
+                                                            aria-hidden="true"
+                                                            onClick={() => {
+                                                                const input = document.querySelector<HTMLInputElement>('input[name="title"]');
+                                                                if (input) validateField('title', input.value);
+                                                            }}
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span className={styles.displayText}>{title}</span>
+                                                        <Image
+                                                            src="/assets/img/icon/edit-icon.svg"
+                                                            alt="éditer"
+                                                            width={20}
+                                                            height={20}
+                                                            aria-hidden="true"
+                                                            onClick={() => setIsEditingTitle(true)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </div>
+                                            {errors.title && <p>{errors.title.message}</p>}
                                         </div>
-                                        {errors.title && <p>{errors.title.message}</p>}
-                                    </div>
 
-                                    <div className={styles.uploadForm__display__input}>
-                                        <label>Artiste</label>
-                                        <div className={styles.uploadForm__display__input__edit}>
-                                            {isEditingArtist || !singer ? (
-                                                <>
-                                                    <input
-                                                        type="text"
-                                                        defaultValue={singer}
-                                                        onBlur={(e) => validateField('singer', e.target.value)}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                validateField('singer', (e.target as HTMLInputElement).value);
-                                                            }
-                                                        }}
-                                                        autoFocus={isMounted && isEditingArtist}
-                                                    />
-                                                    <Image
-                                                        src="/assets/img/icon/check-circle.svg"
-                                                        alt="valider"
-                                                        width={20}
-                                                        height={20}
-                                                        aria-hidden="true"
-                                                        onClick={() => {
-                                                            const input = document.querySelector<HTMLInputElement>('input[name="singer"]');
-                                                            if (input) validateField('singer', input.value);
-                                                        }}
-                                                    />
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span className={styles.displayText}>{singer}</span>
-                                                    <Image
-                                                        src="/assets/img/icon/edit-icon.svg"
-                                                        alt="éditer"
-                                                        width={20}
-                                                        height={20}
-                                                        aria-hidden="true"
-                                                        onClick={() => setIsEditingArtist(true)}
-                                                    />
-                                                </>
-                                            )}
+                                        <div className={styles.uploadForm__display__input}>
+                                            <label>Artiste</label>
+                                            <div className={styles.uploadForm__display__input__edit}>
+                                                {isEditingArtist || !singer ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            defaultValue={singer}
+                                                            onBlur={(e) => validateField('singer', e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault();
+                                                                    validateField('singer', (e.target as HTMLInputElement).value);
+                                                                }
+                                                            }}
+                                                            autoFocus={isMounted && isEditingArtist}
+                                                        />
+                                                        <Image
+                                                            src="/assets/img/icon/check-circle.svg"
+                                                            alt="valider"
+                                                            width={20}
+                                                            height={20}
+                                                            aria-hidden="true"
+                                                            onClick={() => {
+                                                                const input = document.querySelector<HTMLInputElement>('input[name="singer"]');
+                                                                if (input) validateField('singer', input.value);
+                                                            }}
+                                                        />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span className={styles.displayText}>{singer}</span>
+                                                        <Image
+                                                            src="/assets/img/icon/edit-icon.svg"
+                                                            alt="éditer"
+                                                            width={20}
+                                                            height={20}
+                                                            aria-hidden="true"
+                                                            onClick={() => setIsEditingArtist(true)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </div>
+                                            {errors.singer && <p>{errors.singer.message}</p>}
                                         </div>
-                                        {errors.singer && <p>{errors.singer.message}</p>}
-                                    </div>
 
-                                    <div className={styles.uploadForm__display__checkbox}>
-                                        <label>Contenu explicite</label>
-                                        <input type="checkbox" {...register('is_explicit')} />
-                                    </div>
-
-                                    <div className={styles.uploadForm__display__input}>
-                                        <label className={styles.uploadForm__display__label}>Difficulté</label>
-                                        <div className={styles.difficultyChoices}>
-                                            {difficultyLevels.map((level) => (
-                                                <button
-                                                    key={level}
-                                                    type="button"
-                                                    className={`${styles.difficultyButton} ${
-                                                        watch('difficulty') === level ? styles.active : ''
-                                                    } ${styles[level.toLowerCase()]}`}
-                                                    onClick={() => setValue('difficulty', level)}
-                                                >
-                                                    {level}
-                                                </button>
-                                            ))}
+                                        <div className={styles.uploadForm__display__checkbox}>
+                                            <label>Contenu explicite</label>
+                                            <input type="checkbox" {...register('is_explicit')} />
                                         </div>
-                                        {errors.difficulty && <p>{errors.difficulty.message}</p>}
-                                    </div>
 
-                                    {audioUrl && (
-                                        <div className={styles.audioPreview}>
-                                            {isPreparing ? (
-                                                <p>Préparation de l&apos;extrait...</p>
-                                            ) : (
-                                                <audio controls src={trimmedAudioUrl || audioUrl}/>
-                                            )}
+                                        <div className={styles.uploadForm__display__checkbox}>
+                                            <label>Musique Premium </label>
+                                            <input type="checkbox" {...register('is_premium')} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.uploadForm__display__input}>
+                                    <label className={styles.uploadForm__display__label}>Difficulté</label>
+                                    <div className={styles.difficultyChoices}>
+                                        {difficultyLevels.map((level) => (
+                                            <button
+                                                key={level}
+                                                type="button"
+                                                className={`${styles.difficultyButton} ${
+                                                    watch('difficulty') === level ? styles.active : ''
+                                                } ${styles[level.toLowerCase()]}`}
+                                                onClick={() => setValue('difficulty', level)}
+                                            >
+                                                {level}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {errors.difficulty && <p>{errors.difficulty.message}</p>}
+                                </div>
+
+                                <div className={styles.uploadForm__display__input}>
+                                    <label className={styles.uploadForm__display__label}>Statut</label>
+                                    <div className={styles.difficultyChoices}>
+                                        {statusOptions.map((statusLabel) => (
+                                            <button
+                                                key={statusLabel}
+                                                type="button"
+                                                className={`${styles.difficultyButton} ${
+                                                    watch('status') === statusLabel ? styles.active : ''
+                                                } ${styles[statusLabel.toLowerCase()]}`}
+                                                onClick={() => setValue('status', statusLabel)}
+                                            >
+                                                {statusLabel}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {errors.status && <p>{errors.status.message}</p>}
+                                </div>
+                            </div>
+
+                            <div className={styles.stepTwo__buttons}>
+                                <button
+                                    type="button"
+                                    className={styles.stepButton}
+                                    onClick={() => setCurrentStep(1)}
+                                >
+                                    <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true" style={{transform: "rotate(180deg)"}}/>
+                                    Précédent
+                                </button>
+                                <button
+                                    type="button"
+                                    className={styles.stepButton}
+                                    onClick={() => setCurrentStep(3)}
+                                >
+                                    <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStep === 3 && (
+                        <div className={styles.stepThree}>
+                            <h2>étape 3 : choisir <span className={styles.highlightTitle}>les paroles</span> de la musique</h2>
+
+                            <div className={styles.stepThree__wrapper}>
+
+                                <div className={styles.stepThree__wrapper__lyrics}>
+                                    {lyrics.length > 0 && (
+                                        <div className={styles.stepThree__wrapper__lyrics__preview}>
+                                            <h3>Paroles</h3>
+                                            {lyrics.map(({time, text}, i) => {
+                                                const isInRange = time >= range.min && time <= range.max;
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className={isInRange ? styles.highlight : styles.deleted}
+                                                    >
+                                                        [{time.toFixed(2)}] {text}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     )}
+                                </div>
+
+                                <div className={styles.stepThree__wrapper__info}>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequuntur dicta dolore, dolorem, explicabo facilis iure mollitia omnis qui saepe vitae
+                                        voluptas. Aut cupiditate libero maiores, odio quasi soluta totam!</p>
 
                                     {audioUrl && (
                                         <div className="double_range_slider_box">
                                             <div className="double_range_slider">
-                            <span
-                                className="range_track"
-                                style={{
-                                    left: `${(range.min / audioDuration) * 100}%`,
-                                    width: `${((range.max - range.min) / audioDuration) * 100}%`,
-                                }}
-                            ></span>
+                                                <span
+                                                    className="range_track"
+                                                    style={{
+                                                        left: `${(range.min / audioDuration) * 100}%`,
+                                                        width: `${((range.max - range.min) / audioDuration) * 100}%`,
+                                                    }}
+                                                ></span>
 
                                                 <input
                                                     type="range"
@@ -579,25 +632,24 @@ export default function UploadSongPage() {
                                             </div>
                                         </div>
                                     )}
-                                </div>
 
-                                <div className={styles.stepTwo__wrapper__lyrics}>
-                                    {lyrics.length > 0 && (
-                                        <div className={styles.stepTwo__wrapper__lyrics__preview}>
-                                            <h3>Paroles</h3>
-                                            {lyrics.map(({time, text}, i) => {
-                                                const isInRange = time >= range.min && time <= range.max;
-                                                return (
-                                                    <div
-                                                        key={i}
-                                                        className={isInRange ? styles.highlight : styles.deleted}
-                                                    >
-                                                        [{time.toFixed(2)}] {text}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
+                                    <div className={styles.uploadForm__display__input}>
+                                        <label>Temps</label>
+                                        <p>58 secondes</p>
+                                    </div>
+
+                                    <div className={styles.uploadForm__display__input}>
+                                        <label>Preview</label>
+                                        {audioUrl && (
+                                            <div className={styles.audioPreview}>
+                                                {isPreparing ? (
+                                                    <p>Préparation de l&apos;extrait...</p>
+                                                ) : (
+                                                    <audio controls src={trimmedAudioUrl || audioUrl}/>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -606,7 +658,7 @@ export default function UploadSongPage() {
                                 className={styles.stepButton}
                                 onClick={() => setCurrentStep(1)}
                             >
-                                <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true" style={{transform: "rotate(180deg)"}}/>
+                            <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true" style={{transform: "rotate(180deg)"}}/>
                                 Précédent
                             </button>
                         </div>
@@ -617,15 +669,18 @@ export default function UploadSongPage() {
 
                     <h2 className={styles.highlightTitle}>Étape 1 . ajouter les fichiers MP3 et LRC</h2>
                     <div className={styles.lineBreak}></div>
-                    <h2 className={currentStep === 2 ? styles.highlightTitle : ''}>Étape 2 . ajouter des informations
+                    <h2 className={currentStep > 1 ? styles.highlightTitle : ''}>Étape 2 . ajouter des informations
                         complémentaires</h2>
+                    <div className={styles.lineBreak}></div>
+                    <h2 className={currentStep === 3 ? styles.highlightTitle : ''}>Étape 3 . choisir les paroles de la
+                        musique</h2>
 
                     <button
                         type="submit"
                         disabled={isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty')}
                         className={`${styles.submitButton}`}
                     >
-                        {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') &&
+                    {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') &&
                             <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
 
                         {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
