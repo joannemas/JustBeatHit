@@ -736,13 +736,23 @@ export default function UploadSongPage() {
                                                             <RangeSliderFilledTrack/>
                                                         </RangeSliderTrack>
                                                         <RangeSliderThumb boxSize={6} index={1}>
-                                                            <div className={`${styles.sliderThumb} ${styles.start}`}>
-                                                                Début
+                                                            <div className={styles.sliderThumbContainer}>
+                                                                <div className={`${styles.sliderThumb} ${styles.start}`}>
+                                                                    Début
+                                                                </div>
+                                                                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M14.4129 14.3371C14.779 14.7032 14.779 15.2971 14.4129 15.6633L10.0379 20.0383C9.6718 20.4044 9.07786 20.4044 8.71174 20.0383C8.34563 19.6721 8.34563 19.0782 8.71174 18.7121L12.4237 15.0002L8.71174 11.2883C8.34562 10.9221 8.34562 10.3282 8.71174 9.96209C9.07786 9.59597 9.6718 9.59597 10.0379 9.96209L14.4129 14.3371ZM21.9129 14.3371C22.279 14.7032 22.279 15.2971 21.9129 15.6633L17.5379 20.0383C17.1718 20.4044 16.5779 20.4044 16.2117 20.0383C15.8456 19.6721 15.8456 19.0782 16.2117 18.7121L19.9237 15.0002L16.2117 11.2883C15.8456 10.9221 15.8456 10.3282 16.2117 9.96209C16.5779 9.59597 17.1718 9.59597 17.5379 9.96209L21.9129 14.3371Z" fill="#2CC448"/>
+                                                                </svg>
                                                             </div>
                                                         </RangeSliderThumb>
                                                         <RangeSliderThumb boxSize={6} index={0}>
-                                                            <div className={`${styles.sliderThumb} ${styles.end}`}>
-                                                                Fin
+                                                            <div className={styles.sliderThumbContainer}>
+                                                                <div className={`${styles.sliderThumb} ${styles.end}`}>
+                                                                    Fin
+                                                                </div>
+                                                                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M14.4129 14.3371C14.779 14.7032 14.779 15.2971 14.4129 15.6633L10.0379 20.0383C9.6718 20.4044 9.07786 20.4044 8.71174 20.0383C8.34563 19.6721 8.34563 19.0782 8.71174 18.7121L12.4237 15.0002L8.71174 11.2883C8.34562 10.9221 8.34562 10.3282 8.71174 9.96209C9.07786 9.59597 9.6718 9.59597 10.0379 9.96209L14.4129 14.3371ZM21.9129 14.3371C22.279 14.7032 22.279 15.2971 21.9129 15.6633L17.5379 20.0383C17.1718 20.4044 16.5779 20.4044 16.2117 20.0383C15.8456 19.6721 15.8456 19.0782 16.2117 18.7121L19.9237 15.0002L16.2117 11.2883C15.8456 10.9221 15.8456 10.3282 16.2117 9.96209C16.5779 9.59597 17.1718 9.59597 17.5379 9.96209L21.9129 14.3371Z" fill="#F1203C"/>
+                                                                </svg>
                                                             </div>
                                                         </RangeSliderThumb>
                                                     </RangeSlider>
