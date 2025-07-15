@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/server";
+import UpgradeButton from "@/components/UpgradeButton";
 
 
 export default async function Page() {
