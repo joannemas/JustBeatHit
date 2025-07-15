@@ -376,22 +376,34 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   const renderLyrics = () => {
     return lyrics.map((lyric, index) => {
+      const isFirstLine = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+      const isLastLine = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+      const isBeforeFirst = index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+      const isBeforeLast = index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
       if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
         return null;
       }
       return (
         <div key={index} className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ''}`}>
           {index < currentLyricIndex && (
-            <p className={styles.previous}>{lyrics[index].text}</p>
+              <p
+                  className={`${styles.previous} 
+                            ${index === currentLyricIndex ? styles.current : ''}
+                            ${isBeforeFirst ? styles['--before-line'] : ''}
+                            ${isFirstLine ? styles['--first-line'] : ''}`
+                  }
+              >
+                {lyrics[index].text}
+              </p>
           )}
           {index === currentLyricIndex && (
-            <div
-              className={styles.currentLyricContainer}
-              ref={showTimerForTutorial ? currentLyricRef : undefined}
-              style={{ position: "relative", width: "100%" }}
-            >
-              <Image priority
-                src="/assets/img/icon/arrow-right.svg"
+              <div
+                  className={styles.currentLyricContainer}
+                  ref={showTimerForTutorial ? currentLyricRef : undefined}
+                  style={{position: "relative", width: "100%"}}
+              >
+                <Image priority
+                       src="/assets/img/icon/arrow-right.svg"
                 alt="Music svg"
                 width={40}
                 height={40}
@@ -437,7 +449,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             </div>
           )}
           {index > currentLyricIndex && (
-            <p className={styles.next}>{lyrics[index].text}</p>
+              <p className={`${styles.next}
+                            ${isLastLine ? styles['--last-line'] : ''}
+                            ${isBeforeLast ? styles['--before-line'] : ''}`
+              }>
+                {lyrics[index].text}
+              </p>
           )}
         </div>
       );
@@ -445,8 +462,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   };
 
   const speedClass = multiplier === 4 ? styles.faster :
-    multiplier >= 3 ? styles.fast :
-      multiplier >= 2 ? styles.medium : "";
+      multiplier >= 3 ? styles.fast :
+          multiplier >= 2 ? styles.medium : "";
 
   const getGradientId = () => {
     if (multiplier === 4) return "gradient-faster";
