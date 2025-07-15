@@ -19,6 +19,9 @@ import {
 
 const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
 const statusOptions = ['Draft', 'Live'] as const;
+const musicStyles = [
+    'Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'
+];
 
 // Schéma Zod pour valider le formulaire
 const songSchema = z.object({
@@ -31,6 +34,7 @@ const songSchema = z.object({
     lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
     cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
     is_premium: z.boolean(),
+    music_style: z.array(z.string()),
 });
 
 type SongFormData = z.infer<typeof songSchema>;
@@ -71,6 +75,38 @@ export default function UploadSongPage() {
     const [adjustedEndTime, setAdjustedEndTime] = useState(endTime);
     const min = 1;
     const max = lyrics.length > 0 ? lyrics.length : 10; // Protection contre lyrics vide
+    const [musicStyleInput, setMusicStyleInput] = useState('');
+    const [filteredStyles, setFilteredStyles] = useState<string[]>(musicStyles);
+    const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+
+// Synchroniser avec le champ du formulaire react-hook-form
+    useEffect(() => {
+        setValue('music_style', selectedStyles);
+    }, [selectedStyles, setValue]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setMusicStyleInput(value);
+
+        const filtered = musicStyles.filter(style =>
+            style.toLowerCase().includes(value.toLowerCase()) &&
+            !selectedStyles.includes(style)
+        );
+        setFilteredStyles(filtered);
+    };
+
+    const handleStyleSelect = (style: string) => {
+        if (!selectedStyles.includes(style)) {
+            setSelectedStyles(prev => [...prev, style]);
+            setMusicStyleInput('');
+            setFilteredStyles(musicStyles.filter(s => !selectedStyles.includes(s)));
+        }
+    };
+
+    const handleRemoveStyle = (style: string) => {
+        setSelectedStyles(prev => prev.filter(s => s !== style));
+    };
+
 
     // Fonction pour inverser les valeurs du slider
     const invertValue = (val: number) => max - val + min;
@@ -161,7 +197,7 @@ export default function UploadSongPage() {
 
         setIsSubmitting(true);
 
-        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover, is_premium } = data;
+        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover, is_premium, music_style } = data;
         const folderPath = `${singer} - ${title}`.trim();
 
         const mp3File = mp3[0];
@@ -230,7 +266,8 @@ export default function UploadSongPage() {
                 is_explicit,
                 difficulty,
                 status,
-                is_premium
+                is_premium,
+                music_style,
             });
 
         if (insertError) {
@@ -581,6 +618,38 @@ export default function UploadSongPage() {
                                     </div>
 
                                     <div className={styles.uploadForm__display__input}>
+                                        <div className={styles.musicStyleWrapper}>
+                                            <label htmlFor="music-style">Style(s) musical(aux)</label>
+
+                                            <div className={styles.musicStyleInputWrapper}>
+                                                <input
+                                                    type="text"
+                                                    value={musicStyleInput}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Rechercher un style..."
+                                                    className={styles.musicStyleInput}
+                                                />
+                                                {selectedStyles.map((style) => (
+                                                    <span key={style} className={styles.chip}>
+                                                        {style}
+                                                        <button type="button" onClick={() => handleRemoveStyle(style)}>×</button>
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            {musicStyleInput && filteredStyles.length > 0 && (
+                                                <ul className={styles.suggestions}>
+                                                    {filteredStyles.map(style => (
+                                                        <li key={style} onClick={() => handleStyleSelect(style)}>
+                                                            {style}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.uploadForm__display__input}>
                                         <label className={styles.uploadForm__display__label}>Difficulté</label>
                                         <div className={styles.difficultyChoices}>
                                             {difficultyLevels.map((level) => (
@@ -611,7 +680,7 @@ export default function UploadSongPage() {
                                                     } ${styles[statusLabel.toLowerCase()]}`}
                                                     onClick={() => setValue('status', statusLabel)}
                                                 >
-                                                    {statusLabel}
+                                                    {statusLabel === 'Live' ? 'En ligne' : 'Brouillon'}
                                                 </button>
                                             ))}
                                         </div>
