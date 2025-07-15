@@ -79,6 +79,7 @@ export default function UploadSongPage() {
         setRangeIndex([1, Math.floor(lyrics.length / 2)]);
     }, [lyrics]);
 
+    // Calcule un début au milieu entre la ligne précédente et la ligne actuelle
     function getSmartTrimRange(
         rangeIndex: [number, number],
         lyrics: { time: number }[],
@@ -111,15 +112,27 @@ export default function UploadSongPage() {
 
     const formatDuration = (seconds: number): string => {
         if (seconds < 60) {
-            return `${Math.round(seconds)} seconde${seconds >= 2 ? 's' : ''}`;
+            const durationText = `${Math.round(seconds)} seconde${seconds >= 2 ? 's' : ''}`;
+            if (seconds < 30) {
+                return `${durationText} (audio trop court !)`;
+            }
+            return durationText;
         }
 
         const mins = Math.floor(seconds / 60);
         const secs = Math.round(seconds % 60);
+        const durationText = `${mins} minute${mins > 1 ? 's' : ''}${secs > 0 ? ` ${secs}` : ''}`;
 
-        return `${mins} minute${mins > 1 ? 's' : ''}${secs > 0 ? ` ${secs}` : ''}`;
+        if (seconds > 90) {
+            return `${durationText} (audio trop long !)`;
+        }
+
+        return durationText;
     };
 
+    const isValidDuration = (duration: number): boolean => {
+        return duration >= 30 && duration <= 90;
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -145,6 +158,7 @@ export default function UploadSongPage() {
     const singer = watch('singer');
 
     const onSubmit = async (data: SongFormData) => {
+
         setIsSubmitting(true);
 
         const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover, is_premium } = data;
@@ -157,6 +171,11 @@ export default function UploadSongPage() {
         const trimmedMp3Blob = await trimMp3(mp3File, startTime, duration);
         const trimmedLrcBlob = await trimLrc(lrcFile, startTime, endTime);
 
+        if (!isValidDuration(duration)) {
+            alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
+            setIsSubmitting(false);
+            return;
+        }
 
         // Upload du MP3
         const { error: mp3Error } = await supabase.storage
@@ -249,8 +268,6 @@ export default function UploadSongPage() {
             setIsTrimming(true);
 
             const { startTime, endTime, duration } = getSmartTrimRange(rangeIndex, lyrics, audioDuration);
-
-            console.log('Trimming range:', { startTime, endTime, duration });
 
             try {
                 const trimmedBlob = await trimMp3(originalMp3File, startTime, duration);
@@ -705,7 +722,7 @@ export default function UploadSongPage() {
                                 <button
                                     type="button"
                                     className={styles.stepButton}
-                                    onClick={() => setCurrentStep(1)}
+                                    onClick={() => setCurrentStep(2)}
                                 >
                                     <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true" style={{transform: "rotate(180deg)"}}/>
                                     Précédent
@@ -726,7 +743,7 @@ export default function UploadSongPage() {
 
                         <button
                             type="submit"
-                            disabled={isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty')}
+                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty')}
                             className={`${styles.submitButton}`}
                         >
                             {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') &&
@@ -735,9 +752,7 @@ export default function UploadSongPage() {
                             {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
                         </button>
                     </div>
-
                 </form>
-
             </main>
         </ChakraProvider>
     );
