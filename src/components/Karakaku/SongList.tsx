@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import SongCard from "./SongCard";
-import Navbar from "../Navbar";
 import styles from "@/stylesheets/songList.module.scss";
 
 export default function SongList({ gameId }: { gameId?: string }) {
