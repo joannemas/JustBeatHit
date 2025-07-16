@@ -387,8 +387,7 @@ export default function UploadSongPage() {
                     <div className={styles.uploadForm__display}>
                         {currentStep === 1 && (
                             <div className={styles.stepOne}>
-                                <h2>Étape 1 . ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le
-                                    fichier <span className={styles.highlightTitle}>lrc</span></h2>
+                                <h2>Étape 1 . ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le fichier <span className={styles.highlightTitle}>lrc</span></h2>
 
                                 <div>
                                     <div className={styles.stepOne__filesWrapper}>
@@ -668,24 +667,6 @@ export default function UploadSongPage() {
                                         {errors.difficulty && <p>{errors.difficulty.message}</p>}
                                     </div>
 
-                                    <div className={styles.uploadForm__display__input}>
-                                        <label className={styles.uploadForm__display__label}>Statut</label>
-                                        <div className={styles.difficultyChoices}>
-                                            {statusOptions.map((statusLabel) => (
-                                                <button
-                                                    key={statusLabel}
-                                                    type="button"
-                                                    className={`${styles.difficultyButton} ${
-                                                        watch('status') === statusLabel ? styles.active : ''
-                                                    } ${styles[statusLabel.toLowerCase()]}`}
-                                                    onClick={() => setValue('status', statusLabel)}
-                                                >
-                                                    {statusLabel === 'Live' ? 'En ligne' : 'Brouillon'}
-                                                </button>
-                                            ))}
-                                        </div>
-                                        {errors.status && <p>{errors.status.message}</p>}
-                                    </div>
                                 </div>
 
                                 <div className={styles.stepTwo__buttons}>
@@ -775,8 +756,9 @@ export default function UploadSongPage() {
                                     </div>
 
                                     <div className={styles.stepThree__wrapper__info}>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequuntur dicta dolore, dolorem, explicabo facilis iure mollitia omnis qui saepe vitae
-                                            voluptas. Aut cupiditate libero maiores, odio quasi soluta totam!</p>
+                                        <p> Il faut que la durée de la musique soit comprise entre 30 secondes et 1 minute 30.</p>
+
+                                        <p>Pour changer les paroles il suffit de glisser les deux boutons <span style={{color: '#2CC448'}}>début</span> et <span style={{color: '#F1203C'}}>fin</span> entre les paroles voulues</p>
 
                                         <div className={styles.uploadForm__display__input}>
                                             <label>Temps</label>
@@ -795,6 +777,26 @@ export default function UploadSongPage() {
                                                 </div>
                                             )}
                                         </div>
+
+                                        <div className={styles.uploadForm__display__input}>
+                                            <label className={styles.uploadForm__display__label}>Statut</label>
+                                            <div className={styles.difficultyChoices}>
+                                                {statusOptions.map((statusLabel) => (
+                                                    <button
+                                                        key={statusLabel}
+                                                        type="button"
+                                                        className={`${styles.difficultyButton} ${
+                                                            watch('status') === statusLabel ? styles.active : ''
+                                                        } ${styles[statusLabel.toLowerCase()]}`}
+                                                        onClick={() => setValue('status', statusLabel)}
+                                                    >
+                                                        {statusLabel === 'Live' ? 'En ligne' : 'Brouillon'}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            {errors.status && <p>{errors.status.message}</p>}
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -812,13 +814,11 @@ export default function UploadSongPage() {
 
                     <div className={styles.stepper}>
 
-                    <h2 className={styles.highlightTitle}>Étape 1 . ajouter les fichiers MP3 et LRC</h2>
+                        <h2 className={styles.highlightTitle}>Étape 1 . ajouter les fichiers MP3 et LRC</h2>
                         <div className={styles.lineBreak}></div>
-                        <h2 className={currentStep > 1 ? styles.highlightTitle : ''}>Étape 2 . ajouter des informations
-                            complémentaires</h2>
+                        <h2 className={currentStep > 1 ? styles.highlightTitle : ''}>Étape 2 . ajouter des informations complémentaires</h2>
                         <div className={styles.lineBreak}></div>
-                        <h2 className={currentStep === 3 ? styles.highlightTitle : ''}>Étape 3 . choisir les paroles de la
-                            musique</h2>
+                        <h2 className={currentStep === 3 ? styles.highlightTitle : ''}>Étape 3 . choisir les paroles de la musique</h2>
 
                         <button
                             type="submit"

@@ -28,10 +28,11 @@
       height: 100%;
       h2 {
         font-family: 'GoiaDisplay', sans-serif;
-        font-size: 32px;
+        font-size: 28px;
         font-style: italic;
         font-weight: 700;
         text-transform: uppercase;
+        margin: 0;
       }
 
       .fileInput {
@@ -123,6 +124,14 @@
         flex-direction: column;
         gap: 8px;
         margin-bottom: 20px;
+
+        p{
+          margin: 0;
+          font-size: 18px;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
 
         &__edit{
           display: flex;
@@ -548,6 +557,10 @@
     gap: 16px;
     text-transform: uppercase;
     font-style: italic;
+
+    h2 {
+      font-size: 18px;
+    }
 
     .lineBreak{
       width: 2px;
