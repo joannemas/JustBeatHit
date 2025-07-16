@@ -34,7 +34,7 @@ const songSchema = z.object({
     lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
     cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
     is_premium: z.boolean(),
-    music_style: z.array(z.string()),
+    music_style: z.array(z.string()).min(1, 'Veuillez choisir au moins un style'),
 });
 
 type SongFormData = z.infer<typeof songSchema>;
@@ -822,10 +822,10 @@ export default function UploadSongPage() {
 
                         <button
                             type="submit"
-                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty')}
+                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty') || watch('music_style')?.length === 0}
                             className={`${styles.submitButton}`}
                         >
-                            {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') &&
+                            {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') && watch('music_style')?.length !== 0 &&
                                 <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
 
                             {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
