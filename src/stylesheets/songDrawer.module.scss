@@ -1,0 +1,110 @@
+.drawer {
+  width: 20vw;
+  background-color: #1a1a1a;
+  color: white;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.coverImage {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.songTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.songSinger {
+  font-size: 1rem;
+  font-style: italic;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.styleTag {
+  background: #444;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.difficulty {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: white;
+  display: inline-block;
+}
+
+.facile {
+  background-color: #34d399;
+}
+.moyen {
+  background-color: #f59e0b;
+}
+.difficile {
+  background-color: #ef4444;
+}
+.impossible {
+  background-color: #a855f7;
+}
+.unknown {
+  background-color: #9ca3af;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #facc15;
+  }
+
+  p, li {
+    font-size: 0.8rem;
+    color: #e5e5e5;
+  }
+
+  ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+}
+
+.playButton {
+  margin-top: auto;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: white;
+  background: linear-gradient(to right, #d946ef, #f97316);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
