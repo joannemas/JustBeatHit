@@ -6,6 +6,7 @@ import styles from "@/stylesheets/songDrawer.module.scss";
 import { Database } from "~/database.types";
 import { updateGameSong } from "@/app/game/actions";
 import Link from "next/link";
+import { ChevronDown, Plus, Star } from "lucide-react";
 
 type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
@@ -100,25 +101,79 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         ))}
       </div>
 
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <Plus className={styles.icon} />
+            <span>MODIFICATEURS</span>
+          </div>
+
+          <label className={styles.checkboxRow}>
+            <input type="checkbox" />
+            <span>Mort Subite</span>
+          </label>
+        </div>
 
       {bestScore && (
-        <div className={styles.section}>
-          <h3>MEILLEUR SCORE</h3>
-          <p>{bestScore.score} points</p>
+        <div className={styles.gameBlock}>
+          <div className={styles.gameHeader}>
+            <div className={styles.title}>
+              <Star size={16} className={styles.icon} />
+              <span>MEILLEUR SCORE</span>
+            </div>
+            <div className={styles.date}>
+              {new Date(bestScore.created_at!).toLocaleDateString("fr-FR")}
+            </div>
+          </div>
+
+          <div className={styles.statsRow}>
+            <div className={styles.stat}>
+              <div className={styles.label}>SCORE</div>
+              <div className={styles.value}>{bestScore.score?.toLocaleString()}</div>
+            </div>
+            <div className={styles.stat}>
+              <div className={styles.label}>FAUTES</div>
+              <div className={styles.value}>
+                {/* {bestScore.mistakes} / {bestScore.word_count} */}
+              </div>
+            </div>
+            <div className={styles.stat}>
+              <div className={styles.label}>VITESSE</div>
+              {/* <div className={styles.value}>{bestScore.word_speed} MPM</div> */}
+            </div>
+          </div>
         </div>
       )}
 
       {lastGame && (
-        <div className={styles.section}>
-          <h3>DERNIÈRE PARTIE</h3>
-          <ul>
-            <li>Score : {lastGame.score}</li>
-            <li>Erreurs : {lastGame.mistakes}</li>
-            <li>Vitesse : {lastGame.word_speed} MPM</li>
-            <li>Précision : {Math.round(lastGame.typing_accuracy ?? 0)}%</li>
-          </ul>
+      <div className={styles.gameBlock}>
+        <div className={styles.gameHeader}>
+          <div className={styles.title}>
+            <ChevronDown size={16} className={styles.icon} />
+            <span>DERNIÈRE PARTIE</span>
+          </div>
+          <div className={styles.date}>
+            {new Date(lastGame.created_at!).toLocaleDateString("fr-FR")}
+          </div>
         </div>
-      )}
+
+        <div className={styles.statsRow}>
+          <div className={styles.stat}>
+            <div className={styles.label}>SCORE</div>
+            <div className={styles.value}>{lastGame.score?.toLocaleString()}</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.label}>FAUTES</div>
+            <div className={styles.value}>
+              {lastGame.mistakes}
+            </div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.label}>VITESSE</div>
+            <div className={styles.value}>{lastGame.word_speed} MPM</div>
+          </div>
+        </div>
+      </div>
+    )}
         <Link
         key={song.id}
         href={`game/karakaku/${gameId}`}
