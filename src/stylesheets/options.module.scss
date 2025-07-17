@@ -6,6 +6,7 @@
     background-color: $white;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
 
 }
 
@@ -18,7 +19,6 @@
 
 .navTabs {
     display: flex;
-    margin-bottom: 2rem;
     border-bottom: 2px solid rgba($black, 0.1);
     padding-left: 50px;
     margin-top: 180px;
@@ -52,5 +52,89 @@
     .activeTab {
         color: $black;
         border-bottom: 3px solid $black;
+    }
+}
+
+
+.generalSettings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+
+    .avatar {
+        img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    }
+
+    .formGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-weight: bold;
+            font-family: 'Goia', sans-serif;
+            text-transform: uppercase;
+            font-style: italic;
+            color: $black;
+            font-size: 1rem;
+        }
+
+        input {
+            padding: 0.75rem 1rem;
+            border: 2px solid $black;
+            background-color: transparent;
+            border-radius: 20px;
+        }
+    }
+
+    button {
+        align-self: flex-end;
+        padding: 0.75rem 1.5rem;
+        background: $reverse-gradient;
+        color: $white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-family: 'Goia', sans-serif;
+        font-style: italic;
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 1rem;
+
+        &:disabled {
+            background: #767676;
+            cursor: not-allowed;
+        }
+    }
+
+    .successMessage,
+    .errorMessage,
+    .infoMessage {
+        font-family: 'Goia', sans-serif;
+        font-style: italic;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        margin-top: 1rem;
+        font-weight: 700;
+    }
+
+    .successMessage {
+        color: $emerald-green
+    }
+
+    .errorMessage {
+        color: $red-ribbon;
+    }
+
+    .infoMessage {
+        color: $orange;
     }
 }

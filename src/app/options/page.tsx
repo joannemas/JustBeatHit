@@ -4,6 +4,9 @@ import Navbar from "@/components/Navbar"
 import styles from "@/stylesheets/options.module.scss"
 import Image from "next/image"
 
+import GeneralSettings from "@/components/Options/GeneralSettings"
+
+
 const sections = ['général', 'mot de passe', 'abonnement', 'notifications', 'supprimer le compte']
 
 export default function OptionsPage() {
@@ -37,7 +40,7 @@ export default function OptionsPage() {
                 </nav>
 
                 <div className={styles.sectionContent}>
-                    {activeSection === 'général'}
+                    {activeSection === 'général' && <GeneralSettings />}
                     {activeSection === 'mot de passe'}
                     {activeSection === 'abonnement'}
                     {activeSection === 'notifications'}
