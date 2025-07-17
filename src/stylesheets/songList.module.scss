@@ -44,7 +44,7 @@
 
 .songGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 30px;
   padding: 20px;
 }
@@ -135,6 +135,28 @@
   .unknown {
     background-color: #9ca3af;
   }
+}
+.premiumBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff9900);
+  border-radius: 12px;
+  padding: 6px 14px;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.premiumIcon {
+  width: 16px;
+  height: 16px;
 }
 
 .musicStyle {
@@ -303,9 +325,13 @@
   border-radius: 999px;
   padding: 0.6rem 1.2rem;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.2s;
 
   &:hover {
     background-color: #ea8c00;
   }
+
+  
+
 }

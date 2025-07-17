@@ -12,10 +12,10 @@ export default function LibraryView({ gameId }: { gameId?: string }) {
     <div className={styles.mainRow}>
       <div className={styles.leftColumn}>
         <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
-        <SongList gameId={gameId} />
+        <SongList gameId={gameId} onSelectSong={setSelectedSong} />
       </div>
       <div className={styles.rightColumn}>
-        <SongDetailsPanel song={selectedSong} />
+        <SongDetailsPanel  gameId={gameId} song={selectedSong} />
       </div>
     </div>
   );

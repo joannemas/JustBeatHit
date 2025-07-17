@@ -1,32 +1,51 @@
 .drawer {
   width: 20vw;
-  background-color: #1a1a1a;
   color: white;
-  padding: 1.5rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  text-align: start;
+}
+
+.playButton {
+  margin-top: auto;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: white;
+  background: linear-gradient(to right, #d946ef, #f97316);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: filter 0.3s ease;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
 }
 
 .coverImage {
-  width: 100%;
+  width: 18vw;
   height: auto;
   border-radius: 0.75rem;
   object-fit: cover;
-  margin-bottom: 1rem;
+  margin: 1vw
 }
 
 .songTitle {
   font-size: 1.4rem;
   font-weight: bold;
-  margin-bottom: 0.25rem;
+  margin: 0.25rem;
 }
 
 .songSinger {
   font-size: 1rem;
   font-style: italic;
   color: #cbd5e1;
-  margin-bottom: 1rem;
+  margin: 0.25rem;
 }
 
 .tags {
@@ -107,4 +126,6 @@
   &:hover {
     filter: brightness(1.1);
   }
+
+  
 }

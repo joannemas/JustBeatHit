@@ -26,8 +26,6 @@ export default async function Page({ params: { game_name } }: { params: { game_n
             <>
                 <Navbar/>
                 <div className={styles.container}>
-                  {"blabla"}
-                  { data ? data[0].id : undefined}
                   <LibraryView gameId={data ? data[0].id : undefined}/>
                     {/* <div className={styles.titleContainer}>
                         <a href="/" className={styles.backBtn}>

@@ -221,6 +221,7 @@ export type Database = {
           title: string
           updated_at: string | null
           uploader: string | null
+          is_premium: boolean
         }
         Insert: {
           created_at?: string
