@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import styles from '@/stylesheets/options.module.scss'
+import Image from 'next/image'
 
 export default function PasswordSettings() {
     const [currentPassword, setCurrentPassword] = useState('')
@@ -154,10 +155,12 @@ const handlePasswordUpdate = async () => {
                 disabled={saving || !isValidPassword()}
                 className={styles.saveButton}
             >
-                <img
+                <Image
                     src="/assets/img/icon/check-icon.svg"
                     alt="Sauvegarder"
-                    style={{ width: 18, height: 18, marginRight: 8, verticalAlign: 'middle' }}
+                    width={18}
+                    height={18}
+                    style={{ marginRight: 8, verticalAlign: 'middle' }}
                 />
                 {saving ? 'Changement...' : 'Mettre à jour le mot de passe'}
             </button>
@@ -166,7 +169,7 @@ const handlePasswordUpdate = async () => {
             {message === 'error' && <p className={styles.errorMessage}>Une erreur est survenue. Réessaie plus tard.</p>}
             {message === 'invalid' && <p className={styles.errorMessage}>Vérifie les champs et les critères de sécurité.</p>}
             {message === 'wrongCurrent' && <p className={styles.errorMessage}>Le mot de passe actuel est incorrect.</p>}
-            {message === 'sameAsOldPassword' && <p className={styles.errorMessage}>Le nouveau mot de passe doit être différent de l'ancien.</p>}
+            {message === 'sameAsOldPassword' && <p className={styles.errorMessage}>Le nouveau mot de passe doit être différent de l&apos;ancien.</p>}
         </div>
     )
 }

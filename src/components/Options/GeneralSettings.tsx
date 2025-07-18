@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import styles from '@/stylesheets/options.module.scss'
+import Image from 'next/image'
 
 export default function GeneralSettings() {
     const [user, setUser] = useState<any>(null)
@@ -138,10 +139,12 @@ export default function GeneralSettings() {
             disabled={saving || !hasChanges}
             className={styles.saveButton}
         >
-            <img
-            src="/assets/img/icon/check-icon.svg"
-            alt="Sauvegarder"
-            style={{ width: 18, height: 18, marginRight: 8, verticalAlign: 'middle' }}
+            <Image
+                src="/assets/img/icon/check-icon.svg"
+                alt="Sauvegarder"
+                width={18}
+                height={18}
+                style={{ marginRight: 8, verticalAlign: 'middle' }}
             />
             {saving ? 'Enregistrement...' : 'Sauvegarder les changements'}
         </button>
