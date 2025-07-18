@@ -1,10 +1,9 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {useEffect, useState} from 'react';
-import { supabase } from '@/lib/supabase/client';
 import { trimMp3 } from '@/lib/ffmpeg/trimMp3';
 import { trimLrc } from '@/lib/lrc/trimLrc';
 import styles from "@/stylesheets/uploadSong.module.scss";
@@ -16,26 +15,10 @@ import {
     RangeSliderFilledTrack,
     RangeSliderThumb, ChakraProvider,
 } from '@chakra-ui/react'
-
-const difficultyLevels = ['Facile', 'Moyen', 'Difficile', 'Impossible'] as const;
-const statusOptions = ['Draft', 'Live'] as const;
-const musicStyles = [
-    'Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'
-];
-
-// Schéma Zod pour valider le formulaire
-const songSchema = z.object({
-    title: z.string().min(1, 'Le titre est requis'),
-    singer: z.string().min(1, 'Le nom de l’artiste est requis'),
-    is_explicit: z.boolean(),
-    difficulty: z.enum(difficultyLevels),
-    status: z.enum(statusOptions),
-    mp3: z.any().refine((file) => file?.length === 1, 'Le fichier MP3 est requis'),
-    lrc: z.any().refine((file) => file?.length === 1, 'Le fichier LRC est requis'),
-    cover: z.any().refine((file) => file?.length === 1, 'L’image de couverture est requise'),
-    is_premium: z.boolean(),
-    music_style: z.array(z.string()).min(1, 'Veuillez choisir au moins un style'),
-});
+import { songSchema } from './lib/schema';
+import { ACCEPTED_IMAGE_TYPES, difficultyLevels, musicStyles, statusOptions } from './lib/constants';
+import { uploadLocalSong } from '@/lib/dexie/uploadLocalSong';
+import { supabase } from '@/lib/supabase/client';
 
 type SongFormData = z.infer<typeof songSchema>;
 
@@ -193,19 +176,16 @@ export default function UploadSongPage() {
     const title = watch('title');
     const singer = watch('singer');
 
-    const onSubmit = async (data: SongFormData) => {
+    const onSubmit: SubmitHandler<SongFormData> = async (data) => {
 
         setIsSubmitting(true);
 
-        const { title, singer, is_explicit, difficulty, status, mp3, lrc, cover, is_premium, music_style } = data;
+        const { title, singer, is_explicit, difficulty, status, mp3File, lrcFile, coverFile, is_premium, music_style } = data;
         const folderPath = `${singer} - ${title}`.trim();
 
-        const mp3File = mp3[0];
-        const lrcFile = lrc[0];
-        const coverFile = cover[0];
         const { startTime, endTime, duration } = getSmartTrimRange(rangeIndex, lyrics, audioDuration);
-        const trimmedMp3Blob = await trimMp3(mp3File, startTime, duration);
-        const trimmedLrcBlob = await trimLrc(lrcFile, startTime, endTime);
+        const trimmedMp3Blob = await trimMp3(mp3File[0], startTime, duration);
+        const trimmedLrcBlob = await trimLrc(lrcFile[0], startTime, endTime);
 
         if (!isValidDuration(duration)) {
             alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
@@ -245,7 +225,7 @@ export default function UploadSongPage() {
         // Upload de l'image cover
         const { error: coverError } = await supabase.storage
             .from('song')
-            .upload(`${folderPath}/cover.${coverFile.name.split('.').pop()}`, coverFile, {
+            .upload(`${folderPath}/cover.${coverFile?.[0]?.name.split('.').pop()}`, coverFile[0], {
                 cacheControl: '3600',
                 upsert: true,
             });
@@ -276,6 +256,8 @@ export default function UploadSongPage() {
             setIsSubmitting(false);
             return;
         }
+        // Pour des tests sur l'upload dans InedexDB
+        // await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
 
         alert('Chanson ajoutée avec succès !');
         setIsSubmitting(false);
@@ -398,7 +380,7 @@ export default function UploadSongPage() {
                                                     id="mp3"
                                                     type="file"
                                                     accept=".mp3"
-                                                    {...register('mp3')}
+                                                    {...register('mp3File')}
                                                     onChange={onMP3Change}
                                                 />
                                                 <div className={styles.fileInput__plus}>
@@ -414,8 +396,8 @@ export default function UploadSongPage() {
                                             </span>
                                             </div>
 
-                                            {typeof errors.mp3?.message === 'string' && (
-                                                <p className={styles.error}>{errors.mp3.message}</p>
+                                            {typeof errors.mp3File?.message === 'string' && (
+                                                <p className={styles.error}>{errors.mp3File.message}</p>
                                             )}
                                         </div>
 
@@ -425,7 +407,7 @@ export default function UploadSongPage() {
                                                 <input
                                                     type="file"
                                                     accept=".lrc"
-                                                    {...register('lrc')}
+                                                    {...register('lrcFile')}
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];
                                                         if (file) handleLrcFileChange(file);
@@ -444,8 +426,8 @@ export default function UploadSongPage() {
                             </span>
                                             </div>
 
-                                            {typeof errors.lrc?.message === 'string' && (
-                                                <p>{errors.lrc?.message}</p>
+                                            {typeof errors.lrcFile?.message === 'string' && (
+                                                <p>{errors.lrcFile?.message}</p>
                                             )}
                                         </div>
                                     </div>
@@ -483,8 +465,8 @@ export default function UploadSongPage() {
                                                     <img src={coverPreview} alt="cover" className={styles.fileInput__background}/>}
                                                 <input
                                                     type="file"
-                                                    accept=".png,.jpg,.jpeg"
-                                                    {...register('cover')}
+                                                    accept={ACCEPTED_IMAGE_TYPES.join(',')}
+                                                    {...register('coverFile')}
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];
                                                         if (file) {
@@ -506,8 +488,8 @@ export default function UploadSongPage() {
                                             </span>
                                             </div>
 
-                                            {typeof errors.cover?.message === 'string' && (
-                                                <p>{errors.cover.message}</p>
+                                            {typeof errors.coverFile?.message === 'string' && (
+                                                <p>{errors.coverFile.message}</p>
                                             )}
                                         </div>
 
@@ -822,10 +804,10 @@ export default function UploadSongPage() {
 
                         <button
                             type="submit"
-                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3') || !watch('lrc') || !watch('cover') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty') || watch('music_style')?.length === 0}
+                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3File') || !watch('lrcFile') || !watch('coverFile') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty') || watch('music_style')?.length === 0}
                             className={`${styles.submitButton}`}
                         >
-                            {watch('mp3') && watch('lrc') && watch('cover') && watch('title') && watch('singer') && watch('status') && watch('difficulty') && watch('music_style')?.length !== 0 &&
+                            {watch('mp3File') && watch('lrcFile') && watch('coverFile') && watch('title') && watch('singer') && watch('status') && watch('difficulty') && watch('music_style')?.length !== 0 &&
                                 <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
 
                             {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
