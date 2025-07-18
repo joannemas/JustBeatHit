@@ -164,3 +164,135 @@
         color: $red-ribbon;
     }
 }
+
+
+.subscriptionWrapper {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    gap: 2rem;
+    padding: 2rem;
+    flex-wrap: wrap;
+
+    .card {
+        flex: 1 1 300px;
+        border-radius: 25px;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        max-width: 400px;
+        min-height: 45vh;
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+        &:hover {
+            transform: scale(1.02);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-family: 'Goia', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .description {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            margin-top: 0;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 3rem;
+            margin: 0;
+            font-style: italic;
+            text-transform: uppercase;
+
+            span {
+                font-size: 5rem;
+            }
+        }
+
+        .features {
+            list-style: none;
+            padding-left: 0;
+            font-size: 0.95rem;
+
+            li {
+                margin-bottom: 0.5rem;
+
+                img, svg {
+                    width: 20px;
+                    height: 20px;
+                    padding: 2px;
+                    border-radius: 50%;
+                }
+            }
+
+            p {
+                font-weight: bold;
+            }
+        }
+
+        .upgradeButton {
+            @include button($white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+
+
+            span {
+                @include textColorGradient;
+                padding-right: 2px;
+                
+            }
+        }
+    }
+
+    .free {
+        background-color: transparent;
+        border: 2px solid rgba($black, 0.3);
+        color: $black;
+
+        .price {
+            color: rgba($black, 0.7);
+
+            span {
+                color: $black;
+            }
+        }
+
+        li img {
+            background-color: $red-ribbon;
+        }
+
+        .upgradeButton {
+            color: rgba($black, 0.5);
+            border-color: rgba($black, 0.5);
+        }
+    }
+
+    .premium {
+        background: $reverse-gradient;
+        color: $white;
+
+        .price {
+            color: rgba($white, 0.7);
+
+            span {
+                color: $white;
+            }
+        }
+
+        li svg {
+            background-color: $white;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+    }
+}
