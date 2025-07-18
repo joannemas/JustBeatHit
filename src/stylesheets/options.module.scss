@@ -138,3 +138,29 @@
         color: $orange;
     }
 }
+
+.passwordSettings {
+    gap: 0.5rem;
+}
+
+.passwordHints {
+    margin: 0;
+    padding-left: 0.8rem;
+    color: $black;
+    font-family: 'Goia', sans-serif;
+    font-weight: 600;
+
+    li {
+        margin-bottom: 0.25rem;
+        transition: color 0.3s ease;
+        margin-left: 20px;
+    }
+
+    .valid {
+        color: $emerald-green;
+    }
+
+    .invalid {
+        color: $red-ribbon;
+    }
+}

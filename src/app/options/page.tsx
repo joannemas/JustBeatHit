@@ -5,7 +5,7 @@ import styles from "@/stylesheets/options.module.scss"
 import Image from "next/image"
 
 import GeneralSettings from "@/components/Options/GeneralSettings"
-
+import PasswordSettings from "@/components/Options/PasswordSettings"
 
 const sections = ['général', 'mot de passe', 'abonnement', 'notifications', 'supprimer le compte']
 
@@ -41,7 +41,7 @@ export default function OptionsPage() {
 
                 <div className={styles.sectionContent}>
                     {activeSection === 'général' && <GeneralSettings />}
-                    {activeSection === 'mot de passe'}
+                    {activeSection === 'mot de passe' && <PasswordSettings />}
                     {activeSection === 'abonnement'}
                     {activeSection === 'notifications'}
                     {activeSection === 'supprimer le compte'}
