@@ -8,9 +8,9 @@ export class TypedDexie extends Dexie {
     constructor() {
       super('song')
       this.version(1).stores({
-        song: '++id, title, artist', // Primary key 'id' auto increment and index on 'name' and 'artist'
+        song: '++id, title, artist, created_at', // Primary key 'id' auto increment and index on 'name' and 'artist'
       });
     }
   }
   
-  export const db = new TypedDexie()
+  export const localDb = new TypedDexie()

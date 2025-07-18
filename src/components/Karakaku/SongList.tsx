@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import SongCard from "./SongCard";
-import Navbar from "../Navbar";
 import styles from "@/stylesheets/songList.module.scss";
 
 export default function SongList({ gameId }: { gameId?: string }) {
@@ -68,50 +67,48 @@ export default function SongList({ gameId }: { gameId?: string }) {
 
       {/* Filtres par style */}
       <div className={styles.filterContainer}>
-  <div className={styles.dropdownWrapper}>
-    <button
-      className={styles.dropdownButton}
-      onClick={() => setShowDropdown((prev) => !prev)}
-    >
-      AJOUTER UN FILTRE <span className={styles.plus}>+</span>
-    </button>
+      <div className={styles.dropdownWrapper}>
+        <button
+          className={styles.dropdownButton}
+          onClick={() => setShowDropdown((prev) => !prev)}
+        >
+          AJOUTER UN FILTRE <span className={styles.plus}>+</span>
+        </button>
 
-    {showDropdown && (
-      <div className={styles.dropdownMenu}>
-        {allStyles.map((style) => {
-          const lower = style.toLowerCase();
-          return (
-            <div
-              key={style}
-              className={styles.dropdownItem}
-              onClick={() => toggleStyle(style)}
-            >
-              {style}
-            </div>
-          );
-        })}
+        {showDropdown && (
+          <div className={styles.dropdownMenu}>
+            {allStyles.map((style) => {
+              const lower = style.toLowerCase();
+              return (
+                <div
+                  key={style}
+                  className={styles.dropdownItem}
+                  onClick={() => toggleStyle(style)}
+                >
+                  {style}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    )}
-  </div>
 
-  <div className={styles.selectedTags}>
-    {selectedStyles.map((style) => (
-      <div key={style} className={styles.filterTag}>
-        <span>{style.toUpperCase()}</span>
-        <button onClick={() => removeStyle(style)}>&times;</button>
-      </div>
-    ))}
-  </div>
-</div>
-
-
-
-      {/* Liste des chansons */}
-      <div className={styles.songGrid}>
-        {songs.map((song) => (
-          <SongCard key={song.id} gameId={gameId} song={song} />
+      <div className={styles.selectedTags}>
+        {selectedStyles.map((style) => (
+          <div key={style} className={styles.filterTag}>
+            <span>{style.toUpperCase()}</span>
+            <button onClick={() => removeStyle(style)}>&times;</button>
+          </div>
         ))}
       </div>
     </div>
+
+    {/* Liste des chansons */}
+    <div className={styles.songGrid}>
+      {songs.map((song) => (
+        <SongCard key={song.id} gameId={gameId} song={song} />
+      ))}
+    </div>
+  </div>
   );
 }
