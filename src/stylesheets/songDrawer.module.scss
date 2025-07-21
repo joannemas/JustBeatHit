@@ -6,6 +6,7 @@
   flex-direction: column;
   position: fixed;
   text-align: start;
+  font-family: 'GoiaDisplay', sans-serif;
 
    // Ajout du scroll
   max-height: 98vh;
@@ -33,7 +34,7 @@
   font-weight: bold;
   font-size: 1rem;
   color: white;
-  background: linear-gradient(to right, #d946ef, #f97316);
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
   border: none;
   border-radius: 999px;
   cursor: pointer;
@@ -55,16 +56,17 @@
 }
 
 .songTitle {
-  font-size: 1.4rem;
+  font-size: 32px;
   font-weight: bold;
-  margin: 0.25rem;
+  font-style: italic;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .songSinger {
-  font-size: 1rem;
-  font-style: italic;
-  color: #cbd5e1;
-  margin: 0.25rem;
+  font-size: 14px;
+  color: white;
+  margin: 0 0 12px 0;
 }
 
 .tags {
@@ -75,23 +77,26 @@
 }
 
 .styleTag {
-  background: #444;
-  padding: 4px 8px;
-  border-radius: 6px;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 4px;
   font-size: 0.7rem;
-  color: white;
+  color: black;
   font-weight: bold;
   text-transform: uppercase;
+  align-self: center;
 }
 
 .difficulty {
-  padding: 4px 10px;
-  border-radius: 999px;
+  padding: 6px 10px;
+  border-radius: 4px;
   font-weight: bold;
   font-size: 0.7rem;
   text-transform: uppercase;
   color: white;
   display: inline-block;
+  text-align: center;
+  font-style: italic;
 }
 
 .facile {
@@ -131,19 +136,25 @@
 }
 
 .playButton {
-  margin-top: auto;
-  padding: 0.75rem 1.5rem;
-  font-weight: bold;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 64px;
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+  border: 0 solid transparent;
   color: white;
-  background: linear-gradient(to right, #d946ef, #f97316);
-  border: none;
-  border-radius: 999px;
+  font-family: 'GoiaDisplay', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 16px;
+  border-radius: 50px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease-in-out;
+  justify-content: center;
 
   &:hover {
-    filter: brightness(1.1);
+    filter: brightness(0.8);
   }
 }
 
@@ -238,7 +249,7 @@
       appearance: none;
       width: 1.2rem;
       height: 1.2rem;
-      border-radius: 6px;
+      border-radius: 4px;
       border: 2px solid white;
       background: transparent;
       margin-top: 0.1rem;

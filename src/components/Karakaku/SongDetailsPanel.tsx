@@ -7,6 +7,7 @@ import { Database } from "~/database.types";
 import { updateGameSong } from "@/app/game/actions";
 import Link from "next/link";
 import { ChevronDown, Plus, Star } from "lucide-react";
+import Image from "next/image";
 
 type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
@@ -159,17 +160,17 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         <div className={styles.statsRow}>
           <div className={styles.stat}>
             <div className={styles.label}>SCORE</div>
-            <div className={styles.value}>{lastGame.score?.toLocaleString()}</div>
+            <div className={styles.value}>{lastGame.score ? lastGame.score?.toLocaleString() : "-"}</div>
           </div>
           <div className={styles.stat}>
             <div className={styles.label}>FAUTES</div>
             <div className={styles.value}>
-              {lastGame.mistakes}
+              {lastGame.mistakes ? lastGame.mistakes : "-"}
             </div>
           </div>
           <div className={styles.stat}>
             <div className={styles.label}>VITESSE</div>
-            <div className={styles.value}>{lastGame.word_speed} MPM</div>
+            <div className={styles.value}>{lastGame.word_speed ? lastGame.word_speed + " MPM" : "-"}</div>
           </div>
         </div>
       </div>
@@ -180,7 +181,8 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         onClick={handleClick}
         className={styles.playButton}
       >
-        🎵 JOUER
+        <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>
+        JOUER
       </Link>
     </div>
   );

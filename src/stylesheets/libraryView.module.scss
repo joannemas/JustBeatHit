@@ -1,10 +1,9 @@
 .mainRow {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
-  height: calc(100vh - 40px); // important pour que le scroll Y soit géré ici
+  height: 100vh; // important pour que le scroll Y soit géré ici
   overflow: hidden;
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .leftColumn {
@@ -13,6 +12,7 @@
   flex: 1;
   overflow-y: scroll;
   scroll-behavior: smooth;
+  z-index: 10;
 
   /* Scrollbar stylisée */
   &::-webkit-scrollbar {
@@ -35,13 +35,26 @@
 
 .rightColumn {
   width: 20vw;
+  padding-left: 32px;
+  position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -5px;
+    width: 1px;
+    background-color: white;
+  }
 }
 
 .title {
   font-weight: bold;
   font-style: italic;
   color: #FFA540;
-  font-size: 4rem;
+  font-size: 40px;
   margin: 2rem 0 1rem 0;
   padding: 0 1rem;
+  text-align: left;
 }
