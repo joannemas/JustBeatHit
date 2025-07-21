@@ -88,7 +88,7 @@ export default function NotificationsSettings() {
                         <li>Les dernières actus et mises à jour du jeu</li>
                         <li>Des récompenses exclusives en jeu</li>
                         <li>Des musiques rien que pour toi</li>
-                        <li>Et bien d'autres...</li>
+                        <li>Et bien d&apos;autres...</li>
                     </ul>
                 </div>
                 <Image

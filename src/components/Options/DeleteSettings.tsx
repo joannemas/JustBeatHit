@@ -47,8 +47,8 @@ export default function DeleteAccountSettings() {
         <div className={styles.deleteWrapper}>
             <h2>Dommage de te voir partir :(</h2>
             <ul>
-                <li>Si tu veux juste recevoir moins d'e-mails, <Link href="/options/notifications" className={styles.gradientUnderline}>tu peux gérer tes notifications ici !</Link></li>
-                <li>Et si tu veux changer de pseudo, <Link href="/options">c'est par là !</Link></li>
+                <li>Si tu veux juste recevoir moins d&apos;e-mails, <Link href="/options/notifications" className={styles.gradientUnderline}>tu peux gérer tes notifications ici !</Link></li>
+                <li>Et si tu veux changer de pseudo, <Link href="/options">c&apos;est par là !</Link></li>
             </ul>
 
             <p className={styles.deleteWarning}>
@@ -59,7 +59,7 @@ export default function DeleteAccountSettings() {
                     height={24}
                     style={{ marginRight: '5px' }}
                 />
-                Supprimer ton compte, c'est définitif.<br/>Une fois fait, impossible de revenir en arrière.
+                Supprimer ton compte, c&apos;est définitif.<br/>Une fois fait, impossible de revenir en arrière.
             </p>
 
             {!confirming ? (
