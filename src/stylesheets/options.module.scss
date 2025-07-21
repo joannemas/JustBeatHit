@@ -296,3 +296,76 @@
         }
     }
 }
+
+.notificationsSettings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+    max-width: fit-content;
+    margin: 2rem auto;
+    color: $black;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1rem;
+    text-transform: uppercase;
+
+    .notificationsCard {
+        background: $reverse-gradient;
+        color: $white;
+        border-radius: 10px;
+        display: flex;
+        padding: 50px 20px;
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
+            position: relative;
+
+            span {
+                font-size: 4rem;
+            }
+        }
+
+        .newsletterIcon {
+            position: absolute;
+            top: -2rem;
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        div {
+            margin: auto;
+        }
+    }
+
+    label {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+    }
+
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+        accent-color: $black;
+        cursor: pointer;
+    }
+
+    .successMessage {
+        color: $emerald-green;
+        font-weight: bold;
+    }
+    .errorMessage {
+        color: $red-ribbon;
+        font-weight: bold;
+    }
+}

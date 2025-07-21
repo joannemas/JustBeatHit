@@ -7,6 +7,7 @@ import Image from "next/image"
 import GeneralSettings from "@/components/Options/GeneralSettings"
 import PasswordSettings from "@/components/Options/PasswordSettings"
 import SubscriptionSettings from "@/components/Options/SubscriptionSettings"
+import NotificationsSettings from "@/components/Options/NotificationsSettings"
 
 const sections = ['général', 'mot de passe', 'abonnement', 'notifications', 'supprimer le compte']
 
@@ -44,7 +45,7 @@ export default function OptionsPage() {
                     {activeSection === 'général' && <GeneralSettings />}
                     {activeSection === 'mot de passe' && <PasswordSettings />}
                     {activeSection === 'abonnement' && <SubscriptionSettings />}
-                    {activeSection === 'notifications'}
+                    {activeSection === 'notifications' && <NotificationsSettings />}
                     {activeSection === 'supprimer le compte'}
                 </div>
             </section>
