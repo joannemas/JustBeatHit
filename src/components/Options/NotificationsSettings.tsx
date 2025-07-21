@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import styles from '@/stylesheets/options.module.scss'
 import Image from 'next/image'
+import Loader from '@/components/Loader'
 
 export default function NotificationsSettings() {
     const [subscribed, setSubscribed] = useState(false)
@@ -68,7 +69,7 @@ export default function NotificationsSettings() {
     }
 
 
-    if (loading) return <p>Chargement...</p>
+    if (loading) return <Loader />
 
     return (
         <div className={styles.notificationsSettings}>

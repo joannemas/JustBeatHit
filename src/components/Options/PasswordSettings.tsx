@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import styles from '@/stylesheets/options.module.scss'
 import Image from 'next/image'
+import Loader from '@/components/Loader'
 
 export default function PasswordSettings() {
     const [currentPassword, setCurrentPassword] = useState('')
@@ -14,93 +15,95 @@ export default function PasswordSettings() {
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
-// Récupération de l'utilisateur connecté
-useEffect(() => {
-    const fetchUser = async () => {
-        const { data: { user }, error } = await supabase.auth.getUser()
-        if (user) setUser(user)
-        setLoading(false)
-    }
-    fetchUser()
-}, [])
-
-const validatePassword = (password: string) => {
-    return (
-        password.length >= 8 &&
-        /[A-Z]/.test(password) &&
-        /\d/.test(password) &&
-        /[^A-Za-z0-9]/.test(password)
-    )
-}
-
-const isValidPassword = () => {
-    return (
-        currentPassword.length > 0 &&
-        validatePassword(newPassword) &&
-        newPassword === confirmPassword
-    )
-}
-
-const handlePasswordUpdate = async () => {
-    if (!user) {
-        setMessage('error')
-        return
-    }
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        setMessage('invalid')
-        return
-    }
-
-    if (!validatePassword(newPassword) || newPassword !== confirmPassword) {
-        setMessage('invalid')
-        return
-    }
-
-    setSaving(true)
-    setMessage(null)
-
-    // Vérifie le mot de passe actuel
-    const res = await fetch('/api/check-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, password: currentPassword })
-    })
-
-    if (res.status === 401) {
-        setMessage('wrongCurrent')
-        setSaving(false)
-        return
-    }
-
-    if (!res.ok) {
-        setMessage('error')
-        setSaving(false)
-        return
-    }
-
-    // Mise à jour du mot de passe
-    const { error } = await supabase.auth.updateUser({
-        password: newPassword
-    })
-
-    if (error) {
-        console.error('Erreur update password:', error.message)
-        if (error.message.includes("New password should be different")) {
-            setMessage('sameAsOldPassword')
-        } else {
-            setMessage('error')
+    // Récupération de l'utilisateur connecté
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if (user) setUser(user)
+            setLoading(false)
         }
-    } else {
-        setMessage('success')
-        setCurrentPassword('')
-        setNewPassword('')
-        setConfirmPassword('')
+        fetchUser()
+    }, [])
+
+    const validatePassword = (password: string) => {
+        return (
+            password.length >= 8 &&
+            /[A-Z]/.test(password) &&
+            /\d/.test(password) &&
+            /[^A-Za-z0-9]/.test(password)
+        )
     }
 
-    setSaving(false)
-    setTimeout(() => setMessage(null), 7000)
-}
+    const isValidPassword = () => {
+        return (
+            currentPassword.length > 0 &&
+            validatePassword(newPassword) &&
+            newPassword === confirmPassword
+        )
+    }
+
+    const handlePasswordUpdate = async () => {
+        if (!user) {
+            setMessage('error')
+            return
+        }
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            setMessage('invalid')
+            return
+        }
+
+        if (!validatePassword(newPassword) || newPassword !== confirmPassword) {
+            setMessage('invalid')
+            return
+        }
+
+        setSaving(true)
+        setMessage(null)
+
+        // Vérifie le mot de passe actuel
+        const res = await fetch('/api/check-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, password: currentPassword })
+        })
+
+        if (res.status === 401) {
+            setMessage('wrongCurrent')
+            setSaving(false)
+            return
+        }
+
+        if (!res.ok) {
+            setMessage('error')
+            setSaving(false)
+            return
+        }
+
+        // Mise à jour du mot de passe
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword
+        })
+
+        if (error) {
+            console.error('Erreur update password:', error.message)
+            if (error.message.includes("New password should be different")) {
+                setMessage('sameAsOldPassword')
+            } else {
+                setMessage('error')
+            }
+        } else {
+            setMessage('success')
+            setCurrentPassword('')
+            setNewPassword('')
+            setConfirmPassword('')
+        }
+
+        setSaving(false)
+        setTimeout(() => setMessage(null), 7000)
+    }
+
+    if (loading) return <Loader />
 
 
     return (

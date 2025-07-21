@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import styles from '@/stylesheets/options.module.scss'
 import Image from 'next/image'
+import Loader from '@/components/Loader'
 
 export default function GeneralSettings() {
     const [user, setUser] = useState<any>(null)
@@ -102,7 +103,7 @@ export default function GeneralSettings() {
         setTimeout(() => setMessage(null), 5000);
     }
 
-    if (loading) return <p>Chargement...</p>
+    if (loading) return <Loader />
 
     const hasChanges = username !== initialUsername || email !== initialEmail
 
