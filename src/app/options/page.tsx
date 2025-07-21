@@ -1,54 +1,11 @@
 'use client'
-import { useState } from "react"
-import Navbar from "@/components/Navbar"
-import styles from "@/stylesheets/options.module.scss"
-import Image from "next/image"
-
+import PageWrapper from "@/components/Options/PageWrapper"
 import GeneralSettings from "@/components/Options/GeneralSettings"
-import PasswordSettings from "@/components/Options/PasswordSettings"
-import SubscriptionSettings from "@/components/Options/SubscriptionSettings"
-import NotificationsSettings from "@/components/Options/NotificationsSettings"
 
-const sections = ['général', 'mot de passe', 'abonnement', 'notifications', 'supprimer le compte']
-
-export default function OptionsPage() {
-    const [activeSection, setActiveSection] = useState('général')
-
+export default function OptionsDefaultPage() {
     return (
-        <div>
-            <Navbar />
-            <section className={styles.optionsContainer}>
-                
-                <div className={styles.musicDecoration}>
-                    <Image
-                    src="/assets/img/MusicBar-gradient.svg"
-                    alt="Music"
-                    width={100}
-                    height={100}
-                    className={styles.musicDecoration}
-                    />
-                </div>
-
-                <nav className={styles.navTabs}>
-                    {sections.map(section => (
-                        <button
-                            key={section}
-                            className={activeSection === section ? styles.activeTab : ''}
-                            onClick={() => setActiveSection(section)}
-                        >
-                            {section}
-                        </button>
-                    ))}
-                </nav>
-
-                <div className={styles.sectionContent}>
-                    {activeSection === 'général' && <GeneralSettings />}
-                    {activeSection === 'mot de passe' && <PasswordSettings />}
-                    {activeSection === 'abonnement' && <SubscriptionSettings />}
-                    {activeSection === 'notifications' && <NotificationsSettings />}
-                    {activeSection === 'supprimer le compte'}
-                </div>
-            </section>
-        </div>
+        <PageWrapper section="général">
+            <GeneralSettings />
+        </PageWrapper>
     )
 }
