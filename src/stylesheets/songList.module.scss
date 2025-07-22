@@ -45,7 +45,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .songCard {
@@ -223,7 +223,7 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   position: relative;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .dropdownWrapper {
@@ -303,7 +303,7 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .searchInputGroup {
@@ -353,7 +353,41 @@
   &:hover {
     background-color: #ea8c00;
   }
+}
 
-  
+.premiumFilterButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 3px solid rgba(255, 246, 241, 0.10);
+}
 
+.filterButton {
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+  font-style: italic;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  &.active {
+    border-bottom: 3px solid white;
+  }
+}
+
+.premiumFilterCount{
+  border: 1px solid rgba(255, 246, 241, 0.50);
+  border-radius: 999px;
+  display: flex;
+  padding: 1px 6px 1px 4px;
+  justify-content: center;
+  align-items: center;
 }

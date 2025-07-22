@@ -13,6 +13,7 @@
   overflow-y: scroll;
   scroll-behavior: smooth;
   z-index: 10;
+  padding: 0 40px 0 20px;
 
   /* Scrollbar stylisée */
   &::-webkit-scrollbar {
@@ -55,6 +56,5 @@
   color: #FFA540;
   font-size: 40px;
   margin: 2rem 0 1rem 0;
-  padding: 0 1rem;
   text-align: left;
 }
