@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase/client";
 import SongCard from "./SongCard";
 import styles from "@/stylesheets/songList.module.scss";
 import Link from "next/link";
+import { useRef } from "react";
 
 export default function SongList({
   gameId,
@@ -22,6 +23,7 @@ export default function SongList({
   const [freeCount, setFreeCount] = useState(0);
 
   const allStyles = ['Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'];
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -73,7 +75,6 @@ export default function SongList({
         }
       }
 
-      // ✅ En parallèle : fetch counts
       const [premium, free] = await Promise.all([
         supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true),
         supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false),
@@ -86,7 +87,23 @@ export default function SongList({
     fetchSongs();
   }, [search, selectedStyles, premiumFilter]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
 
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const toggleStyle = (style: string) => {
     const lower = style.toLowerCase();
@@ -118,7 +135,7 @@ export default function SongList({
 
         {/* Filtres */}
         <div className={styles.filterContainer}>
-          <div className={styles.dropdownWrapper}>
+          <div className={styles.dropdownWrapper} ref={dropdownRef}>
             <button
                 className={styles.dropdownButton}
                 onClick={() => setShowDropdown(!showDropdown)}
