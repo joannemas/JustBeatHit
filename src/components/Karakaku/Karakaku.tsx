@@ -431,6 +431,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 spellCheck={false}
                 ref={inputRef}
                 data-tutorial="input-field"
+                autoComplete="off"
+                autoCorrect="off"
+                onCopy={(e) => e.preventDefault()}
+                onCut={(e) => e.preventDefault()}
+                onContextMenu={(e) => e.preventDefault()}
+                onKeyDown={(e) => {
+                  if (
+                    (e.ctrlKey || e.metaKey) &&
+                    ['c', 'v', 'x', 'a'].includes(e.key.toLowerCase())
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
                 disabled={isPausedMenuOpen}
               />
               <div ref={caretRef} className={styles.caret}></div>
