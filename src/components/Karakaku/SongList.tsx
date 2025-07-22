@@ -21,7 +21,7 @@ export default function SongList({
   const [premiumCount, setPremiumCount] = useState(0);
   const [freeCount, setFreeCount] = useState(0);
 
-  const allStyles = ["Pop", "Rock", "Rap", "Jazz", "Electro"];
+  const allStyles = ['Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'];
 
   useEffect(() => {
     const fetchSongs = async () => {
