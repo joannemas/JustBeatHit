@@ -477,7 +477,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isGameOver) {
+      if ((event.key === "Escape" || event.key === "Enter") && !isGameOver) {
         setIsPausedMenuOpen((prev) => {
           if (prev) {
             document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
