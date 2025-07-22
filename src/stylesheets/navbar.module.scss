@@ -1,5 +1,56 @@
 @import './mixins.scss';
 
+.burger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 101;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background: $yellow;
+        border-radius: 2px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    &.open span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    &.open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    &.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    @media (max-width: 768px) {
+        display: flex;
+    }
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9;
+    }
+
 .navbar {
     background: $reverse-gradient;
     display: flex;
@@ -92,5 +143,15 @@
         height: 330px;
         background-color: $white;
         border-radius: 50%;
+    }
+
+    @media (max-width: 768px) {
+        transform: translateX(-100%); // hidden
+        transition: transform 0.3s ease-in-out;
+        width: 70vw;
+
+        &.open {
+            transform: translateX(0); // visible
+        }
     }
 }
