@@ -933,3 +933,107 @@
   align-items: center;
   min-height: 100vh;
 }
+
+
+@media screen and (max-width: 768px) {
+    .btnContainer {
+        flex-direction: column;
+    }
+
+    .songList {
+        margin: 1rem;
+    }
+
+    .vinylPlayer, .titleSong {
+        display: none;
+    }
+
+    .lyrics {
+        font-size: 1rem;
+        justify-content: flex-start;
+        margin-top: 50px;
+        max-width: 50vw;
+    }
+
+    .progressBarBackground {
+        margin: 0 30px;
+        height: 30%;
+        width: 8px;
+    }
+
+    .score {
+        bottom: 50%;
+        margin: 1px;
+        text-align: left;
+
+        .actualScore {
+            font-size: 2rem;
+        }
+
+        .label {
+            font-size: 1rem;
+            padding-right: 20px;
+            text-align: right;
+        }
+
+        .multiplier, img, .changeScore, p:nth-of-type(3) {
+            display: none !important;
+        }
+
+    }
+
+    .logoJbh {
+        width: 3rem;
+    }
+
+    .arrowIcon {
+        top : 30%;
+        width: 30px;
+        height: 30px;
+    }
+
+    .echapInfoText {
+        max-width: 10vw;
+        font-size: 0.6rem;
+    }
+
+    .countdown {
+        font-size: 1rem;
+        left: calc(100% + 0.5rem);
+        color: transparent;
+
+        img {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    .countdown__icon {
+        width: 30px;
+        height: 30px;
+    }
+
+
+    .animatedBackground {
+        width: 100vw;
+        height: 100vw;
+        z-index: -1;
+        opacity: 0.2;
+        background:$red-ribbon;
+        filter: blur(50px);
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: -35%;
+        animation: move 10s ease-in-out infinite, bounce 10s ease-in-out infinite, rotate 30s infinite;
+
+        &.--inverse {
+            top: unset;
+            left: unset;
+            bottom: 20px;
+            right: 35%;
+            animation: move-inverse 12s ease-in-out infinite, bounce 8s ease-in-out infinite, rotate-inverse 25s infinite;
+        }
+    }
+
+}
