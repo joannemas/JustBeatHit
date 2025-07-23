@@ -187,77 +187,77 @@ export default function UploadSongPage() {
         const trimmedMp3Blob = await trimMp3(mp3File[0], startTime, duration);
         const trimmedLrcBlob = await trimLrc(lrcFile[0], startTime, endTime);
 
-        if (!isValidDuration(duration)) {
-            alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
-            setIsSubmitting(false);
-            return;
-        }
+        // if (!isValidDuration(duration)) {
+        //     alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
-        // Upload du MP3
-        const { error: mp3Error } = await supabase.storage
-            .from('song')
-            .upload(`${folderPath}/song.mp3`, trimmedMp3Blob, {
-                cacheControl: '3600',
-                upsert: true,
-            });
+        // // Upload du MP3
+        // const { error: mp3Error } = await supabase.storage
+        //     .from('song')
+        //     .upload(`${folderPath}/song.mp3`, trimmedMp3Blob, {
+        //         cacheControl: '3600',
+        //         upsert: true,
+        //     });
 
-        if (mp3Error) {
-            console.error('Erreur à l’upload du MP3:', mp3Error.message);
-            alert("Échec de l'upload du fichier MP3");
-            setIsSubmitting(false);
-            return;
-        }
+        // if (mp3Error) {
+        //     console.error('Erreur à l’upload du MP3:', mp3Error.message);
+        //     alert("Échec de l'upload du fichier MP3");
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
-        // Upload du LRC
-        const { error: lrcError } = await supabase.storage
-            .from('song')
-            .upload(`${folderPath}/lyrics.lrc`, trimmedLrcBlob, {
-                cacheControl: '3600',
-                upsert: true,
-            });
-        if (lrcError) {
-            console.error('Erreur à l’upload du LRC:', lrcError.message);
-            alert("Échec de l'upload du fichier LRC");
-            setIsSubmitting(false);
-            return;
-        }
+        // // Upload du LRC
+        // const { error: lrcError } = await supabase.storage
+        //     .from('song')
+        //     .upload(`${folderPath}/lyrics.lrc`, trimmedLrcBlob, {
+        //         cacheControl: '3600',
+        //         upsert: true,
+        //     });
+        // if (lrcError) {
+        //     console.error('Erreur à l’upload du LRC:', lrcError.message);
+        //     alert("Échec de l'upload du fichier LRC");
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
-        // Upload de l'image cover
-        const { error: coverError } = await supabase.storage
-            .from('song')
-            .upload(`${folderPath}/cover.${coverFile?.[0]?.name.split('.').pop()}`, coverFile[0], {
-                cacheControl: '3600',
-                upsert: true,
-            });
+        // // Upload de l'image cover
+        // const { error: coverError } = await supabase.storage
+        //     .from('song')
+        //     .upload(`${folderPath}/cover.${coverFile?.[0]?.name.split('.').pop()}`, coverFile[0], {
+        //         cacheControl: '3600',
+        //         upsert: true,
+        //     });
 
-        if (coverError) {
-            console.error('Erreur à l’upload de la cover:', coverError.message);
-            alert("Échec de l'upload de l’image de couverture");
-            setIsSubmitting(false);
-            return;
-        }
+        // if (coverError) {
+        //     console.error('Erreur à l’upload de la cover:', coverError.message);
+        //     alert("Échec de l'upload de l’image de couverture");
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
-        // Insertion dans la base de données
-        const { error: insertError } = await supabase
-            .from('song')
-            .insert({
-                title,
-                singer,
-                is_explicit,
-                difficulty,
-                status,
-                is_premium,
-                music_style,
-            });
+        // // Insertion dans la base de données
+        // const { error: insertError } = await supabase
+        //     .from('song')
+        //     .insert({
+        //         title,
+        //         singer,
+        //         is_explicit,
+        //         difficulty,
+        //         status,
+        //         is_premium,
+        //         music_style,
+        //     });
 
-        if (insertError) {
-            console.error('Erreur à l’insertion:', insertError.message);
-            alert("Échec de l'insertion dans la base de données");
-            setIsSubmitting(false);
-            return;
-        }
+        // if (insertError) {
+        //     console.error('Erreur à l’insertion:', insertError.message);
+        //     alert("Échec de l'insertion dans la base de données");
+        //     setIsSubmitting(false);
+        //     return;
+        // }
         // Pour des tests sur l'upload dans InedexDB
-        // await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
+        await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
 
         alert('Chanson ajoutée avec succès !');
         setIsSubmitting(false);

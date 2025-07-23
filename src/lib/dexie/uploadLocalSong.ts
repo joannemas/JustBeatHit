@@ -1,5 +1,6 @@
+import { hashFile } from "@/utils/hashFile"
 import { localDb } from "./db"
-import { LocalSong } from "./types"
+import { v5 as uuidV5 } from "uuid"
 
 /**
  * Addd song (MP3 and LRC) to the IndexedDB DB
@@ -15,8 +16,13 @@ export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: F
   }
   
   try {
-    console.log(`Adding song : ${singer} - ${title}`)
+    const [mp3Hash, lrcHash] = await Promise.all([hashFile(mp3File), hashFile(lrcFile)])
+    const songUUID = uuidV5(mp3Hash+lrcHash, process.env.NEXT_PUBLIC_SONG_UUID_NAMESPACE!)
+
+    console.log('UUID basé sur le contenu du fichier :', songUUID);
+    console.debug(`Adding song : ${singer} - ${title}`)
     const id = await localDb.song.add({
+      uuid: songUUID,
       title,
       singer,
       mp3File,
@@ -25,29 +31,11 @@ export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: F
       created_at: new Date()
     })
 
-    console.log(`Song added successfully width ID : ${id}`)
+    console.debug(`Song added successfully width ID : ${id}`)
     return id
   } catch (error) {
     console.error("Error while adding song to the IndexedDB :", error)
     throw error
-  }
-}
-
-/**
- * Récupère toutes les chansons de la base de données, triées par date d'ajout.
- * @returns {Promise<Musique[]>} Une promesse qui se résout avec un tableau de chansons.
- */
-export async function listSongs(): Promise<LocalSong[]> {
-  try {
-    // On récupère les musiques, on les trie par 'dateAjout' et on inverse
-    // l'ordre pour avoir les plus récentes en premier, puis on les convertit en tableau.
-    const toutesLesMusiques = await localDb.song.orderBy('dateAjout').reverse().toArray();
-    console.log("Musiques récupérées avec succès :", toutesLesMusiques);
-    return toutesLesMusiques;
-  } catch (error) {
-    console.error("Erreur lors de la récupération des musiques :", error);
-    // On retourne un tableau vide en cas d'erreur pour éviter de faire planter l'UI
-    return [];
   }
 }
   
