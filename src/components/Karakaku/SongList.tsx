@@ -4,14 +4,29 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import SongCard from "./SongCard";
 import styles from "@/stylesheets/songList.module.scss";
+import Link from "next/link";
+import { useRef } from "react";
+import { listLocalSongs } from "@/lib/dexie/listLocalSongs";
+import { Database } from "~/database.types";
+import { LocalSong } from "@/lib/dexie/types";
 
-export default function SongList({ gameId }: { gameId?: string }) {
-  const [songs, setSongs] = useState<any[]>([]);
+export default function SongList({
+  gameId,
+  onSelectSong,
+}: {
+  gameId?: string;
+  onSelectSong?: (song: any) => void;
+}) {
+  const [songs, setSongs] = useState<Database["public"]["Tables"]["song"]["Row"][] | LocalSong[]>([]);
   const [search, setSearch] = useState("");
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
-
-  const allStyles = ["Pop", "Rock", "Rap", "Jazz", "Electro"];
   const [showDropdown, setShowDropdown] = useState(false);
+  const [premiumFilter, setPremiumFilter] = useState<"all" | "premium" | "free" | "local">("all");
+  const [premiumCount, setPremiumCount] = useState(0);
+  const [freeCount, setFreeCount] = useState(0);
+
+  const allStyles = ['Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'];
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -22,93 +37,192 @@ export default function SongList({ gameId }: { gameId?: string }) {
       }
 
       if (selectedStyles.length > 0) {
-        query = query.contains("music_style", selectedStyles); // attention : .contains fonctionne sur array
+        query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
       }
 
       const { data, error } = await query;
-      if (!error) setSongs(data || []);
+      if (!error) {
+        setSongs(data || []);
+        if (data?.length && onSelectSong) {
+          onSelectSong(data[0]); // sélectionne automatiquement la première
+        }
+      }
     };
 
     fetchSongs();
   }, [search, selectedStyles]);
 
-    const toggleStyle = (style: string) => {
+  useEffect(() => {
+    const fetchSongs = async () => {
+      if(premiumFilter === "local"){
+        const songs = await listLocalSongs()
+        console.debug("songs", songs)
+        if (songs?.length && onSelectSong) {
+          onSelectSong(songs[0]);
+        }
+        setSongs(songs)
+        return
+      }
+      let query = supabase.from("song").select("*");
+
+      if (search) {
+        query = query.ilike("title", `%${search}%`);
+      }
+
+      if (selectedStyles.length > 0) {
+        query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
+      }
+
+      if (premiumFilter === "premium") {
+        query = query.eq("is_premium", true);
+      } else if (premiumFilter === "free") {
+        query = query.eq("is_premium", false);
+      }
+
+      const { data, error } = await query;
+      if (!error) {
+        setSongs(data || []);
+        if (data?.length && onSelectSong) {
+          onSelectSong(data[0]);
+        }
+      }
+
+      const [premium, free] = await Promise.all([
+        supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true),
+        supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false),
+      ]);
+
+      if (!premium.error) setPremiumCount(premium.count || 0);
+      if (!free.error) setFreeCount(free.count || 0);
+    };
+
+    fetchSongs();
+  }, [search, selectedStyles, premiumFilter]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const toggleStyle = (style: string) => {
     const lower = style.toLowerCase();
     setSelectedStyles((prev) =>
-        prev.includes(lower)
-        ? prev
-        : [...prev, lower]
+      prev.includes(lower) ? prev.filter((s) => s !== lower) : [...prev, lower]
     );
-    };
+  };
 
-    const removeStyle = (style: string) => {
+  const removeStyle = (style: string) => {
     setSelectedStyles((prev) => prev.filter((s) => s !== style));
-    };
+  };
 
   return (
-    <div>
-      {/* Barre de recherche */}
+      <div>
+        {/* Barre de recherche */}
         <div className={styles.searchBarWrapper}>
-            <div className={styles.searchInputGroup}>
-                <span className={styles.searchIcon}>🔍</span>
-                <input
+          <div className={styles.searchInputGroup}>
+            <span className={styles.searchIcon}>🔍</span>
+            <input
                 type="text"
                 placeholder="RECHERCHER UNE MUSIQUE"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className={styles.searchInput}
-                />
-            </div>
-            <button className={styles.addButton}>
-                + AJOUTER UNE MUSIQUE
+            />
+          </div>
+          <Link href="/upload-song" className={styles.addButton}>+ AJOUTER UNE MUSIQUE</Link>
+        </div>
+
+        {/* Filtres */}
+        <div className={styles.filterContainer}>
+          <div className={styles.dropdownWrapper} ref={dropdownRef}>
+            <button
+                className={styles.dropdownButton}
+                onClick={() => setShowDropdown(!showDropdown)}
+            >
+              AJOUTER UN FILTRE <span className={styles.plus}>+</span>
             </button>
+
+            {showDropdown && (
+                <div className={styles.dropdownMenu}>
+                  {allStyles.map((style) => (
+                      <div
+                          key={style}
+                          className={styles.dropdownItem}
+                          onClick={() => toggleStyle(style)}
+                      >
+                        {style}
+                      </div>
+                  ))}
+                </div>
+            )}
+          </div>
+
+          <div className={styles.selectedTags}>
+            {selectedStyles.map((style) => (
+                <div key={style} className={styles.filterTag}>
+                  <span>{style.toUpperCase()}</span>
+                  <button onClick={() => removeStyle(style)}>&times;</button>
+                </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.premiumFilterButtons}>
+          <button
+              className={`${styles.filterButton} ${premiumFilter === "all" ? styles.active : ""}`}
+              onClick={() => setPremiumFilter("all")}
+          >
+            Tous
+            <span className={styles.premiumFilterCount}>{premiumCount + freeCount}</span>
+          </button>
+          <button
+              className={`${styles.filterButton} ${premiumFilter === "premium" ? styles.active : ""}`}
+              onClick={() => setPremiumFilter("premium")}
+          >
+            Musiques Premium
+            <span className={styles.premiumFilterCount}>{premiumCount}</span>
+          </button>
+          <button
+              className={`${styles.filterButton} ${premiumFilter === "free" ? styles.active : ""}`}
+              onClick={() => setPremiumFilter("free")}
+          >
+            Musiques Gratuites
+            <span className={styles.premiumFilterCount}>{freeCount}</span>
+          </button>
+          <button
+              className={`${styles.filterButton} ${premiumFilter === "local" ? styles.active : ""}`}
+              onClick={() => setPremiumFilter("local")}
+          >
+            Musiques Personnalisées
+          </button>
         </div>
 
 
-      {/* Filtres par style */}
-      <div className={styles.filterContainer}>
-      <div className={styles.dropdownWrapper}>
-        <button
-          className={styles.dropdownButton}
-          onClick={() => setShowDropdown((prev) => !prev)}
-        >
-          AJOUTER UN FILTRE <span className={styles.plus}>+</span>
-        </button>
-
-        {showDropdown && (
-          <div className={styles.dropdownMenu}>
-            {allStyles.map((style) => {
-              const lower = style.toLowerCase();
-              return (
-                <div
-                  key={style}
-                  className={styles.dropdownItem}
-                  onClick={() => toggleStyle(style)}
-                >
-                  {style}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {/* Liste des chansons */}
+        <div className={styles.songGrid}>
+          {songs.map((song) => (
+              <SongCard
+                  key={song.id}
+                  song={song}
+                  gameId={gameId}
+                  coverUrl={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
+                  onSelect={() => onSelectSong?.(song)}
+              />
+          ))}
+        </div>
       </div>
-
-      <div className={styles.selectedTags}>
-        {selectedStyles.map((style) => (
-          <div key={style} className={styles.filterTag}>
-            <span>{style.toUpperCase()}</span>
-            <button onClick={() => removeStyle(style)}>&times;</button>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* Liste des chansons */}
-    <div className={styles.songGrid}>
-      {songs.map((song) => (
-        <SongCard key={song.id} gameId={gameId} song={song} />
-      ))}
-    </div>
-  </div>
   );
 }

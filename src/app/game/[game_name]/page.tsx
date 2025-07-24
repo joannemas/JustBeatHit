@@ -6,6 +6,7 @@ import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { Database } from "~/database.types";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import LibraryView from "@/components/Karakaku/LibraryView";
 
 const GAME_NAMES: Database["public"]["Enums"]["game_name"][] = ["karakaku"];
 
@@ -25,13 +26,14 @@ export default async function Page({ params: { game_name } }: { params: { game_n
             <>
                 <Navbar/>
                 <div className={styles.container}>
-                    <div className={styles.titleContainer}>
+                  <LibraryView gameId={data ? data[0].id : undefined}/>
+                    {/* <div className={styles.titleContainer}>
                         <a href="/" className={styles.backBtn}>
                             <CircleArrowLeft size={52} color="#f59e0b"/>
                         </a>
                         <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
                     </div>
-                    <SongList gameId={data ? data[0].id : undefined}/>
+                    <SongList gameId={data ? data[0].id : undefined}/> */}
                     {/* console */}
                 </div>
             </>

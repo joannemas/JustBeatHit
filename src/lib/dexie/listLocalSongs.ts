@@ -8,7 +8,7 @@ import { LocalSong } from "./types";
 export async function listLocalSongs(): Promise<LocalSong[]> {
     try {
       // Retrieve songs and order them from recent to old by created_at
-      const toutesLesMusiques = await localDb.song.orderBy('dateAjout').reverse().toArray();
+      const toutesLesMusiques = await localDb.song.orderBy('created_at').reverse().toArray();
       console.debug("Song retrieved successfully :", toutesLesMusiques);
       return toutesLesMusiques;
     } catch (error) {

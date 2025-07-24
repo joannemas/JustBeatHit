@@ -1,0 +1,60 @@
+.mainRow {
+  display: flex;
+  flex-direction: row;
+  height: 100vh; // important pour que le scroll Y soit géré ici
+  overflow: hidden;
+  padding: 0 20px;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  z-index: 10;
+  padding: 0 40px 0 20px;
+
+  /* Scrollbar stylisée */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #f59e0b;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #ea8c00;
+  }
+}
+
+.rightColumn {
+  width: 20vw;
+  padding-left: 32px;
+  position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -5px;
+    width: 1px;
+    background-color: white;
+  }
+}
+
+.title {
+  font-weight: bold;
+  font-style: italic;
+  color: #FFA540;
+  font-size: 40px;
+  margin: 2rem 0 1rem 0;
+  text-align: left;
+}
