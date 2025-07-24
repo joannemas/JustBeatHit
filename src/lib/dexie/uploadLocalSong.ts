@@ -19,10 +19,9 @@ export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: F
     const [mp3Hash, lrcHash] = await Promise.all([hashFile(mp3File), hashFile(lrcFile)])
     const songUUID = uuidV5(mp3Hash+lrcHash, process.env.NEXT_PUBLIC_SONG_UUID_NAMESPACE!)
 
-    console.log('UUID basé sur le contenu du fichier :', songUUID);
     console.debug(`Adding song : ${singer} - ${title}`)
     const id = await localDb.song.add({
-      uuid: songUUID,
+      id: songUUID,
       title,
       singer,
       mp3File,

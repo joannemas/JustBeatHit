@@ -1,6 +1,6 @@
 // Defining schema interface
 export interface LocalSong {
-  uuid: string // Primary key optionnal bcause auto generated
+  id: string // Primary key optionnal bcause auto generated
   title: string
   singer: string
   mp3File: Blob
