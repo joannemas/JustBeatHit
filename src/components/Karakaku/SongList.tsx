@@ -9,6 +9,7 @@ import { useRef } from "react";
 import { listLocalSongs } from "@/lib/dexie/listLocalSongs";
 import { Database } from "~/database.types";
 import { LocalSong } from "@/lib/dexie/types";
+import useClaims from "@/lib/hooks/useClaims";
 
 export default function SongList({
   gameId,
@@ -17,6 +18,8 @@ export default function SongList({
   gameId?: string;
   onSelectSong?: (song: any) => void;
 }) {
+  const {userClaims: {role, plan}} = useClaims()
+
   const [songs, setSongs] = useState<Database["public"]["Tables"]["song"]["Row"][] | LocalSong[]>([]);
   const [search, setSearch] = useState("");
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
@@ -24,9 +27,11 @@ export default function SongList({
   const [premiumFilter, setPremiumFilter] = useState<"all" | "premium" | "free" | "local">("all");
   const [premiumCount, setPremiumCount] = useState(0);
   const [freeCount, setFreeCount] = useState(0);
+  const [showPremiumPopup, setShowPremiumPopup] = useState(false); // État pour la popup
 
   const allStyles = ['Pop', 'Rock', 'Electro', 'Hip-Hop', 'Jazz', 'R&B', 'Chill', 'Funk', 'K-pop', 'J-pop', 'Reggae', 'Classique', 'Indie', 'Metal', 'Country', 'Blues', 'Latin', 'Folk', 'Soul', 'Punk', 'Disco', 'House', 'Techno', 'Trance', 'Dubstep', 'Ambient', 'Experimental', 'World Music', 'Gospel', 'Opera', 'Ska', 'Grunge', 'Synthwave', 'Lo-fi', 'Acoustic', 'Alternative', 'New Wave', 'Progressive', 'Post-Rock', 'Post-Punk', 'Emo', 'Ska Punk', 'Math Rock', 'Garage Rock', 'Surf Rock', 'Shoegaze', 'Dream Pop', 'Chiptune', 'Funk Rock', 'Nu Metal', 'Metalcore', 'Death Metal', 'Black Metal', 'Thrash Metal', 'Power Metal', 'Symphonic Metal', 'Industrial Metal', 'Glam Rock', 'Hard Rock', 'Southern Rock', 'Bluegrass', 'Celtic', 'Bossa Nova', 'Samba', 'Flamenco', 'Tango', 'Bollywood', 'Afrobeats', 'Highlife', 'Kizomba', 'Salsa', 'Merengue', 'Cumbia', 'Reggaeton', 'Dancehall', 'Trap', 'Grime', 'Drill'];
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -104,9 +109,12 @@ export default function SongList({
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
       }
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setShowPremiumPopup(false);
+      }
     };
 
-    if (showDropdown) {
+    if (showDropdown || showPremiumPopup) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -115,7 +123,7 @@ export default function SongList({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDropdown]);
+  }, [showDropdown, showPremiumPopup]);
 
   const toggleStyle = (style: string) => {
     const lower = style.toLowerCase();
@@ -126,6 +134,14 @@ export default function SongList({
 
   const removeStyle = (style: string) => {
     setSelectedStyles((prev) => prev.filter((s) => s !== style));
+  };
+
+  const handleAddSongClick = () => {
+    if (role !== "admin" && plan !== "Premium") {
+      setShowPremiumPopup(true);
+    } else {
+      window.location.href = "/upload-song"; // Redirection manuelle
+    }
   };
 
   return (
@@ -142,8 +158,39 @@ export default function SongList({
                 className={styles.searchInput}
             />
           </div>
-          <Link href="/upload-song" className={styles.addButton}>+ AJOUTER UNE MUSIQUE</Link>
+          <button className={styles.addButton} onClick={handleAddSongClick}>+ AJOUTER UNE MUSIQUE</button>
         </div>
+
+        {/* Popup pour utilisateurs non premium */}
+        {showPremiumPopup && (
+            <div className={styles.premiumPopup}>
+              <div className={styles.premiumPopupContent} ref={popupRef}>
+                <button
+                    className={styles.closeIcon}
+                    onClick={() => setShowPremiumPopup(false)}
+                    aria-label="Fermer la popup"
+                >
+                  ✕
+                </button>
+                <h2>Fonctionnalité réservée aux utilisateurs Premium</h2>
+                <p>
+                  L'ajout de musiques est une fonctionnalité exclusive pour les utilisateurs ayant un abonnement Premium.
+                  Souscrivez à un abonnement pour débloquer cette fonctionnalité et bien plus encore !
+                </p>
+                <div className={styles.premiumPopupButtons}>
+                  <Link href="/" className={styles.subscribeButton}>
+                    Voir les abonnements
+                  </Link>
+                  <button
+                      className={styles.closeButton}
+                      onClick={() => setShowPremiumPopup(false)}
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
 
         {/* Filtres */}
         <div className={styles.filterContainer}>
