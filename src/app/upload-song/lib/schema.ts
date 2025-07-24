@@ -12,8 +12,8 @@ export const songSchema = z.object({
     singer: z.string().min(1, 'Le nom de l’artiste est requis'),
     is_explicit: z.boolean(),
     difficulty: z.enum(difficultyLevels),
-    status: z.enum(statusOptions),
-    is_premium: z.boolean(),
+    status: z.enum(statusOptions).optional(),
+    is_premium: z.boolean().optional(),
     music_style: z.array(z.string()).min(1, 'Veuillez choisir au moins un style'),
 
     // ✅ Validation du fichier MP3

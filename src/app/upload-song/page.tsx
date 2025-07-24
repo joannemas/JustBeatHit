@@ -19,6 +19,7 @@ import { songSchema } from './lib/schema';
 import { ACCEPTED_IMAGE_TYPES, difficultyLevels, musicStyles, statusOptions } from './lib/constants';
 import { uploadLocalSong } from '@/lib/dexie/uploadLocalSong';
 import useClaims from '@/lib/hooks/useClaims';
+import {supabase} from "@/lib/supabase/client";
 
 type SongFormData = z.infer<typeof songSchema>;
 
@@ -182,83 +183,87 @@ export default function UploadSongPage() {
         setIsSubmitting(true);
 
         const { title, singer, is_explicit, difficulty, status, mp3File, lrcFile, coverFile, is_premium, music_style } = data;
-        const folderPath = `${singer} - ${title}`.trim();
 
+        const updatedStatus = role !== 'admin' ? 'Local' : status;
+        const folderPath = `${singer} - ${title}`.trim();
         const { startTime, endTime, duration } = getSmartTrimRange(rangeIndex, lyrics, audioDuration);
         const trimmedMp3Blob = await trimMp3(mp3File[0], startTime, duration);
         const trimmedLrcBlob = await trimLrc(lrcFile[0], startTime, endTime);
 
-        // if (!isValidDuration(duration)) {
-        //     alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
-        //     setIsSubmitting(false);
-        //     return;
-        // }
+        if (!isValidDuration(duration)) {
+            alert("La durée de l'audio doit être comprise entre 30 et 90 secondes.");
+            setIsSubmitting(false);
+            return;
+        }
 
-        // // Upload du MP3
-        // const { error: mp3Error } = await supabase.storage
-        //     .from('song')
-        //     .upload(`${folderPath}/song.mp3`, trimmedMp3Blob, {
-        //         cacheControl: '3600',
-        //         upsert: true,
-        //     });
+        // Upload du MP3
+        const { error: mp3Error } = await supabase.storage
+            .from('song')
+            .upload(`${folderPath}/song.mp3`, trimmedMp3Blob, {
+                cacheControl: '3600',
+                upsert: true,
+            });
 
-        // if (mp3Error) {
-        //     console.error('Erreur à l’upload du MP3:', mp3Error.message);
-        //     alert("Échec de l'upload du fichier MP3");
-        //     setIsSubmitting(false);
-        //     return;
-        // }
+        if (mp3Error) {
+            console.error('Erreur à l’upload du MP3:', mp3Error.message);
+            alert("Échec de l'upload du fichier MP3");
+            setIsSubmitting(false);
+            return;
+        }
 
-        // // Upload du LRC
-        // const { error: lrcError } = await supabase.storage
-        //     .from('song')
-        //     .upload(`${folderPath}/lyrics.lrc`, trimmedLrcBlob, {
-        //         cacheControl: '3600',
-        //         upsert: true,
-        //     });
-        // if (lrcError) {
-        //     console.error('Erreur à l’upload du LRC:', lrcError.message);
-        //     alert("Échec de l'upload du fichier LRC");
-        //     setIsSubmitting(false);
-        //     return;
-        // }
+        // Upload du LRC
+        const { error: lrcError } = await supabase.storage
+            .from('song')
+            .upload(`${folderPath}/lyrics.lrc`, trimmedLrcBlob, {
+                cacheControl: '3600',
+                upsert: true,
+            });
+        if (lrcError) {
+            console.error('Erreur à l’upload du LRC:', lrcError.message);
+            alert("Échec de l'upload du fichier LRC");
+            setIsSubmitting(false);
+            return;
+        }
 
-        // // Upload de l'image cover
-        // const { error: coverError } = await supabase.storage
-        //     .from('song')
-        //     .upload(`${folderPath}/cover.${coverFile?.[0]?.name.split('.').pop()}`, coverFile[0], {
-        //         cacheControl: '3600',
-        //         upsert: true,
-        //     });
+        // Upload de l'image cover
+        const { error: coverError } = await supabase.storage
+            .from('song')
+            .upload(`${folderPath}/cover.${coverFile?.[0]?.name.split('.').pop()}`, coverFile[0], {
+                cacheControl: '3600',
+                upsert: true,
+            });
 
-        // if (coverError) {
-        //     console.error('Erreur à l’upload de la cover:', coverError.message);
-        //     alert("Échec de l'upload de l’image de couverture");
-        //     setIsSubmitting(false);
-        //     return;
-        // }
+        if (coverError) {
+            console.error('Erreur à l’upload de la cover:', coverError.message);
+            alert("Échec de l'upload de l’image de couverture");
+            setIsSubmitting(false);
+            return;
+        }
 
-        // // Insertion dans la base de données
-        // const { error: insertError } = await supabase
-        //     .from('song')
-        //     .insert({
-        //         title,
-        //         singer,
-        //         is_explicit,
-        //         difficulty,
-        //         status,
-        //         is_premium,
-        //         music_style,
-        //     });
+        // Insertion dans la base de données
+        const { error: insertError } = await supabase
+            .from('song')
+            .insert({
+                title,
+                singer,
+                is_explicit,
+                difficulty,
+                status: updatedStatus,
+                is_premium,
+                music_style,
+            });
 
-        // if (insertError) {
-        //     console.error('Erreur à l’insertion:', insertError.message);
-        //     alert("Échec de l'insertion dans la base de données");
-        //     setIsSubmitting(false);
-        //     return;
-        // }
-        // Pour des tests sur l'upload dans InedexDB
-        await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
+        if (insertError) {
+            console.error('Erreur à l’insertion:', insertError.message);
+            alert("Échec de l'insertion dans la base de données");
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (role !== 'admin' && plan === 'premium') {
+            // Pour des tests sur l'upload dans InedexDB
+            await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
+        }
 
         alert('Chanson ajoutée avec succès !');
         setIsSubmitting(false);
@@ -590,10 +595,12 @@ export default function UploadSongPage() {
                                                 <input type="checkbox" {...register('is_explicit')} />
                                             </div>
 
-                                            <div className={styles.uploadForm__display__checkbox}>
-                                                <label>Musique Premium </label>
-                                                <input type="checkbox" {...register('is_premium')} />
-                                            </div>
+                                            {role === 'admin' && (
+                                                <div className={styles.uploadForm__display__checkbox}>
+                                                    <label>Musique Premium </label>
+                                                    <input type="checkbox" {...register('is_premium')} />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -759,25 +766,26 @@ export default function UploadSongPage() {
                                             )}
                                         </div>
 
-                                        <div className={styles.uploadForm__display__input}>
-                                            <label className={styles.uploadForm__display__label}>Statut</label>
-                                            <div className={styles.difficultyChoices}>
-                                                {statusOptions.map((statusLabel) => (
-                                                    <button
-                                                        key={statusLabel}
-                                                        type="button"
-                                                        className={`${styles.difficultyButton} ${
-                                                            watch('status') === statusLabel ? styles.active : ''
-                                                        } ${styles[statusLabel.toLowerCase()]}`}
-                                                        onClick={() => setValue('status', statusLabel)}
-                                                    >
-                                                        {statusLabel === 'Live' ? 'En ligne' : statusLabel === 'Local' ? 'Local' : 'Brouillon'}
-                                                    </button>
-                                                ))}
+                                        {role === 'admin' && (
+                                            <div className={styles.uploadForm__display__input}>
+                                                <label className={styles.uploadForm__display__label}>Statut</label>
+                                                <div className={styles.difficultyChoices}>
+                                                    {statusOptions.map((statusLabel) => (
+                                                        <button
+                                                            key={statusLabel}
+                                                            type="button"
+                                                            className={`${styles.difficultyButton} ${
+                                                                watch('status') === statusLabel ? styles.active : ''
+                                                            } ${styles[statusLabel.toLowerCase()]}`}
+                                                            onClick={() => setValue('status', statusLabel)}
+                                                        >
+                                                            {statusLabel === 'Live' ? 'En ligne' : statusLabel === 'Local' ? 'Local' : 'Brouillon'}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                {errors.status && <p>{errors.status.message}</p>}
                                             </div>
-                                            {errors.status && <p>{errors.status.message}</p>}
-                                        </div>
-
+                                        )}
                                     </div>
                                 </div>
 
@@ -803,10 +811,10 @@ export default function UploadSongPage() {
 
                         <button
                             type="submit"
-                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3File') || !watch('lrcFile') || !watch('coverFile') || !watch('title') || !watch('singer') || !watch('status') || !watch('difficulty') || watch('music_style')?.length === 0}
+                            disabled={currentStep !== 3 || isSubmitting || !watch('mp3File') || !watch('lrcFile') || !watch('coverFile') || !watch('title') || !watch('singer') || (role === 'admin' && !watch('status')) || !watch('difficulty') || watch('music_style')?.length === 0}
                             className={`${styles.submitButton}`}
                         >
-                            {watch('mp3File') && watch('lrcFile') && watch('coverFile') && watch('title') && watch('singer') && watch('status') && watch('difficulty') && watch('music_style')?.length !== 0 &&
+                            {watch('mp3File') && watch('lrcFile') && watch('coverFile') && watch('title') && watch('singer') && watch('status') && (role !== 'admin' || watch('status')) && watch('music_style')?.length !== 0 &&
                                 <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
 
                             {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
