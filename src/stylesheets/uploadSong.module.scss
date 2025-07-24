@@ -16,6 +16,16 @@
     padding-right: 4px;
   }
 
+  .hyperlink{
+    color: $yellow;
+  }
+
+  code{
+    background-color: rgba(255, 246, 241, 0.30);
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+
   .uploadForm {
     display: flex;
     //justify-content: center;
@@ -218,6 +228,10 @@
             color: $white;
           }
         }
+
+        audio {
+          width: 100%;
+        }
       }
 
       &__checkbox{
@@ -290,6 +304,9 @@
           &.active {
             outline: 3px solid $yellow;
           }
+        }
+        .local {
+          background: var(--Gradient, linear-gradient(44deg, $yellow 3.69%, $red-ribbon 94.55%));
         }
         .live {
           background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));

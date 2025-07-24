@@ -432,13 +432,11 @@ export default function UploadSongPage() {
                                         </div>
                                     </div>
 
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium amet animi
-                                        architecto,
-                                        asperiores blanditiis commodi deleniti dolores eos error esse est ex excepturi hic
-                                        itaque
-                                        laborum magni modi mollitia necessitatibus nostrum odio odit optio pariatur, qui
-                                        quia.
+                                    <p>Pour ajouter une musique, vous devez fournir le fichier audio au format <code>.mp3</code> ainsi que son fichier de paroles au format <code>.lrc</code>.
+                                        Le fichier <code>.lrc</code> contient les paroles de la chanson, accompagnées de timecodes indiquant le moment exact où chaque ligne doit s’afficher.
+                                        Vous pouvez en trouver sur des sites comme <a href="https://www.lyricsify.com/" target="_blank" rel="noopener noreferrer" className={styles.hyperlink}>Lyricsify</a> ou <a href="https://rclyricsband.com/" target="_blank" rel="noopener noreferrer" className={styles.hyperlink}>RC Lyrics Band</a>.
                                     </p>
+                                    <p>⚠️ Assurez-vous que le timing des paroles correspond bien à celui de l’audio, sans quoi la synchronisation ne sera pas correcte.</p>
                                 </div>
 
                                 <button
@@ -772,7 +770,7 @@ export default function UploadSongPage() {
                                                         } ${styles[statusLabel.toLowerCase()]}`}
                                                         onClick={() => setValue('status', statusLabel)}
                                                     >
-                                                        {statusLabel === 'Live' ? 'En ligne' : 'Brouillon'}
+                                                        {statusLabel === 'Live' ? 'En ligne' : statusLabel === 'Local' ? 'Local' : 'Brouillon'}
                                                     </button>
                                                 ))}
                                             </div>
