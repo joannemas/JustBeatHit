@@ -6,6 +6,9 @@ import SongCard from "./SongCard";
 import styles from "@/stylesheets/songList.module.scss";
 import Link from "next/link";
 import { useRef } from "react";
+import { listLocalSongs } from "@/lib/dexie/listLocalSongs";
+import { Database } from "~/database.types";
+import { LocalSong } from "@/lib/dexie/types";
 
 export default function SongList({
   gameId,
@@ -14,11 +17,11 @@ export default function SongList({
   gameId?: string;
   onSelectSong?: (song: any) => void;
 }) {
-  const [songs, setSongs] = useState<any[]>([]);
+  const [songs, setSongs] = useState<Database["public"]["Tables"]["song"]["Row"][] | LocalSong[]>([]);
   const [search, setSearch] = useState("");
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [premiumFilter, setPremiumFilter] = useState<"all" | "premium" | "free">("all");
+  const [premiumFilter, setPremiumFilter] = useState<"all" | "premium" | "free" | "local">("all");
   const [premiumCount, setPremiumCount] = useState(0);
   const [freeCount, setFreeCount] = useState(0);
 
@@ -51,6 +54,15 @@ export default function SongList({
 
   useEffect(() => {
     const fetchSongs = async () => {
+      if(premiumFilter === "local"){
+        const songs = await listLocalSongs()
+        console.debug("songs", songs)
+        if (songs?.length && onSelectSong) {
+          onSelectSong(songs[0]);
+        }
+        setSongs(songs)
+        return
+      }
       let query = supabase.from("song").select("*");
 
       if (search) {
@@ -190,6 +202,12 @@ export default function SongList({
             Musiques Gratuites
             <span className={styles.premiumFilterCount}>{freeCount}</span>
           </button>
+          <button
+              className={`${styles.filterButton} ${premiumFilter === "local" ? styles.active : ""}`}
+              onClick={() => setPremiumFilter("local")}
+          >
+            Musiques Personnalisées
+          </button>
         </div>
 
 
@@ -200,6 +218,7 @@ export default function SongList({
                   key={song.id}
                   song={song}
                   gameId={gameId}
+                  coverUrl={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
                   onSelect={() => onSelectSong?.(song)}
               />
           ))}

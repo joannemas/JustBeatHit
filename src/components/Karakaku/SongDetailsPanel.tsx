@@ -8,12 +8,13 @@ import { updateGameSong } from "@/app/game/actions";
 import Link from "next/link";
 import { ChevronDown, Plus, Star } from "lucide-react";
 import Image from "next/image";
+import { LocalSong } from "@/lib/dexie/types";
 
 type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
 type Game = Database["public"]["Tables"]["games"]["Row"];
 
-export default function SongDetailsPanel({ song, gameId }: { song: Database["public"]["Tables"]["song"]["Row"], gameId?: string }) {
+export default function SongDetailsPanel({ song, gameId }: { song: Database["public"]["Tables"]["song"]["Row"] | LocalSong, gameId?: string }) {
     /** @todo - Add toaster on updateGame error */
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -46,7 +47,6 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         .eq("user_id", user.id)
         .eq("song_id", song.id)
         .eq("game", "karakaku")
-        .eq("game_id", profile.last_game_id)
         .single();
 
       if (!bestError) setBestScore(best);
@@ -79,7 +79,7 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
   return (
     <div className={styles.drawer}>
       <img
-        src={`https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
+        src={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
         alt={song.title}
         className={styles.coverImage}
         />
@@ -88,14 +88,14 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
       <p className={styles.songSinger}>{song.singer}</p>
 
       <div className={styles.tags}>
-        <div
-        className={`${styles.difficulty} ${
-          styles[song.difficulty?.toLowerCase() || "unknown"]
-        }`}
-      >
-        {song.difficulty}
-      </div>
-        {song.music_style?.map((style, index) => (
+        {"difficulty" in song && <div
+          className={`${styles.difficulty} ${
+            styles[song.difficulty?.toLowerCase() || "unknown"]
+          }`}
+        >
+          {song.difficulty}
+        </div>}
+        {"music_style" in song && song.music_style?.map((style, index) => (
           <span key={index} className={styles.styleTag}>
             {style}
           </span>
