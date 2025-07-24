@@ -260,7 +260,7 @@ export default function UploadSongPage() {
             return;
         }
 
-        if (role !== 'admin' && plan === 'premium') {
+        if (role !== 'admin' && plan === 'Premium') {
             // Pour des tests sur l'upload dans InedexDB
             await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
         }
@@ -376,7 +376,7 @@ export default function UploadSongPage() {
                         {currentStep === 1 && (
                             <div className={styles.stepOne}>
                                 <h2>Étape 1 . ajouter le fichier <span className={styles.highlightTitle}>mp3</span> et le fichier <span className={styles.highlightTitle}>lrc</span></h2>
-
+                                
                                 <div>
                                     <div className={styles.stepOne__filesWrapper}>
                                         <div className={styles.fileInput}>
@@ -814,7 +814,7 @@ export default function UploadSongPage() {
                             disabled={currentStep !== 3 || isSubmitting || !watch('mp3File') || !watch('lrcFile') || !watch('coverFile') || !watch('title') || !watch('singer') || (role === 'admin' && !watch('status')) || !watch('difficulty') || watch('music_style')?.length === 0}
                             className={`${styles.submitButton}`}
                         >
-                            {watch('mp3File') && watch('lrcFile') && watch('coverFile') && watch('title') && watch('singer') && watch('status') && (role !== 'admin' || watch('status')) && watch('music_style')?.length !== 0 &&
+                            {watch('mp3File') && watch('lrcFile') && watch('coverFile') && watch('title') && watch('singer') && (role !== 'admin' || watch('status')) && watch('music_style')?.length !== 0 &&
                                 <Image src="/assets/img/icon/check-icon.svg" alt="check icon" width={25} height={25} aria-hidden="true"/>}
 
                             {isSubmitting ? 'Envoi en cours...' : 'Terminer'}
