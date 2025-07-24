@@ -9,6 +9,7 @@
   font-family: 'GoiaDisplay', sans-serif;
 
    // Ajout du scroll
+  height: 100%;
   max-height: 98vh;
   overflow-y: auto;
   scrollbar-width: thin; // Pour Firefox
@@ -48,11 +49,12 @@
 }
 
 .coverImage {
-  width: 18vw;
-  height: auto;
+  width: 90%;
+  height: 25%;
   border-radius: 0.75rem;
   object-fit: cover;
-  margin: 1vw
+  object-position: top;
+  margin: 1vw auto;
 }
 
 .songTitle {
