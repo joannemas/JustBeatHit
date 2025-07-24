@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { CustomClaims } from '../supabase/types';
 
 export default function useClaims() {
-    const [userClaims, setUserClaims] = useState<{}>({role: null, plan: null});
+    const [userClaims, setUserClaims] = useState<{role: null | string, plan: null | string}>({role: null, plan: null});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

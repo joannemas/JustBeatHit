@@ -18,7 +18,7 @@ import {
 import { songSchema } from './lib/schema';
 import { ACCEPTED_IMAGE_TYPES, difficultyLevels, musicStyles, statusOptions } from './lib/constants';
 import { uploadLocalSong } from '@/lib/dexie/uploadLocalSong';
-import { supabase } from '@/lib/supabase/client';
+import useClaims from '@/lib/hooks/useClaims';
 
 type SongFormData = z.infer<typeof songSchema>;
 
@@ -33,6 +33,7 @@ export default function UploadSongPage() {
     } = useForm<SongFormData>({
         resolver: zodResolver(songSchema),
     });
+    const {userClaims: {role, plan}} = useClaims()
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
