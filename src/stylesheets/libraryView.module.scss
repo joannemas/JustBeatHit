@@ -1,9 +1,22 @@
 .mainRow {
   display: flex;
   flex-direction: row;
-  height: 100vh; // important pour que le scroll Y soit géré ici
+  height: 100vh; /* important pour que le scroll Y soit géré ici */
   overflow: hidden;
   padding: 0 20px;
+  position: relative;
+  z-index: 0;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(20vw + 55px); /* Positionne la ligne à gauche de .rightColumn */
+    width: 1px;
+    background-color: white;
+    z-index: 1;
+  }
 }
 
 .leftColumn {
@@ -12,7 +25,7 @@
   flex: 1;
   overflow-y: scroll;
   scroll-behavior: smooth;
-  z-index: 0;
+  z-index: 2;
   padding: 0 40px 0 20px;
 
   /* Scrollbar stylisée */
@@ -38,16 +51,7 @@
   width: 20vw;
   padding-left: 32px;
   position: relative;
-
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -5px;
-    width: 1px;
-    background-color: white;
-  }
+  z-index: 2;
 }
 
 .title {
