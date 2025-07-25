@@ -10,7 +10,7 @@ import { v5 as uuidV5 } from "uuid"
  * @param {string} title - The title of the song
  * @returns {Promise<number>} Id of added song
  */
-export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: File, singer: string, title: string): Promise<number> {
+export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: File, singer: string, title: string): Promise<string> {
   if (!mp3File || !lrcFile) {
     throw new Error("Veuillez fournir un fichier MP3 et un fichier LRC.")
   }
@@ -31,7 +31,7 @@ export async function uploadLocalSong(mp3File: Blob, lrcFile: Blob, coverFile: F
     })
 
     console.debug(`Song added successfully width ID : ${id}`)
-    return id
+    return songUUID
   } catch (error) {
     console.error("Error while adding song to the IndexedDB :", error)
     throw error

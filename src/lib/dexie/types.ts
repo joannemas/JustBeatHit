@@ -7,6 +7,5 @@ export interface LocalSong {
   lrcFile: Blob
   coverFile: File
   created_at: Date
-  is_premium: boolean
 }
 

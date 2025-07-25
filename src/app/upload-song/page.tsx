@@ -184,6 +184,7 @@ export default function UploadSongPage() {
 
         const { title, singer, is_explicit, difficulty, status, mp3File, lrcFile, coverFile, is_premium, music_style } = data;
 
+        console.debug('Status :', status)
         const updatedStatus = role !== 'admin' ? 'Local' : status;
         const folderPath = `${singer} - ${title}`.trim();
         const { startTime, endTime, duration } = getSmartTrimRange(rangeIndex, lyrics, audioDuration);
@@ -196,10 +197,24 @@ export default function UploadSongPage() {
             return;
         }
 
-        if (role !== 'admin' && plan === 'Premium') {
+        if (updatedStatus === 'Local') {
             // Pour des tests sur l'upload dans InedexDB
             setIsSubmitting(false);
-            await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
+            const id = await uploadLocalSong(trimmedMp3Blob, trimmedLrcBlob, coverFile[0], singer, title)
+
+            // Insertion dans la base de données
+            await supabase
+                .from('song')
+                .insert({
+                    id,
+                    title,
+                    singer,
+                    is_explicit,
+                    difficulty,
+                    status: updatedStatus,
+                    is_premium,
+                    music_style,
+                });
         } else {
             // Upload du MP3
             const { error: mp3Error } = await supabase.storage
