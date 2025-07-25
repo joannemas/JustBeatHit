@@ -37,6 +37,10 @@ export default function SongList({
     const fetchSongs = async () => {
       let query = supabase.from("song").select("*");
 
+      if (role !== "admin") {
+        query = query.neq("status", "Draft");
+      }
+
       if (search) {
         query = query.ilike("title", `%${search}%`);
       }
@@ -70,6 +74,10 @@ export default function SongList({
       }
       let query = supabase.from("song").select("*");
 
+      if (role !== "admin") {
+        query = query.neq("status", "Draft");
+      }
+
       if (search) {
         query = query.ilike("title", `%${search}%`);
       }
@@ -92,10 +100,16 @@ export default function SongList({
         }
       }
 
-      const [premium, free] = await Promise.all([
-        supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true),
-        supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false),
-      ]);
+      // Compteurs pour premium et free avec filtre status pour non-admins
+      let premiumQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true);
+      let freeQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false);
+
+      if (role !== "admin") {
+        premiumQuery = premiumQuery.neq("status", "Draft");
+        freeQuery = freeQuery.neq("status", "Draft");
+      }
+
+      const [premium, free] = await Promise.all([premiumQuery, freeQuery]);
 
       if (!premium.error) setPremiumCount(premium.count || 0);
       if (!free.error) setFreeCount(free.count || 0);
