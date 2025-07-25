@@ -1,3 +1,5 @@
+@import './mixins.scss';
+
 .drawer {
   width: 20vw;
   color: white;
@@ -279,3 +281,113 @@
   }
 }
 
+.premiumFilterCount{
+  border: 1px solid rgba(255, 246, 241, 0.50);
+  border-radius: 999px;
+  display: flex;
+  padding: 1px 6px 1px 4px;
+  justify-content: center;
+  align-items: center;
+}
+
+.premiumPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.premiumPopupContent {
+  background-color: $background-color;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative; /* Pour positionner la croix */
+}
+
+.premiumPopupContent h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.premiumPopupContent p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: $white;
+}
+
+.premiumPopupButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.subscribeButton {
+  padding: 10px 20px;
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+  color: $white;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+}
+
+.closeButton {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid $white;
+  color: $white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+}
+
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: $white;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: $red-ribbon;
+  }
+}
