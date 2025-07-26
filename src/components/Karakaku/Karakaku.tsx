@@ -71,6 +71,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const currentLyricRef = useRef<HTMLDivElement>(null);
   const [timerMockPos, setTimerMockPos] = useState<{ top: number; left: number } | null>(null);
 
+  const isMobileDevice = () => {
+    return /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+  };
+
   const { startTutorial } = useTutorial({
     onStart: () => setShowTimerForTutorial(true),
     onEnd: () => setShowTimerForTutorial(false),
@@ -475,27 +479,31 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     return match ? match[0] : "";
   }
 
+  const togglePause = () => {
+    setIsPausedMenuOpen((prev) => {
+      if (prev) {
+        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
+        const audio = audioPlayerRef.current?.audioEl.current;
+        if (audio) {
+          const isMusicFinished = audio.ended;
+          if (!isCountdownActive && !isMusicFinished) {
+            audio.play();
+          }
+        }
+        inputRef.current?.focus();
+      } else {
+        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: none;");
+        audioPlayerRef.current?.audioEl.current?.pause();
+        inputRef.current?.blur();
+      }
+      return !prev;
+    });
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.key === "Escape" || event.key === "Enter") && !isGameOver) {
-        setIsPausedMenuOpen((prev) => {
-          if (prev) {
-            document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
-            const audio = audioPlayerRef.current?.audioEl.current;
-            if (audio) {
-              const isMusicFinished = audio.ended;
-              if (!isCountdownActive && !isMusicFinished) {
-                audio.play();
-              }
-            }
-            inputRef.current?.focus();
-          } else {
-            document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: none;");
-            audioPlayerRef.current?.audioEl.current?.pause();
-            inputRef.current?.blur();
-          }
-          return !prev;
-        });
+        togglePause();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -518,6 +526,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   const handleResume = () => {
     setIsPausedMenuOpen(false);
+    document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
     const audio = audioPlayerRef.current?.audioEl.current;
     if (audio) {
       const isMusicFinished = audio.ended;
@@ -526,6 +535,12 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       }
     }
     inputRef.current?.focus();
+  };
+
+  const handleEchapClick = () => {
+    if (isMobileDevice()) {
+      togglePause();
+    }
   };
 
   return (
@@ -613,13 +628,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           <div className={`${styles.animatedEchap}`}></div>
           <div className={styles.pauseMenuContent}>
             <div>
-              <Image
-                src="/assets/img/icon/icon-echap.svg"
-                alt="Pause"
-                width={100}
-                height={24}
-                className={styles.pauseTextIcon}
-              />
+              {!isMobileDevice() && (
+                  <Image
+                      src="/assets/img/icon/icon-echap.svg"
+                      alt="Pause"
+                      width={100}
+                      height={24}
+                      className={styles.pauseTextIcon}
+                  />
+              )}
               <button className={styles.btnEchap} onClick={handleResume}>
                 <Image
                   src="/assets/img/icon/arrow-right-black.svg"
@@ -632,13 +649,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               </button>
             </div>
             <div>
-              <Image
-                src="/assets/img/icon/icon-r.svg"
-                alt="Reprendre"
-                width={100}
-                height={24}
-                className={styles.pauseTextIcon}
-              />
+              {!isMobileDevice() && (
+                  <Image
+                      src="/assets/img/icon/icon-r.svg"
+                      alt="Reprendre"
+                      width={100}
+                      height={24}
+                      className={styles.pauseTextIcon}
+                  />
+              )}
               <button className={styles.btnEchap} onClick={handleReplay}>
                 <Image
                   src="/assets/img/icon/refresh.svg"
@@ -717,13 +736,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               height={1000}
               className={styles.logoJbh}
             />
-            <div className={styles.echapInfoText} data-tutorial="escape-info">
+            <div className={styles.echapInfoText} data-tutorial="escape-info"
+                 onClick={handleEchapClick}
+                 style={{ cursor: isMobileDevice() ? 'pointer' : 'default' }}
+            >
               <span>
                 <Image
-                  src="/assets/img/icon/echap-key.svg"
+                  src={isMobileDevice() ? "/assets/img/icon/echap-key-mobile.svg" : "/assets/img/icon/echap-key.svg"}
                   alt="Music svg"
-                  width={50}
-                  height={50}
+                  width={isMobileDevice() ? 65 : 50}
+                  height={isMobileDevice() ? 65 : 50}
                 />
                 <span>pour mettre en pause la partie</span>
               </span>
