@@ -5,7 +5,7 @@ import Image from 'next/image'
 import useClaims from "@/lib/hooks/useClaims";
 
 export default function SubscriptionOptions() {
-    const {userClaims: {role, plan}} = useClaims()
+    const {userClaims: {plan}} = useClaims()
 
     return (
         <div className={styles.subscriptionWrapper}>
