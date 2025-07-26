@@ -11,6 +11,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@hcaptcha/react-hcaptcha": "^1.12.0",
     "@hookform/resolvers": "^5.0.1",
+    "@stripe/stripe-js": "^7.4.0",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.6",
     "clsx": "^2.1.1",
@@ -28,6 +29,7 @@
     "sass": "^1.77.8",
     "sharp": "^0.33.5",
     "uuid": "^11.1.0",
+    "stripe": "^18.3.0",
     "zod": "^3.24.3"
   },
   "scripts": {
