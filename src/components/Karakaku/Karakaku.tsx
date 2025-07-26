@@ -408,7 +408,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                   style={{
                     position: "absolute",
                     right: isMobileDevice() ? "inherit" : "-70px",
-                    left: isMobileDevice() ? "-75px" : "inherit",
+                    left: isMobileDevice() ? "-75px" : "revert-layer",
                     top: "50%",
                     transform: "translateY(-50%)"
                   }}
