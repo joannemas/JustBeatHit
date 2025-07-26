@@ -68,34 +68,6 @@ export default function SubscriptionOptions() {
                     </li>
                 </ul>
 
-                { plan === 'Freenium' ? (
-                    <button disabled={true} className={styles.currentPlanButton}>
-                        Votre plan
-                    </button>
-                ) : (
-                    <button className={styles.upgradeButton}>
-                        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="customGradient" gradientTransform="rotate(135)">
-                                    <stop offset="0%" stopColor="#A32CC4" />
-                                    <stop offset="25%" stopColor="#C1208F" />
-                                    <stop offset="50%" stopColor="#F1203C" />
-                                    <stop offset="75%" stopColor="#FF6026" />
-                                    <stop offset="100%" stopColor="#FFAB36" />
-                                </linearGradient>
-                            </defs>
-                            <path
-                                fill="url(#customGradient)"
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M19.9496 9.11612C19.4615 9.60427 19.4615 10.3957 19.9496 10.8839L27.8157 18.75H10.0002C9.30981 18.75 8.75016 19.3096 8.75016 20C8.75016 20.6904 9.30981 21.25 10.0002 21.25H27.8157L19.9496 29.1161C19.4615 29.6043 19.4615 30.3957 19.9496 30.8839C20.4378 31.372 21.2292 31.372 21.7174 30.8839L31.7174 20.8839C32.2055 20.3957 32.2055 19.6043 31.7174 19.1161L21.7174 9.11612C21.2292 8.62796 20.4378 8.62796 19.9496 9.11612Z"
-                            />
-                        </svg>
-                        <span>S&apos;abonner</span>
-                    </button>
-                    )
-                }
-
             </div>
 
             <div className={`${styles.card} ${styles.premium}`}>
@@ -133,33 +105,6 @@ export default function SubscriptionOptions() {
                     </li>
                 </ul>
 
-                { plan === 'Premium' ? (
-                    <button disabled={true} className={styles.currentPlanButton}>
-                        Votre plan
-                    </button>
-                ) : (
-                    <button className={styles.upgradeButton}>
-                        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="customGradient" gradientTransform="rotate(135)">
-                                    <stop offset="0%" stopColor="#A32CC4" />
-                                    <stop offset="25%" stopColor="#C1208F" />
-                                    <stop offset="50%" stopColor="#F1203C" />
-                                    <stop offset="75%" stopColor="#FF6026" />
-                                    <stop offset="100%" stopColor="#FFAB36" />
-                                </linearGradient>
-                            </defs>
-                            <path
-                                fill="url(#customGradient)"
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M19.9496 9.11612C19.4615 9.60427 19.4615 10.3957 19.9496 10.8839L27.8157 18.75H10.0002C9.30981 18.75 8.75016 19.3096 8.75016 20C8.75016 20.6904 9.30981 21.25 10.0002 21.25H27.8157L19.9496 29.1161C19.4615 29.6043 19.4615 30.3957 19.9496 30.8839C20.4378 31.372 21.2292 31.372 21.7174 30.8839L31.7174 20.8839C32.2055 20.3957 32.2055 19.6043 31.7174 19.1161L21.7174 9.11612C21.2292 8.62796 20.4378 8.62796 19.9496 9.11612Z"
-                            />
-                        </svg>
-                        <span>S&apos;abonner</span>
-                    </button>
-                )
-                }
             </div>
         </div>
     )

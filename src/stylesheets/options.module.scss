@@ -253,6 +253,25 @@
         }
     }
 
+    .currentPlanButton{
+        @include button($white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: rgba($black, 0.5);
+        border: 2px solid rgba($black, 0.5);
+        padding: 1.5rem;
+
+        &:hover {
+            filter: none;
+        }
+
+        span {
+            padding-right: 2px;
+        }
+    }
+
     .free {
         background-color: transparent;
         border: 2px solid rgba($black, 0.3);
@@ -270,6 +289,9 @@
             background-color: $red-ribbon;
         }
 
+        .upgradeButton {
+            border: 2px solid $purple-heart;
+        }
     }
 
     .premium {
