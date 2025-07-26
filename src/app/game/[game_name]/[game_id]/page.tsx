@@ -11,7 +11,7 @@ import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 export async function generateMetadata({ params: { game_name, game_id }, params }: { params: { game_name: string, game_id: string } }): Promise<Metadata | void> {
   const supabase = createClient()
   const { data } = await supabase.from('games').select().eq('id', game_id).single()
-  const { data: { ...song } } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
+  const { data: song } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
 
   const host = headers().get('x-forwarded-host')
   const protocol = headers().get('x-forwarded-proto')

@@ -10,6 +10,7 @@ import { ChevronDown, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import { LocalSong } from "@/lib/dexie/types";
 import useClaims from "@/lib/hooks/useClaims";
+import { useRouter } from "next/navigation";
 
 type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
@@ -26,6 +27,7 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
   const [lastGame, setLastGame] = useState<Game | null>(null);
   const [showPremiumPopup, setShowPremiumPopup] = useState(false); // État pour la popup
   const popupRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -89,13 +91,13 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
     fetchStats();
   }, [song]);
 
-    const handlePlayClick = (e: React.MouseEvent) => {
+    const handlePlayClick = async (e: React.MouseEvent) => {
         e.preventDefault();
         if ("is_premium" in song && song.is_premium && role !== "admin" && plan !== "Premium") {
             setShowPremiumPopup(true);
         } else {
-            updateGameSong(song.id, gameId);
-            window.location.href = `/game/karakaku/${gameId}`;
+            await updateGameSong(song.id, gameId);
+            router.push(`/game/karakaku/${gameId}`);
         }
     };
 
