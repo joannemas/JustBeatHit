@@ -245,12 +245,30 @@
             justify-content: center;
             font-weight: bold;
 
-
             span {
                 @include textColorGradient;
                 padding-right: 2px;
                 
             }
+        }
+    }
+
+    .currentPlanButton{
+        @include button($white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: rgba($black, 0.5);
+        border: 2px solid rgba($black, 0.5);
+        padding: 1.5rem;
+
+        &:hover {
+            filter: none;
+        }
+
+        span {
+            padding-right: 2px;
         }
     }
 
@@ -272,8 +290,7 @@
         }
 
         .upgradeButton {
-            color: rgba($black, 0.5);
-            border-color: rgba($black, 0.5);
+            border: 2px solid $purple-heart;
         }
     }
 
