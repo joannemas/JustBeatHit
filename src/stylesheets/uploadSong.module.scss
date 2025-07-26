@@ -5,6 +5,8 @@
   font-family: 'GoiaDisplay', sans-serif;
   display: flex;
   height: 100vh;
+  background-color: $background-color;
+  color: $white;
 
   .highlightTitle {
     background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
@@ -14,34 +16,45 @@
     padding-right: 4px;
   }
 
+  .hyperlink{
+    color: $yellow;
+  }
+
+  code{
+    background-color: rgba(255, 246, 241, 0.30);
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+
   .uploadForm {
     display: flex;
-    justify-content: center;
+    //justify-content: center;
     width: 100%;
     margin-left: 20vw;
 
     &__display {
-      padding: 0 64px;
-      width: 60%;
+      padding: 0 52px;
+      width: 70%;
       height: 100%;
       h2 {
         font-family: 'GoiaDisplay', sans-serif;
-        font-size: 32px;
+        font-size: 28px;
         font-style: italic;
         font-weight: 700;
         text-transform: uppercase;
+        margin: 0;
       }
 
       .fileInput {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 8px;
         width: 50%;
         margin-bottom: 20px;
 
         label {
           font-family: 'GoiaDisplay', sans-serif;
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -122,6 +135,14 @@
         gap: 8px;
         margin-bottom: 20px;
 
+        p{
+          margin: 0;
+          font-size: 18px;
+          font-style: italic;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+
         &__edit{
           display: flex;
           align-items: center;
@@ -149,7 +170,7 @@
         }
 
         label{
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -207,6 +228,10 @@
             color: $white;
           }
         }
+
+        audio {
+          width: 100%;
+        }
       }
 
       &__checkbox{
@@ -217,7 +242,7 @@
 
         label {
           font-family: 'GoiaDisplay', sans-serif;
-          font-size: 20px;
+          font-size: 18px;
           font-style: italic;
           font-weight: 700;
           text-transform: uppercase;
@@ -238,40 +263,54 @@
         display: flex;
         gap: 16px;
         flex-wrap: wrap;
-      }
 
-      .difficultyButton {
-        padding: 8px 12px;
-        border-radius: 4px;
-        border: none;
-        color: $white;
-        cursor: pointer;
-        transition: all 0.1s ease-in-out;
-        text-transform: uppercase;
-        font-family: 'GoiaDisplay', sans-serif;
-        font-style: italic;
-        font-weight: 700;
+        .difficultyButton {
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: none;
+          color: $white;
+          cursor: pointer;
+          transition: all 0.1s ease-in-out;
+          text-transform: uppercase;
+          font-family: 'GoiaDisplay', sans-serif;
+          font-style: italic;
+          font-weight: 700;
 
-        &:hover {
-          filter: brightness(0.9);
+          &:hover {
+            filter: brightness(0.9);
+          }
+
+          &.active {
+            outline: 3px solid $white;
+          }
         }
 
-        &.active {
-          outline: 3px solid $white;
+        .facile {
+          background-color: $emerald-green;
         }
-      }
+        .moyen {
+          background-color: $yellow;
+        }
+        .difficile {
+          background-color: $red-ribbon;
+        }
+        .impossible {
+          background-color: $purple-heart;
+        }
+        .draft {
+          background-color: $white;
+          color: $black;
 
-      .facile {
-        background-color: $emerald-green;
-      }
-      .moyen {
-        background-color: $yellow;
-      }
-      .difficile {
-        background-color: $red-ribbon;
-      }
-      .impossible {
-        background-color: $purple-heart;
+          &.active {
+            outline: 3px solid $yellow;
+          }
+        }
+        .local {
+          background: var(--Gradient, linear-gradient(44deg, $yellow 3.69%, $red-ribbon 94.55%));
+        }
+        .live {
+          background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+        }
       }
     }
   }
@@ -334,6 +373,58 @@
       max-height: 70%;
 
       &__inputs {
+        width: 100%;
+
+        .fileInput{
+          width: 60%;
+          display: flex;
+          flex-direction: column;
+
+          &__display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+
+    &__buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .songInfo {
+      display: flex;
+      align-items: stretch; // Important pour que les enfants s'étirent sur la même hauteur
+      gap: 20px;
+      width: 100%;
+    }
+
+    .songTextInfos{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .stepThree {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+
+    &__wrapper {
+      display: flex;
+      gap: 16px;
+      max-height: 70%;
+
+      &__inputs {
         width: 50%;
 
         .fileInput{
@@ -345,18 +436,23 @@
         }
       }
 
+      &__info{
+        width: 40%;
+      }
+
       &__lyrics {
         position: relative;
         height: 100%;
-        width: 50%;
-
+        width: 60%;
+        display: flex;
+        flex-direction: column;
 
         &::before {
           content: '';
           position: absolute;
           top: 0;
           bottom: 0;
-          left: 4px;
+          right: 4px;
           width: 1px;
           background-color: rgba(255, 246, 241, 0.30);
           z-index: 0;
@@ -369,11 +465,11 @@
 
         &__preview {
           height: 100%;
-          overflow-y: scroll;
-          direction: rtl;
-          text-align: left;
-          padding: 0 36px;
-
+          overflow-y: auto;
+          padding: 20px 20px 20px 0;
+          display: flex;
+          flex-direction: row;
+          gap: 16px;
 
           &::-webkit-scrollbar {
             width: 6px;
@@ -388,24 +484,78 @@
           scrollbar-color: $yellow transparent;
 
           h3{
-            font-size: 20px;
+            font-size: 18px;
             font-style: italic;
             font-weight: 700;
             text-transform: uppercase;
             color: $yellow;
           }
 
-          div {
-            padding: 20px 0;
+          .lyricLine {
+            height: 70px;
           }
 
           .highlight {
-            color: $yellow;
+            background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-right: 4px;
           }
 
           .deleted {
             text-decoration: line-through;
             color: rgba(255, 246, 241, 0.30);
+          }
+
+          .lyricsDisplay{
+            height: 100%;
+          }
+
+          .sliderContainer {
+            height: 100%;
+            width: 20%;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+
+            .sliderThumbContainer {
+              display: flex;
+              align-items: center;
+              position: relative;
+              .sliderThumb {
+                display: flex;
+                padding: 4px 12px;
+                color: $black;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-style: italic;
+                font-weight: 700;
+                text-transform: uppercase;
+                background: #FFF6F1;
+
+                &.start{
+                  border: 3px solid $emerald-green;
+                }
+
+                &.end{
+                  border: 3px solid $red-ribbon;
+                }
+              }
+
+              svg {
+                position: absolute;
+                top: 50%;
+                bottom: 0;
+                transform: translateY(-50%);
+                left: 100%;
+              }
+            }
           }
         }
       }
@@ -424,6 +574,10 @@
     gap: 16px;
     text-transform: uppercase;
     font-style: italic;
+
+    h2 {
+      font-size: 18px;
+    }
 
     .lineBreak{
       width: 2px;
@@ -452,6 +606,95 @@
 
     &:hover {
       filter: brightness(0.8);
+    }
+  }
+}
+
+.musicStyleWrapper {
+  position: relative;
+
+  .musicStyleInputWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+    position: relative;
+    border-radius: 6px;
+
+    .chip {
+      border: 1px solid $white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-style: italic;
+      text-transform: uppercase;
+      font-weight: 700;
+
+      button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        color: $white;
+      }
+    }
+
+    .musicStyleInput {
+      border: none;
+      outline: none;
+      flex-grow: 1;
+    }
+  }
+
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin-top: 4px;
+    border: 1px solid $white;
+    border-radius: 6px;
+    background: $background-color;
+    list-style: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+
+    // WebKit browsers (Chrome, Safari, Edge)
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #aaa;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #888;
+    }
+
+    // Firefox
+    scrollbar-width: thin;
+    scrollbar-color: #aaa transparent;
+
+    li {
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+
+      &:hover {
+        background: #4e4e4e;
+      }
     }
   }
 }
