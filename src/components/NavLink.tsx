@@ -12,11 +12,11 @@ type Props = {
 
 export default function NavLink({ href, children }: Props) {
     const pathname = usePathname()
-    const isActive = pathname === href
+    const isActive = pathname === href || pathname.startsWith(href + '/')
 
     return (
-<li className={clsx(styles.navItem, { [styles.active]: isActive })}>
-<Link href={href}>{children}</Link>
+        <li className={clsx(styles.navItem, { [styles.active]: isActive })}>
+            <Link href={href}>{children}</Link>
         </li>
     )
 }

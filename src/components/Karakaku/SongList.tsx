@@ -192,7 +192,7 @@ export default function SongList({
                   Souscrivez à un abonnement pour débloquer cette fonctionnalité et bien plus encore !
                 </p>
                 <div className={styles.premiumPopupButtons}>
-                  <Link href="/" className={styles.subscribeButton}>
+                  <Link href="/options/subscription" className={styles.subscribeButton}>
                     Voir les abonnements
                   </Link>
                   <button
