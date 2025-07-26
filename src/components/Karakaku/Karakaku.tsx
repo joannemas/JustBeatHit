@@ -73,6 +73,10 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const currentLyricRef = useRef<HTMLDivElement>(null);
   const [timerMockPos, setTimerMockPos] = useState<{ top: number; left: number } | null>(null);
 
+  const isMobileDevice = () => {
+    return /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+  };
+
   const { startTutorial } = useTutorial({
     onStart: () => setShowTimerForTutorial(true),
     onEnd: () => setShowTimerForTutorial(false),
@@ -437,7 +441,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                   data-tutorial="timer-info"
                   style={{
                     position: "absolute",
-                    right: "-70px",
+                    right: isMobileDevice() ? "inherit" : "-70px",
+                    left: isMobileDevice() ? "-75px" : "revert-layer",
                     top: "50%",
                     transform: "translateY(-50%)"
                   }}
@@ -465,6 +470,19 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 spellCheck={false}
                 ref={inputRef}
                 data-tutorial="input-field"
+                autoComplete="off"
+                autoCorrect="off"
+                onCopy={(e) => e.preventDefault()}
+                onCut={(e) => e.preventDefault()}
+                onContextMenu={(e) => e.preventDefault()}
+                onKeyDown={(e) => {
+                  if (
+                    (e.ctrlKey || e.metaKey) &&
+                    ['c', 'v', 'x', 'a'].includes(e.key.toLowerCase())
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
                 disabled={isPausedMenuOpen}
               />
               <div ref={caretRef} className={styles.caret}></div>
@@ -501,27 +519,31 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
     return match ? match[0] : "";
   }
 
+  const togglePause = () => {
+    setIsPausedMenuOpen((prev) => {
+      if (prev) {
+        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
+        const audio = audioPlayerRef.current?.audioEl.current;
+        if (audio) {
+          const isMusicFinished = audio.ended;
+          if (!isCountdownActive && !isMusicFinished) {
+            audio.play();
+          }
+        }
+        inputRef.current?.focus();
+      } else {
+        document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: none;");
+        audioPlayerRef.current?.audioEl.current?.pause();
+        inputRef.current?.blur();
+      }
+      return !prev;
+    });
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isGameOver) {
-        setIsPausedMenuOpen((prev) => {
-          if (prev) {
-            document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
-            const audio = audioPlayerRef.current?.audioEl.current;
-            if (audio) {
-              const isMusicFinished = audio.ended;
-              if (!isCountdownActive && !isMusicFinished) {
-                audio.play();
-              }
-            }
-            inputRef.current?.focus();
-          } else {
-            document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: none;");
-            audioPlayerRef.current?.audioEl.current?.pause();
-            inputRef.current?.blur();
-          }
-          return !prev;
-        });
+      if ((event.key === "Escape" || event.key === "Enter") && !isGameOver) {
+        togglePause();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -544,6 +566,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
 
   const handleResume = () => {
     setIsPausedMenuOpen(false);
+    document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
     const audio = audioPlayerRef.current?.audioEl.current;
     if (audio) {
       const isMusicFinished = audio.ended;
@@ -552,6 +575,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
       }
     }
     inputRef.current?.focus();
+  };
+
+  const handleEchapClick = () => {
+    if (isMobileDevice()) {
+      togglePause();
+      document.querySelectorAll(`.${styles.pauseTextIcon}`).forEach(el => {
+        el.setAttribute("style", "display: none;");
+      })
+    }
   };
 
   return (
@@ -743,13 +775,16 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               height={1000}
               className={styles.logoJbh}
             />
-            <div className={styles.echapInfoText} data-tutorial="escape-info">
+            <div className={styles.echapInfoText} data-tutorial="escape-info"
+                 onClick={handleEchapClick}
+                 style={{ cursor: isMobileDevice() ? 'pointer' : 'default' }}
+            >
               <span>
                 <Image
-                  src="/assets/img/icon/echap-key.svg"
+                  src={isMobileDevice() ? "/assets/img/icon/echap-key-mobile.svg" : "/assets/img/icon/echap-key.svg"}
                   alt="Music svg"
-                  width={50}
-                  height={50}
+                  width={isMobileDevice() ? 65 : 50}
+                  height={isMobileDevice() ? 65 : 50}
                 />
                 <span>pour mettre en pause la partie</span>
               </span>

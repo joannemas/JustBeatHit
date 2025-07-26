@@ -7,6 +7,7 @@ import {supabase} from "@/lib/supabase/client";
 import {useEffect, useState} from "react";
 
 export default function Navbar() {
+    const [menuOpen, setMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
     
     useEffect(()=>{
@@ -19,16 +20,28 @@ export default function Navbar() {
     
 
     return (
-        <div className={styles.navbar}>
+        <>
+        <button
+        className={`${styles.burger} ${menuOpen ? styles.open : ''}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Ouvrir le menu"
+        >
+        <span></span>
+        <span></span>
+        <span></span>
+        </button>
+        <div className={`${styles.navbar} ${menuOpen ? styles.open : ''}`}>
         <div className={styles.logoNavbar}>
-            <Image
-            priority
-            src="/assets/img/logo-jbh.png"
-            alt="Logo Just Beat Hit"
-            width={100}
-            height={100}
-            className={styles.logoNavbarJBH}
-            />
+            <a href="/">
+                <Image
+                    priority
+                    src="/assets/img/logo-jbh.png"
+                    alt="Logo Just Beat Hit"
+                    width={100}
+                    height={100}
+                    className={styles.logoNavbarJBH}
+                />
+            </a>
         </div>
 
         <ul>
@@ -54,5 +67,7 @@ export default function Navbar() {
 
         <div className={styles.decorationNavbar}></div>
         </div>
+        {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+        </>
     )
 }

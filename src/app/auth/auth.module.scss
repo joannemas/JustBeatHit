@@ -172,3 +172,29 @@
         height: auto;
     }
 }
+
+@media screen and (max-width: 768px) {
+    .authContainer {
+        padding: 16px;
+        width: auto;
+        overflow: auto;
+        min-height: 100vh;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logo {
+        height: 200px;
+        width: 200px;
+        align-self: flex-start;
+        top : 0px;
+        display: block;
+        position: relative;
+    }
+
+    .vinyl {
+        display: none;
+    }
+    
+}
