@@ -385,3 +385,41 @@
 .leaderBoardItem:nth-child(3) {
     width: 80%;
 }
+
+@media screen and (max-width: 768px) {
+    .finalScore{
+        width: 100%;
+        z-index: 1;
+
+        p{
+            font-size: 1rem;
+        }
+    }
+
+    .score{
+        bottom: 25%;
+
+        .scoreLine{
+            justify-content: end;
+        }
+
+        .label{
+            font-size: 1.5rem;
+        }
+
+        .actualScore{
+            font-size: 2.5rem;
+        }
+    }
+
+    .leaderBord{
+        width: 100%;
+    }
+
+    .leaderBoardItem{
+        .itemScore{
+            font-size: 1rem;
+        }
+    }
+
+}
