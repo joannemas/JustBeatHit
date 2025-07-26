@@ -24,7 +24,7 @@ export default function NotificationsSettings() {
                     .single()
 
                 if (!error && data) {
-                    setSubscribed(data.newsletter_subscribed)
+                    setSubscribed(data.newsletter_subscribed ?? false)
                 } else {
                     console.error('Erreur récupération newsletter:', error?.message)
                 }
