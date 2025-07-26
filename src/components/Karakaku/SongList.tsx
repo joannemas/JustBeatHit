@@ -188,7 +188,7 @@ export default function SongList({
                 </button>
                 <h2>Fonctionnalité réservée aux utilisateurs Premium</h2>
                 <p>
-                  L'ajout de musiques est une fonctionnalité exclusive pour les utilisateurs ayant un abonnement Premium.
+                  L&apos;ajout de musiques est une fonctionnalité exclusive pour les utilisateurs ayant un abonnement Premium.
                   Souscrivez à un abonnement pour débloquer cette fonctionnalité et bien plus encore !
                 </p>
                 <div className={styles.premiumPopupButtons}>
