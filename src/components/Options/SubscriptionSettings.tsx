@@ -76,7 +76,7 @@ export default function SubscriptionOptions() {
                     <p className={styles.description}>Jouez aussi longtemps que vous le souhaitez.</p>
                 </div>
                 
-                <p className={styles.price}><span>10€</span>/mois</p>
+                <p className={styles.price}><span>6.99€</span>/mois</p>
                 <ul className={styles.features}>
                     <p>Inclus</p>
                     <li>

@@ -21,7 +21,7 @@
     display: flex;
     border-bottom: 2px solid rgba($black, 0.1);
     padding-left: 50px;
-    margin-top: 150px;
+    margin-top: 115px;
 
     button {
         background: none;
@@ -171,13 +171,13 @@
     justify-content: center;
     margin: auto;
     gap: 2rem;
-    padding: 2rem;
+    padding: 1rem 2rem;
     flex-wrap: wrap;
 
     .card {
         flex: 1 1 300px;
         border-radius: 25px;
-        padding: 2rem;
+        padding: 1.5rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
