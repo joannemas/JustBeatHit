@@ -407,7 +407,8 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                   data-tutorial="timer-info"
                   style={{
                     position: "absolute",
-                    right: "-70px",
+                    right: isMobileDevice() ? "inherit" : "-70px",
+                    left: isMobileDevice() ? "-75px" : "inherit",
                     top: "50%",
                     transform: "translateY(-50%)"
                   }}
@@ -540,6 +541,9 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const handleEchapClick = () => {
     if (isMobileDevice()) {
       togglePause();
+      document.querySelectorAll(`.${styles.pauseTextIcon}`).forEach(el => {
+        el.setAttribute("style", "display: none;");
+      })
     }
   };
 
@@ -628,15 +632,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           <div className={`${styles.animatedEchap}`}></div>
           <div className={styles.pauseMenuContent}>
             <div>
-              {!isMobileDevice() && (
-                  <Image
-                      src="/assets/img/icon/icon-echap.svg"
-                      alt="Pause"
-                      width={100}
-                      height={24}
-                      className={styles.pauseTextIcon}
-                  />
-              )}
+              <Image
+                src="/assets/img/icon/icon-echap.svg"
+                alt="Pause"
+                width={100}
+                height={24}
+                className={styles.pauseTextIcon}
+              />
               <button className={styles.btnEchap} onClick={handleResume}>
                 <Image
                   src="/assets/img/icon/arrow-right-black.svg"
@@ -649,15 +651,13 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
               </button>
             </div>
             <div>
-              {!isMobileDevice() && (
-                  <Image
-                      src="/assets/img/icon/icon-r.svg"
-                      alt="Reprendre"
-                      width={100}
-                      height={24}
-                      className={styles.pauseTextIcon}
-                  />
-              )}
+              <Image
+                src="/assets/img/icon/icon-r.svg"
+                alt="Reprendre"
+                width={100}
+                height={24}
+                className={styles.pauseTextIcon}
+              />
               <button className={styles.btnEchap} onClick={handleReplay}>
                 <Image
                   src="/assets/img/icon/refresh.svg"

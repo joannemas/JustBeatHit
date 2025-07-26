@@ -962,7 +962,7 @@
     }
 
     .score {
-        bottom: 50%;
+        bottom: 5%;
         margin: 1px;
         text-align: left;
 
@@ -990,12 +990,14 @@
         top : 30%;
         width: 30px;
         height: 30px;
+        right: calc(100% + 0.1rem);
+        transform: none;
     }
 
     .echapInfoText {
         max-width: 35vw;
-        font-size: 1rem;
-        top: 2%;
+        font-size: 0.8rem;
+        top: 4%;
         left: 50%;
         transform: translateX(-50%);
         text-align: center;
