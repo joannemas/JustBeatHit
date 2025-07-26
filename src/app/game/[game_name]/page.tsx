@@ -1,4 +1,3 @@
-import React from "react"
 import SongList from "@/components/Karakaku/SongList";
 import styles from "@/stylesheets/songList.module.scss";
 import { CircleArrowLeft } from "lucide-react";

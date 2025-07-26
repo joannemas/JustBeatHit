@@ -39,8 +39,6 @@ export default function SongCard({
               <span>PREMIUM</span>
             </div>
           )}
-
-
           <div className={styles.musicStyle}>
             {"music_style" in song && song.music_style?.map((style, index) => (
               <div key={index} className={styles.musicStyleItem}>
