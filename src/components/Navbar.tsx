@@ -32,14 +32,16 @@ export default function Navbar() {
         </button>
         <div className={`${styles.navbar} ${menuOpen ? styles.open : ''}`}>
         <div className={styles.logoNavbar}>
-            <Image
-            priority
-            src="/assets/img/logo-jbh.png"
-            alt="Logo Just Beat Hit"
-            width={100}
-            height={100}
-            className={styles.logoNavbarJBH}
-            />
+            <a href="/">
+                <Image
+                    priority
+                    src="/assets/img/logo-jbh.png"
+                    alt="Logo Just Beat Hit"
+                    width={100}
+                    height={100}
+                    className={styles.logoNavbarJBH}
+                />
+            </a>
         </div>
 
         <ul>
