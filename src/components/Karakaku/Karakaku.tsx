@@ -19,6 +19,7 @@ import { handleInputChange as handleInputChangeUtil, handlePaste } from './utils
 import { endGame, replayGame, startGame } from "@/app/game/actions";
 import '../tutorial/tutorial.css';
 import { useTutorial } from '../tutorial/usetutorial';
+import { getSong } from '@/lib/dexie/getSong';
 
 interface KarakakuProps {
   songSrc: string;
@@ -64,6 +65,7 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   const [volume, setVolume] = useState<number>(0.8);
   const [linePoints, setLinePoints] = useState<number>(0);
   const [showLinePoints, setShowLinePoints] = useState<boolean>(false);
+  const [fileSrc, setFileSrc] = useState<{song: string | null, lyrics: string | null} | null>(null);
   const linePointsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wasValidatedRef = useRef<boolean>(false);
 
@@ -77,8 +79,28 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
   });
 
   useEffect(() => {
-    lyricsDisplayUtils(lyricSrc, charRefs, parseLRC, setLyrics, setTotalLines)
-  }, [lyricSrc, charRefs]);
+    if(fileSrc && fileSrc.lyrics) {lyricsDisplayUtils(fileSrc.lyrics, charRefs, parseLRC, setLyrics, setTotalLines)}
+  }, [fileSrc, charRefs]);
+
+  useEffect(() => {
+    const getSongFiles = async () => {
+      const parts = songSrc.split('-')
+      const prefix = parts[0];
+      const id = parts.slice(1).join('-')
+
+      if(prefix === 'local') {
+        const localSong = await getSong(id);
+        const lyricsURL = localSong?.lrcFile ? URL.createObjectURL(localSong.lrcFile) : null
+        const songURL = localSong?.mp3File ? URL.createObjectURL(localSong.mp3File) : null
+        console.debug('songURL', songURL);
+        setFileSrc({ song: songURL, lyrics: lyricsURL });
+      }else{
+        console.debug('FileSrc', { song: songSrc, lyrics: lyricSrc });
+        setFileSrc({ song: songSrc, lyrics: lyricSrc });
+      }
+    }
+    getSongFiles();
+  },[])
 
   useEffect(() => {
     caretUtils({
@@ -739,14 +761,15 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
             >
               ?
             </button>
+            { fileSrc && fileSrc.song &&
             <ReactAudioPlayer
-              src={songSrc}
+              src={fileSrc.song}
               controls
               ref={audioPlayerRef}
               onListen={handleTimeUpdateWrapper}
               listenInterval={100}
               volume={volume}
-            />
+            />}
             <div className={styles.progressBarBackground}>
               <div className={styles.progressBar} style={{ height: `${progress}%` }}></div>
             </div>

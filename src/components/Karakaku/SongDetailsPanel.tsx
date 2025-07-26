@@ -16,7 +16,7 @@ type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
 type Game = Database["public"]["Tables"]["games"]["Row"];
 
-export default function SongDetailsPanel({ song, gameId }: { song: Database["public"]["Tables"]["song"]["Row"] | LocalSong, gameId?: string }) {
+export default function SongDetailsPanel({ song, gameId }: { song: Song | LocalSong, gameId?: string }) {
     /** @todo - Add toaster on updateGame error */
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -72,7 +72,7 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         .eq("game", "karakaku")
         .single();
 
-      if (!bestError) setBestScore(best);
+      setBestScore(best?? null);
 
       // Récupère la dernière game jouée
       const { data: lastGameData, error: gameError } = await supabase
@@ -85,7 +85,7 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
         .limit(1)
         .single();
 
-      if (!gameError) setLastGame(lastGameData);
+      setLastGame(lastGameData?? null);
     };
 
     fetchStats();
@@ -148,38 +148,42 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
               </label>
           </div>
 
-          {bestScore && (
-              <div className={styles.gameBlock}>
-                  <div className={styles.gameHeader}>
-                      <div className={styles.title}>
-                          <Star size={16} className={styles.icon}/>
-                          <span>MEILLEUR SCORE</span>
-                      </div>
-                      <div className={styles.date}>
-                          {new Date(bestScore.created_at!).toLocaleDateString("fr-FR")}
-                      </div>
-                  </div>
+            <div className={styles.gameBlock}>
+                <div className={styles.gameHeader}>
+                    <div className={styles.title}>
+                        <Star size={16} className={styles.icon}/>
+                        <span>MEILLEUR SCORE</span>
+                    </div>
+                    <div className={styles.date}>
+                        {lastGame?.created_at ? new Date(lastGame?.created_at).toLocaleDateString("fr-FR") : '' }
+                    </div>
+                </div>
 
-                  <div className={styles.statsRow}>
-                      <div className={styles.stat}>
-                          <div className={styles.label}>SCORE</div>
-                          <div className={styles.value}>{bestScore.score?.toLocaleString()}</div>
-                      </div>
-                      <div className={styles.stat}>
-                          <div className={styles.label}>FAUTES</div>
-                          <div className={styles.value}>
-                              {/* {bestScore.mistakes} / {bestScore.word_count} */}
-                          </div>
-                      </div>
-                      <div className={styles.stat}>
-                          <div className={styles.label}>VITESSE</div>
-                          {/* <div className={styles.value}>{bestScore.word_speed} MPM</div> */}
-                      </div>
-                  </div>
-              </div>
-          )}
+                <div className={styles.statsRow}>
+                    <div className={styles.stat}>
+                        <div className={styles.label}>SCORE</div>
+                        <div className={styles.value}>
+                            {bestScore?.score?.toLocaleString() ?? "-"}
+                        </div>
+                    </div>
+                    <div className={styles.stat}>
+                        <div className={styles.label}>FAUTES</div>
+                        <div className={styles.value}>
+                            {/* {bestScore.mistakes} / {bestScore.word_count} */}
+                            -
+                        </div>
+                    </div>
+                    <div className={styles.stat}>
+                        <div className={styles.label}>VITESSE</div>
+                        <div className={styles.value}>
+                            {/* {bestScore?.word_speed}  */}
+                            -
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          {lastGame && (
+          
               <div className={styles.gameBlock}>
                   <div className={styles.gameHeader}>
                       <div className={styles.title}>
@@ -187,28 +191,27 @@ export default function SongDetailsPanel({ song, gameId }: { song: Database["pub
                           <span>DERNIÈRE PARTIE</span>
                       </div>
                       <div className={styles.date}>
-                          {new Date(lastGame.created_at!).toLocaleDateString("fr-FR")}
+                          {lastGame?.created_at ? new Date(lastGame?.created_at).toLocaleDateString("fr-FR") : '' }
                       </div>
                   </div>
 
                   <div className={styles.statsRow}>
                       <div className={styles.stat}>
                           <div className={styles.label}>SCORE</div>
-                          <div className={styles.value}>{lastGame.score ? lastGame.score?.toLocaleString() : "-"}</div>
+                          <div className={styles.value}>{lastGame?.score?.toLocaleString() ?? "-"}</div>
                       </div>
                       <div className={styles.stat}>
                           <div className={styles.label}>FAUTES</div>
                           <div className={styles.value}>
-                              {lastGame.mistakes ? lastGame.mistakes : "-"}
+                              {lastGame?.mistakes ?? "-"}
                           </div>
                       </div>
                       <div className={styles.stat}>
                           <div className={styles.label}>VITESSE</div>
-                          <div className={styles.value}>{lastGame.word_speed ? lastGame.word_speed + " MPM" : "-"}</div>
+                          <div className={styles.value}>{lastGame?.word_speed ? lastGame.word_speed + " MPM" : "-"}</div>
                       </div>
                   </div>
               </div>
-          )}
 
           <button className={styles.playButton} onClick={handlePlayClick}>
               <Image src="/assets/img/icon/arrow-right.svg" alt="arrow icon" width={25} height={25} aria-hidden="true"/>

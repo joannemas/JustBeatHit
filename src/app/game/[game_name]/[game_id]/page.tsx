@@ -67,18 +67,27 @@ export default async function page({ params: { game_name, game_id } }: { params:
     return <GameResult gameId={game_id} />
   }
 
-  const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
-  const songPromises = [
-    supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5),
-    supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),
-  ]
-  const [lyricsURL, songURL] = await Promise.all(songPromises)
+  const { data: {...song}, error } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
+  let lyricsURL = null;
+  let songURL = null;
+  if(song?.status === 'Local'){
+    lyricsURL = `local-${song.id}`
+    songURL = `local-${song.id}`
+  }else{
+    const songPromises = [
+      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),
+      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5)
+    ]
+    const [songFile, lyricFile] = await Promise.all(songPromises)
+    lyricsURL = lyricFile.data?.signedUrl ?? null
+    songURL = songFile.data?.signedUrl ?? null
+  }
 
   console.debug(lyricsURL, songURL, `${song.singer} - ${song.title.replaceAll('\'', '')}/lyrics.lrc`)
 
-  if (!song || !lyricsURL.data || !songURL.data) {
+  if (!song || !lyricsURL || !songURL) {
     return <div>Loading...</div>;
   }
 
-  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} gameId={game_id} gameName={game_name} />;
+  return <Karakaku songSrc={songURL} lyricSrc={lyricsURL} title={song.title} singer={song.singer} gameId={game_id} gameName={game_name} />;
 }
