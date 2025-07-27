@@ -1,120 +1,106 @@
 import styles from "@/stylesheets/home.module.scss";
 import Link from "next/link";
 import Image from "next/image";
-import Carousel from "@/components/Carrousel";
 import Navbar from "@/components/Navbar";
+import { createClient } from "@/lib/supabase/server";
+import UpgradeButton from "@/components/UpgradeButton";
 
 
-export default function Page() {
-  const carouselImages = [
-    "/assets/img/Boat.jpg",
-    "/assets/img/Carrousel1.png",
-  ];
+export default async function Page() {
+
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log("user", user);
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user?.id!)
+    .single();
+  console.log("data", data);
+  console.log("error", error);
 
   return (
     <div className={styles.home}>
       <Navbar />
-      <div className={styles.headerHomepage}>
-        <div className={styles.headerHomepageContent}>
-          <ul>
-            <li>
-              <h3>
-                <span>Beat the hit</span>
-                <span>and beat your friends</span>
-              </h3>
-            </li>
-            <li className={styles.feedback}>
-              <p>Aidez-nous à améliorer notre jeu !</p>
-              <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfHnAhsBZLp80V5M1mJ4AiTJRpjXfVINfIm87CUIDC758PtSQ/viewform?pli=1">
-                <button className={styles.btnFeedback}>Donner son avis</button>
-              </Link>
-            </li>
-          </ul>
-          <ul>
-            <li>accès rapide ·</li>
-            <li>
-              <Link href="/game/karakaku">
-                <button className={styles.startButton}>
-                  <Image
-                    priority
-                    src="/assets/img/icon/Karaoke.svg"
-                    alt="" // Pas de texte alternatif pour les images décoratives
-                    aria-hidden="false"
-                    width={24}
-                    height={24}
-                  />
-                  karakaku</button>
-              </Link>
-            </li>
-            <li>
-              <Image
-                priority
-                src="/assets/img/SoonLogo.svg"
-                alt=""  // Pas de texte alternatif pour les images décoratives
-                aria-hidden="true"
-                width={89}
-                height={44}
-              />
-              <Link href="">
-                <button className={styles.startButton}>
-                  <Image
-                    priority
-                    src="/assets/img/icon/question-mark.svg"
-                    alt="" // Pas de texte alternatif pour les images décoratives
-                    aria-hidden="true"
-                    width={24}
-                    height={24}
-                  />
-                  Blind Test</button>
-              </Link>
-            </li>
-            <li>
-              <Image
-                priority
-                src="/assets/img/SoonLogo.svg"
-                alt="" // Pas de texte alternatif pour les images décoratives
-                aria-hidden="true"
-                width={89}
-                height={44}
-              />
-              <Link href="/">
-                <button className={styles.startButton}>
-                  <Image
-                    priority
-                    src="/assets/img/icon/music-1.svg"
-                    alt="" // Pas de texte alternatif pour les images décoratives
-                    aria-hidden="true"
-                    width={24}
-                    height={24}
-                  />
-                  N&apos;oubliez pas les paroles</button>
-              </Link>
-            </li>
+      <div className={styles.musicDecoration}>
+        <Image
+          src="/assets/img/MusicBar-gradient.svg"
+          alt="Music"
+          width={100}
+          height={100}
+          className={styles.musicDecoration}
+        />
+      </div>
+
+      <div className={styles.homeContent}>
+      {data ?
+        <h1>Content de te revoir {data.username} !</h1>
+      :
+        <h1>Bienvenue sur Just Beat Hit, <a href={`/auth/register`} className={styles.registerLink}>inscris toi</a> pour jouer !</h1>
+      }
+        <div className={styles.homeContentContainer}>
+          <div className={styles.gameList}>
+            <Link href="/game/karakaku" className={styles.gameCard}>
             <div>
-              <Carousel images={carouselImages} />
+                <span className={`${styles.badge} ${styles.badgeNew}`}>Nouveau</span>
+                <h2>Karakaku</h2>
+                <p>Le jeu qui met à l&apos;épreuve ta vitesse de frappe !</p>
             </div>
-          </ul>
+            <div className={styles.imgPreview}>
+              <Image
+                src="/assets/img/karakaku-preview.png"
+                alt="Karakaku game preview"
+                fill
+                style={{ objectPosition: 'left center', objectFit: 'cover', zIndex: 1 }}
+                className={styles.gamePreview}
+              />
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--yellow']}`}></div>
+            </div>
+
+            </Link>
+
+            <div className={styles.rowCards}>
+            <Link href="/game/paroles-en-tete" className={styles.gameCard}>
+              <div>
+                <span className={`${styles.badge} ${styles.badgeSoon}`}>Bientôt disponible</span>
+                <h2>Paroles en tête</h2>
+                <p>Le jeu qui met à l&apos;épreuve ta mémoire !</p>
+              </div>
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--purple']}`}></div>
+            </Link>
+
+            <Link href="/game/blind-test" className={styles.gameCard}>
+              <div>
+                <span className={`${styles.badge} ${styles.badgeSoon}`}>Bientôt disponible</span>
+                <h2>Blind test</h2>
+                <p>Le jeu qui met à l&apos;épreuve ta culture musicale !</p>
+              </div>
+              <div className={`${styles.animatedSphere} ${styles['animatedSphere--orange']}`}></div>
+            </Link>
+            </div>
+            
+          </div>
+
+          <div className={styles.challengeWrapper}>
+            <div className={styles.challengeList}>
+              <h3>Défis journaliers</h3>
+            </div>
+          </div>
+
         </div>
-        <Image
-          priority
-          src="/assets/img/Logo.svg"
-          alt="Logo"
-          className={styles.logo}
-          width={584}
-          height={756}
-        />
       </div>
-      <div>
+
+      <div className={styles.vinylDecoration}>
         <Image
-          src="/assets/img/Boat.jpg"
-          alt="Boat"
-          className={styles.boatImage}
-          width={1792}
-          height={419}
+          src="/assets/img/vinyl-jbh.svg"
+          alt="Vinyl"
+          width={100}
+          height={100}
+          className={`${styles.vinylDecoration} ${styles["--playing"]}`}
         />
-      </div>
-      <div className={styles.description}>
-        <h3>Just Beat Hit propose une variété de <br /> mini-jeux rythmés pour tester vos <br />réflexes et votre sens du tempo</h3>
       </div>
     </div>
   );

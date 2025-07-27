@@ -1,140 +1,521 @@
+@import './mixins.scss';
+
 .backBtn {
-    position: absolute;
-    left: 4rem;
-    top: 3rem;
+  // position: absolute;
+  // left: 4rem;
+  // top: 3rem;
 }
 
 .container {
-    text-align: center;
-    padding: 20px;
-    background: #1D1D1D; //linear-gradient(-135deg, #FF6026, #C1208F);
-    min-height: 100vh;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
+  text-align: center;
+  background: #1D1D1D;
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  margin-left: 17vw;
 }
 
 .titleContainer {
-    background-color: #1D1D1D;
-    padding: 10px;
-    border: 3px solid #FFAB36;
-    display: inline-block;
-    border-radius: 25px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  gap: 20px;
+  padding: 0 20px;
 }
 
 .title {
-    font-weight: bold;
-    font-style: italic;
-    color: #FFA540;
-    font-size: 4rem;
-    margin: 0;
+  font-weight: bold;
+  font-style: italic;
+  color: #FFA540;
+  font-size: 4rem;
+  margin: 0;
 }
 
 .subtitle {
-    font-weight: bold;
-    font-style: italic;
-    color: white;
-    font-size: 2.5rem;
-    margin: 30px 0;
+  font-weight: bold;
+  font-style: italic;
+  color: white;
+  font-size: 2.5rem;
+  margin: 30px 0;
 }
 
 .songGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
 }
 
 .songCard {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    border-radius: 10px;
-    transition: transform 0.2s;
-    text-decoration: none;
+  display: block;
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  text-decoration: none;
+  cursor: pointer;
+  height: 240px;
+
+  img{
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    img {
+      filter: brightness(0.8);
+    }
+  }
 }
 
-.songCard:hover {
-    transform: scale(1.05);
+.imageBack {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.songTitle {
-    font-size: 1.2em;
-    font-weight: bold;
+.imageBack img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.songSinger {
-    font-size: 0.9em;
-    opacity: 0.8;
-}
-
-.songContent {
-    position: relative;
-    background-image: url('/assets/img/vinyl.png');
-    background-size: cover;
-    background-position: center;
-    border-radius: 50%;
-    width: 200px;
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: transform 0.5s ease-in-out;
-    cursor: pointer;
-    flex-direction: column;
-    padding: 20px;
-}
-
-.innerDisk {
-    position: absolute;
-    border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    z-index: 2;
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+  text-align: center;
 }
 
 .songContentText {
-    z-index: 3;
-    position: relative;
-    text-align: center;
+  display: inline-flex;
+  justify-content: space-between;
+  padding: 1rem;
+  align-items: end;
+
+  .SingerAndTitle {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-items: start;
+  }
+
+  .difficulty {
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    color: white;
+    width: fit-content;
+    height: fit-content;
+    line-height: 1;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+    font-style: italic;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .facile {
+    background-color: #34d399;
+  }
+
+  .moyen {
+    background-color: #f59e0b;
+  }
+
+  .difficile {
+    background-color: #ef4444;
+  }
+
+  .impossible {
+    background-color: #8b5cf6;
+  }
+
+  .unknown {
+    background-color: #9ca3af;
+  }
+}
+.premiumBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+  border-radius: 4px;
+  padding: 4px 8px;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+  font-family: 'GoiaDisplay', sans-serif;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.songCard:hover .songContent {
-    animation: spinText 5s linear infinite;
+.premiumIcon {
+  width: 16px;
+  height: 16px;
 }
 
-@keyframes spinText {
-    0% {
-        transform: rotate(0deg);
-    }
+.musicStyle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
 
-    100% {
-        transform: rotate(360deg);
-    }
+  .musicStyleItem {
+    padding: 4px 6px;
+    background-color: white;
+    color: #1D1D1D;
+    font-weight: bold;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-style: italic;
+  }
+}
+
+.songContentText h2 {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.songContentText p {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin: 0;
 }
 
 .songTitle,
 .songSinger {
-    color: white;
-    margin: 5px 0;
+  color: white;
+  margin: 5px 0;
+  user-select: none;
+  pointer-events: none;
+}
+
+.songTitle{
+  text-transform: uppercase;
+  font-style: italic;
+  font-weight: 700;
 }
 
 .container * {
-    font-family: var(--font-goia);
+  font-family: 'GoiaDisplay', sans-serif;
 }
 
-.songTitle,
-.songSinger {
-    color: white;
-    margin: 5px 0;
-    user-select: none;
-    pointer-events: none;
+.filterContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  position: relative;
+  padding: 20px 0;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownButton {
+  border: 1px solid white;
+  background: transparent;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.plus {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: #2c2c2c;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  z-index: 10;
+  width: max-content;
+  min-width: 150px;
+  max-height: 215px;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #888;
+  }
+
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: #aaa transparent;
+}
+
+.dropdownItem {
+  padding: 0.5rem 1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background-color: #444;
+  }
+}
+
+.selectedTags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterTag {
+  background-color: #f5f0ec;
+  color: black;
+  font-weight: bold;
+  font-style: italic;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 20px 0;
+}
+
+.searchInputGroup {
+  display: flex;
+  align-items: center;
+  background-color: #2c2c2c;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  flex: 1;
+}
+
+.searchIcon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #aaa;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  flex: 1;
+  font-style: italic;
+  font-size: 0.9rem;
+
+  &::placeholder {
+    color: #aaa;
+    font-style: italic;
+  }
+}
+
+.addButton {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+  font-family: 'GoiaDisplay', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #ea8c00;
+  }
+}
+
+.premiumFilterButtons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 3px solid rgba(255, 246, 241, 0.10);
+}
+
+.filterButton {
+  padding: 0.5rem;
+  text-transform: uppercase;
+  font-style: italic;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.8rem;
+
+  &.active {
+    border-bottom: 3px solid white;
+  }
+}
+
+.premiumFilterCount{
+  border: 1px solid rgba(255, 246, 241, 0.50);
+  border-radius: 999px;
+  display: flex;
+  padding: 1px 6px 1px 4px;
+  justify-content: center;
+  align-items: center;
+}
+
+.premiumPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.premiumPopupContent {
+  background-color: $background-color;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative; /* Pour positionner la croix */
+}
+
+.premiumPopupContent h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  background: -webkit-linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.premiumPopupContent p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: $white;
+}
+
+.premiumPopupButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.subscribeButton {
+  padding: 10px 20px;
+  background: var(--Gradient, linear-gradient(44deg, #8E43AD 3.69%, #AA387D 23.45%, #D63251 48.76%, #F7352D 74.65%, #FA9B4F 94.55%));
+  color: $white;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+}
+
+.closeButton {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid $white;
+  color: $white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-style: italic;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+}
+
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: $white;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: $red-ribbon;
+  }
 }

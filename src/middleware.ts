@@ -3,7 +3,6 @@ import { updateSession } from '@/lib/supabase/middleware'
 
 // Public path regex
 export const PUBLIC_PATH = [
-    /^\/$/,                    // Allow "/"
     /^\/auth(\/.*)?$/,         // Allow "/auth" and all that follows "/auth/..."
 ]
 
@@ -20,6 +19,10 @@ export async function middleware(request: NextRequest) {
         if (request.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+        return NextResponse.next();
+    }
+
+    if (pathname.startsWith('/api/webhooks')) {
         return NextResponse.next();
     }
 

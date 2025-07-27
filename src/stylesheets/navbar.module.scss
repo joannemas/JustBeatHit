@@ -1,41 +1,157 @@
-.navbar {
-    display: inline-flex;
+@import './mixins.scss';
+
+.burger {
+    display: none;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    width: calc(100% - 40px);
-    padding: 10px 20px;
+    width: 30px;
+    height: 21px;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 101;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 
-    .LogoMini {
-        width: 40px;
+    span {
+        display: block;
+        height: 3px;
+        width: 100%;
+        background: $yellow;
+        border-radius: 2px;
+        transition: all 0.3s ease-in-out;
     }
 
-    .registerLink {
-        color: sandybrown;
+    &.open span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
     }
+
+    &.open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    &.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    @media (max-width: 768px) {
+        display: flex;
+    }
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9;
+    }
+
+.navbar {
+    background: $reverse-gradient;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 17vw;
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    z-index: 10;
 
     ul {
-        display: inline-flex;
-        list-style: none;
-        padding: 0;
+        display: flex;
+        flex-direction: column;
         margin: 0;
-        width: 33%;
-
-        &:nth-of-type(2) {
-            justify-content: center;
-        }
-
-        &:last-of-type {
-            justify-content: flex-end;
-            align-items: center;
-        }
+        padding: 0;
+        width: 100%;
 
         li {
-            margin: 0 10px;
             cursor: pointer;
+            border-bottom: 1px solid rgba(#1D1D1D, 0.3);
+            padding: 1rem;
+            display: flex;
+
+            &:first-child {
+                border-top: 1px solid rgba(#1D1D1D, 0.3);
+            }
 
             span {
                 text-decoration: underline;
             }
+
+            a {
+                text-decoration: none;
+                color: $white;
+                font-size: 1rem;
+                font-weight: 700;
+                font-style: italic;
+                text-transform: uppercase;
+                font-family: 'Goia', sans-serif;
+                margin-left: 30px;
+                text-align: left;
+                width: 100%;
+            }
+        }
+
+        li:hover {
+            background: $white;
+            transition: all 0.3s ease-in-out;
+        }
+        li:hover a {
+            @include textColorGradient;
+            padding-right: 2px;
+
+        }
+    }
+
+    li.active {
+        background: $white;
+        transition: all 0.3s ease-in-out;
+
+        a {
+            @include textColorGradient;
+            padding-right: 2px;
+        }
+    }
+
+
+    .logoNavbar {
+        display: flex;
+        align-items: center;
+        padding-left: 30px;
+        margin-left: 1rem;
+        width: 100%;
+        height: 20vh;
+        margin-bottom: 2rem;
+
+        img {
+            height: auto;
+            object-fit: contain;
+        }
+    }
+
+    .decorationNavbar {
+        position: absolute;
+        bottom: -170px;
+        left: -125px;
+        width: 330px;
+        height: 330px;
+        background-color: $white;
+        border-radius: 50%;
+    }
+
+    @media (max-width: 768px) {
+        transform: translateX(-100%); // hidden
+        transition: transform 0.3s ease-in-out;
+        width: 70vw;
+
+        &.open {
+            transform: translateX(0); // visible
         }
     }
 }

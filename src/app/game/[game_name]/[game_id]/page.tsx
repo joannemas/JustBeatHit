@@ -11,7 +11,7 @@ import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 export async function generateMetadata({ params: { game_name, game_id }, params }: { params: { game_name: string, game_id: string } }): Promise<Metadata | void> {
   const supabase = createClient()
   const { data } = await supabase.from('games').select().eq('id', game_id).single()
-  const { data: { ...song } } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
+  const { data: song } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
 
   const host = headers().get('x-forwarded-host')
   const protocol = headers().get('x-forwarded-proto')
@@ -67,18 +67,27 @@ export default async function page({ params: { game_name, game_id } }: { params:
     return <GameResult gameId={game_id} />
   }
 
-  const { data: { ...song }, error } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
-  const songPromises = [
-    supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5),
-    supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),
-  ]
-  const [lyricsURL, songURL] = await Promise.all(songPromises)
+  const { data: {...song}, error } = await supabase.from('song').select('*').eq('id', data?.song_id ?? '').single()
+  let lyricsURL = null;
+  let songURL = null;
+  if(song?.status === 'Local'){
+    lyricsURL = `local-${song.id}`
+    songURL = `local-${song.id}`
+  }else{
+    const songPromises = [
+      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),
+      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5)
+    ]
+    const [songFile, lyricFile] = await Promise.all(songPromises)
+    lyricsURL = lyricFile.data?.signedUrl ?? null
+    songURL = songFile.data?.signedUrl ?? null
+  }
 
   console.debug(lyricsURL, songURL, `${song.singer} - ${song.title.replaceAll('\'', '')}/lyrics.lrc`)
 
-  if (!song || !lyricsURL.data || !songURL.data) {
+  if (!song || !lyricsURL || !songURL) {
     return <div>Loading...</div>;
   }
 
-  return <Karakaku songSrc={songURL.data.signedUrl} lyricSrc={lyricsURL.data?.signedUrl} title={song.title} singer={song.singer} gameId={game_id} gameName={game_name} />;
+  return <Karakaku songSrc={songURL} lyricSrc={lyricsURL} title={song.title} singer={song.singer} gameId={game_id} gameName={game_name} />;
 }

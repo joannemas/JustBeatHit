@@ -1,0 +1,1 @@
+export type CustomClaims = {user_role: string, user_plan: string}

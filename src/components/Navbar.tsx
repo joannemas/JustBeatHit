@@ -1,71 +1,73 @@
-import Link from "next/link";
-import styles from "@/stylesheets/navbar.module.scss";
-import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+"use client"
 
-export default async function Navbar() {
-  const supabase = createClient();
+import NavLink from './NavLink'
+import styles from '@/stylesheets/navbar.module.scss'
+import Image from 'next/image'
+import {supabase} from "@/lib/supabase/client";
+import {useEffect, useState} from "react";
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  console.log("user", user);
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", user?.id!)
-    .single();
-  console.log("data", data);
-  console.log("error", error);
+export default function Navbar() {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    
+    useEffect(()=>{
+        const fetchUser = async () => {
+            const {data: {user}} = await supabase.auth.getUser()
+            setUser(user)
+        }
+        fetchUser()
+    }, [])
+    
 
-  return (
-    <div className={styles.navbar}>
-      <ul>
-        <li>
-          <Link href="/">
-            <Image
-              priority
-              src="/assets/img/LogoMini.svg"
-              alt="Logo Mini"
-              className={styles.LogoMini}
-              width={57}
-              height={57}
-            />
-          </Link>
-        </li>
-      </ul>
-      <ul>
-        <li>Jeux</li>
-        <li>l&apos;équipe JBH</li>
-        <li>Contact</li>
-        <li>à propos</li>
-      </ul>
-      {data ? (
+    return (
+        <>
+        <button
+        className={`${styles.burger} ${menuOpen ? styles.open : ''}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Ouvrir le menu"
+        >
+        <span></span>
+        <span></span>
+        <span></span>
+        </button>
+        <div className={`${styles.navbar} ${menuOpen ? styles.open : ''}`}>
+        <div className={styles.logoNavbar}>
+            <a href="/">
+                <Image
+                    priority
+                    src="/assets/img/logo-jbh.png"
+                    alt="Logo Just Beat Hit"
+                    width={100}
+                    height={100}
+                    className={styles.logoNavbarJBH}
+                />
+            </a>
+        </div>
+
         <ul>
-          <li>
-            Comment ça va <span>{data.username}</span> ?
-          </li>
-          <a href={`/profile/${data.username}`}>
-            <Image
-              priority
-              src={data.avatar_url}
-              alt="Profil"
-              width={44}
-              height={44}
-            />
-          </a>
+            <NavLink href="/">Accueil</NavLink>
+            <NavLink href="/game/karakaku">Karakaku</NavLink>
+            {/*<NavLink href="/game/paroles-en-tete">Paroles en tête</NavLink>*/}
+            {/*<NavLink href="/game/blind-test">Blind test</NavLink>*/}
+            {/* {user && <NavLink href="/profil">Profil</NavLink>} */}
+            {user && <NavLink href="/options">Options</NavLink>}
+            {user && <li className={styles.navItem}>
+                <a onClick={async (e) => {
+                    e.preventDefault()
+                    await supabase.auth.signOut()
+                    setUser(null)
+                    window.location.href = "/"
+                    }}
+                    style={{ cursor: 'pointer' }}>
+                    Déconnexion
+                </a>
+            </li>}
+
         </ul>
-      ) : (
-        <ul>
-          <li>
-            Bienvenue,{" "}
-            <a href={`/auth/register`} className={styles.registerLink}>
-              inscris toi
-            </a>{" "}
-            pour jouer !{" "}
-          </li>
-        </ul>
-      )}
-    </div>
-  );
+
+        <div className={styles.decorationNavbar}></div>
+        </div>
+        {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+        </>
+    )
 }
