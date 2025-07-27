@@ -47,8 +47,8 @@ export default function Navbar() {
         <ul>
             <NavLink href="/">Accueil</NavLink>
             <NavLink href="/game/karakaku">Karakaku</NavLink>
-            <NavLink href="/game/paroles-en-tete">Paroles en tête</NavLink>
-            <NavLink href="/game/blind-test">Blind test</NavLink>
+            {/*<NavLink href="/game/paroles-en-tete">Paroles en tête</NavLink>*/}
+            {/*<NavLink href="/game/blind-test">Blind test</NavLink>*/}
             {/* {user && <NavLink href="/profil">Profil</NavLink>} */}
             {user && <NavLink href="/options">Options</NavLink>}
             {user && <li className={styles.navItem}>

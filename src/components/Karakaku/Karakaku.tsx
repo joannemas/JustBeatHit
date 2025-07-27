@@ -720,18 +720,18 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
                 Guide
               </button>
             </div>
-            <Link href="/">
-              <button className={styles.btnEchap}>
-                <Image
-                  src="/assets/img/icon/settings.svg"
-                  alt="Play"
-                  width={24}
-                  height={24}
-                  className={styles.playIcon}
-                />
-                Options
-              </button>
-            </Link>
+            {/*<Link href="/">*/}
+            {/*  <button className={styles.btnEchap}>*/}
+            {/*    <Image*/}
+            {/*      src="/assets/img/icon/settings.svg"*/}
+            {/*      alt="Play"*/}
+            {/*      width={24}*/}
+            {/*      height={24}*/}
+            {/*      className={styles.playIcon}*/}
+            {/*    />*/}
+            {/*    Options*/}
+            {/*  </button>*/}
+            {/*</Link>*/}
             <Link href="/game/karakaku">
               <button className={styles.btnEchap}>
                 <Image
