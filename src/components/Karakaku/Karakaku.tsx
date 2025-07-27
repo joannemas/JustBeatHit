@@ -30,6 +30,7 @@ import "../tutorial/tutorial.css";
 import { useTutorial } from "../tutorial/usetutorial";
 import { getSong } from "@/lib/dexie/getSong";
 import Loader from "../Loader";
+import { supabase } from "@/lib/supabase/client";
 
 interface KarakakuProps {
   songSrc: string;
@@ -99,7 +100,78 @@ const Karakaku: React.FC<KarakakuProps> = ({
     top: number;
     left: number;
   } | null>(null);
+  const [user, setUser] = useState<{ id: string } | null>(null);
+  // Vérification des défis journaliers
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+  const [missions, setMissions] = useState<any[]>([]);
+  const [completed, setCompleted] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchMissions = async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("daily_missions")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("date", today);
+      if (error) {
+        console.error("Fetch missions error:", error);
+      } else {
+        setMissions(Array.isArray(data) ? data : []);
+      }
+    };
+    fetchMissions();
+  }, [user?.id]);
 
+
+  const checkMissions = async (score: number, mode: string, songTitle?: string) => {
+    for (const mission of missions) {
+      if (!mission.completed) {
+        let shouldComplete = false;
+        if (mission.type === "song" && mission.song === songTitle) shouldComplete = true;
+        if (mission.type === "score" && typeof mission.score === "number" && score >= mission.score) shouldComplete = true;
+        if (mission.type === "mode" && mode === mission.mode) shouldComplete = true;
+
+        if (shouldComplete) {
+          const { error } = await supabase
+            .from("daily_missions")
+            .update({ completed: true })
+            .eq("id", mission.id);
+          if (!error) {
+            setMissions((prev) =>
+              prev.map((m) =>
+                m.id === mission.id ? { ...m, completed: true } : m
+              )
+            );
+          } else {
+            console.error("Error updating mission:", error);
+          }
+        }
+      }
+    }
+  };
+  const handleAudioEnded = () => {
+    if (lyrics.length > 0) {
+      setCurrentLyricIndex(lyrics.length - 1);
+    }
+    setIsMusicFinished(true);
+
+    setTimeout(() => {
+      if (!isGameOver) {
+        setIsStarted(false);
+        setIsGameOver(true);
+        setIsValidated(true);
+      }
+    }, 300);
+  };
   const isMobileDevice = () => {
     return /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
   };
@@ -108,19 +180,34 @@ const Karakaku: React.FC<KarakakuProps> = ({
     onStart: () => setShowTimerForTutorial(true),
     onEnd: () => setShowTimerForTutorial(false),
   });
-
   useEffect(() => {
     if (fileSrc && fileSrc.lyrics) {
       lyricsDisplayUtils(
         fileSrc.lyrics,
         charRefs,
         parseLRC,
-        setLyrics,
+        (parsedLyrics) => {
+          setLyrics(parsedLyrics);
+          setTotalLines(parsedLyrics.length);
+        },
         setTotalLines
       );
     }
   }, [fileSrc, charRefs]);
-
+  useEffect(() => {
+    const duration = audioPlayerRef.current?.audioEl.current?.duration;
+    if (
+      typeof duration === "number" &&
+      lyrics.length > 0 &&
+      lyrics.some(line => typeof line.time === "number" && line.time > duration)
+    ) {
+      const filtered = lyrics.filter(
+        (line) => typeof line.time !== "number" || line.time <= duration
+      );
+      setLyrics(filtered);
+      setTotalLines(filtered.length);
+    }
+  }, [lyrics, audioPlayerRef.current?.audioEl.current?.duration]);
   useEffect(() => {
     const getSongFiles = async () => {
       const parts = songSrc.split("-");
@@ -214,7 +301,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
     if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
       const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
       const duration = audioPlayerRef.current.audioEl.current.duration;
-      setProgress((currentTime / duration) * 100);
+      setProgress((currentTime / duration) * 1000);
     }
   };
 
@@ -459,7 +546,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
           }
           return prev - 1;
         });
-      }, 1000);
+      }, 100);
     } else if (
       currentLyricIndex === lyrics.length - 1 &&
       isValidated &&
@@ -505,41 +592,53 @@ const Karakaku: React.FC<KarakakuProps> = ({
     const newAccuracy = calculateAccuracy(completedInputs, lyrics);
     setAccuracy(newAccuracy);
   }, [completedInputs, lyrics]);
-
+  useEffect(() => {
+    if (isGameOver && !gameOverTransition) {
+      checkMissions(score, mortSubite ? "extreme" : "normal", title);
+    }
+  }, [isGameOver]);
   const renderLyrics = () => {
-    return lyrics.map((lyric, index) => {
+  // Defensive: filter out any lines past the audio duration and empty lines
+  const audioDuration = audioPlayerRef.current?.audioEl.current?.duration ?? Infinity;
+  const BUFFER = 0.1; // 100ms buffer to handle float imprecision
+
+  return lyrics
+    .filter(
+      (lyric) =>
+        (!lyric.time || lyric.time <= audioDuration - BUFFER) &&
+        lyric.text &&
+        lyric.text.trim().length > 0
+    )
+    .map((lyric, index) => {
       const isFirstLine =
-        index !== currentLyricIndex &&
-        index === Math.max(0, currentLyricIndex - 5);
+        index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
       const isLastLine =
-        index !== currentLyricIndex &&
-        index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+        index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
       const isBeforeFirst =
-        index !== currentLyricIndex &&
-        index === Math.max(0, currentLyricIndex - 4);
+        index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
       const isBeforeLast =
-        index !== currentLyricIndex &&
-        index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+        index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+
       if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
         return null;
       }
+
       return (
         <div
           key={index}
-          className={`${styles.lyricLine} ${
-            index === currentLyricIndex ? styles.current : ""
-          }`}
+          className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ""}`}
         >
           {index < currentLyricIndex && (
             <p
               className={`${styles.previous} 
-                            ${index === currentLyricIndex ? styles.current : ""}
-                            ${isBeforeFirst ? styles["--before-line"] : ""}
-                            ${isFirstLine ? styles["--first-line"] : ""}`}
+                ${index === currentLyricIndex ? styles.current : ""}
+                ${isBeforeFirst ? styles["--before-line"] : ""}
+                ${isFirstLine ? styles["--first-line"] : ""}`}
             >
-              {lyrics[index].text}
+              {lyric.text}
             </p>
           )}
+
           {index === currentLyricIndex && (
             <div
               className={styles.currentLyricContainer}
@@ -578,6 +677,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
                   {countdown === 1 ? "seconde" : "secondes"}
                 </div>
               )}
+
               <p className={styles.currentLyric}>{getStyledText()}</p>
               <input
                 type="text"
@@ -607,28 +707,29 @@ const Karakaku: React.FC<KarakakuProps> = ({
               <div ref={caretRef} className={styles.caret}></div>
             </div>
           )}
+
           {index > currentLyricIndex && (
             <p
               className={`${styles.next}
-                            ${isLastLine ? styles["--last-line"] : ""}
-                            ${isBeforeLast ? styles["--before-line"] : ""}`}
+                ${isLastLine ? styles["--last-line"] : ""}
+                ${isBeforeLast ? styles["--before-line"] : ""}`}
             >
-              {lyrics[index].text}
+              {lyric.text}
             </p>
           )}
         </div>
       );
     });
-  };
+};
 
   const speedClass =
     multiplier === 4
       ? styles.faster
       : multiplier >= 3
-      ? styles.fast
-      : multiplier >= 2
-      ? styles.medium
-      : "";
+        ? styles.fast
+        : multiplier >= 2
+          ? styles.medium
+          : "";
 
   const getGradientId = () => {
     if (multiplier === 4) return "gradient-faster";
@@ -716,9 +817,9 @@ const Karakaku: React.FC<KarakakuProps> = ({
       });
     }
   };
-if (!isInputReady) {
-  return <Loader />;
-}
+  if (!isInputReady) {
+    return <Loader />;
+  }
   return (
     <div className={styles.karakaku} style={{ position: "relative" }}>
       {showTimerForTutorial && timerMockPos && (
@@ -761,9 +862,8 @@ if (!isInputReady) {
         }}
       >
         <div
-          className={`${styles.pauseMenu} ${
-            isPausedMenuOpen ? styles.pauseMenuVisible : ""
-          }`}
+          className={`${styles.pauseMenu} ${isPausedMenuOpen ? styles.pauseMenuVisible : ""
+            }`}
         >
           <Image
             src="/assets/img/MusicBar.svg"
@@ -917,6 +1017,7 @@ if (!isInputReady) {
                 onListen={handleTimeUpdateWrapper}
                 listenInterval={100}
                 volume={volume}
+                onEnded={handleAudioEnded}
               />
             )}
             <div className={styles.progressBarBackground}>
@@ -943,11 +1044,10 @@ if (!isInputReady) {
               alt="Vinyl svg"
               width={1000}
               height={1000}
-              className={`${styles.vinylPlayer} ${
-                isStarted && !isCountdownActive
-                  ? styles["--playing"]
-                  : styles["--paused"]
-              }`}
+              className={`${styles.vinylPlayer} ${isStarted && !isCountdownActive
+                ? styles["--playing"]
+                : styles["--paused"]
+                }`}
             />
           </>
         )}
@@ -967,9 +1067,8 @@ if (!isInputReady) {
             </p>
             <div className={styles.score_display}>
               <div
-                className={`${styles.multiplier} ${speedClass} ${
-                  isStarted ? styles["playing"] : ""
-                }`}
+                className={`${styles.multiplier} ${speedClass} ${isStarted ? styles["playing"] : ""
+                  }`}
               >
                 <svg
                   className={styles.spin_multiplier}

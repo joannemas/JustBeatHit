@@ -29,58 +29,24 @@ export default async function Page() {
     .single();
 
   const today = new Date().toISOString().slice(0, 10);
-  console.log("User ID:", user.id);
-  console.log("Today:", today);
 
-  let { data: dailyMissionRow, error: selectError } = await supabase
+  let { data: missions, error: selectError } = await supabase
     .from("daily_missions")
-    .select("missions, completed")
+    .select("*")
     .eq("user_id", user.id)
-    .eq("date", today)
-    .single();
+    .eq("date", today);
 
-  console.log("Daily mission fetch:", dailyMissionRow, selectError);
+  if (!missions || missions.length === 0) {
+    await generateDailyMissions(supabase, user.id, today);
 
-  if (!dailyMissionRow || !dailyMissionRow.missions) {
-    const missionsToInsert = await generateDailyMissions(supabase);
-    console.log("Generated missions:", missionsToInsert);
-
-    const { data: insertData, error: insertError } = await supabase
+    const { data: newMissions, error: newFetchError } = await supabase
       .from("daily_missions")
-      .insert([
-        {
-          user_id: user.id,
-          date: today,
-          missions: missionsToInsert,
-          completed: [],
-        },
-      ]);
-
-    if (insertError) {
-      console.error("Error inserting daily missions:", insertError);
-    } else {
-      console.log("Insert data:", insertData);
-    }
-
-    const { data: newRow, error: newFetchError } = await supabase
-      .from("daily_missions")
-      .select("missions, completed")
+      .select("*")
       .eq("user_id", user.id)
-      .eq("date", today)
-      .single();
+      .eq("date", today);
 
-    console.log("Fetched daily mission after insert:", newRow, newFetchError);
-    dailyMissionRow = newRow;
+    missions = newMissions || [];
   }
-
-  const missions = Array.isArray(dailyMissionRow?.missions)
-    ? dailyMissionRow.missions
-    : [];
-  const completedMissions: string[] = Array.isArray(dailyMissionRow?.completed)
-    ? dailyMissionRow.completed.filter(
-        (item): item is string => typeof item === "string"
-      )
-    : [];
 
   function getTimeUntilMidnight() {
     const now = new Date();
@@ -96,6 +62,7 @@ export default async function Page() {
   return (
     <div className={styles.home}>
       <Navbar />
+
       <div className={styles.musicDecoration}>
         <Image
           src="/assets/img/MusicBar-gradient.svg"
@@ -118,13 +85,12 @@ export default async function Page() {
             pour jouer !
           </h1>
         )}
+
         <div className={styles.homeContentContainer}>
           <div className={styles.gameList}>
             <Link href="/game/karakaku" className={styles.gameCard}>
               <div>
-                <span className={`${styles.badge} ${styles.badgeNew}`}>
-                  Nouveau
-                </span>
+                <span className={`${styles.badge} ${styles.badgeNew}`}>Nouveau</span>
                 <h2>Karakaku</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta vitesse de frappe !</p>
               </div>
@@ -140,9 +106,7 @@ export default async function Page() {
                   }}
                   className={styles.gamePreview}
                 />
-                <div
-                  className={`${styles.animatedSphere} ${styles["animatedSphere--yellow"]}`}
-                ></div>
+                <div className={`${styles.animatedSphere} ${styles["animatedSphere--yellow"]}`}></div>
               </div>
             </Link>
 
@@ -155,11 +119,8 @@ export default async function Page() {
                   <h2>Paroles en tête</h2>
                   <p>Le jeu qui met à l&apos;épreuve ta mémoire !</p>
                 </div>
-                <div
-                  className={`${styles.animatedSphere} ${styles["animatedSphere--purple"]}`}
-                ></div>
+                <div className={`${styles.animatedSphere} ${styles["animatedSphere--purple"]}`}></div>
               </Link>
-
               <Link href="/game/blind-test" className={styles.gameCard}>
                 <div>
                   <span className={`${styles.badge} ${styles.badgeSoon}`}>
@@ -168,33 +129,23 @@ export default async function Page() {
                   <h2>Blind test</h2>
                   <p>Le jeu qui met à l&apos;épreuve ta culture musicale !</p>
                 </div>
-                <div
-                  className={`${styles.animatedSphere} ${styles["animatedSphere--orange"]}`}
-                ></div>
+                <div className={`${styles.animatedSphere} ${styles["animatedSphere--orange"]}`}></div>
               </Link>
             </div>
           </div>
 
-          <div
-            className={styles.challengeWrapper}
-            style={{ position: "relative" }}
-          >
+          <div className={styles.challengeWrapper} style={{ position: "relative" }}>
             <div className={styles.challengeList}>
               <h3>Défis journaliers</h3>
               <ul>
-                {missions.map((mission: any) => (
-                  <li
-                    key={mission.id}
-                    style={{ display: "flex", alignItems: "center", gap: 8 }}
-                  >
+                {missions.map((mission) => (
+                  <li key={mission.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <input
                       type="checkbox"
-                      checked={completedMissions.includes(mission.id)}
+                      checked={!!mission.completed}
                       readOnly
                       style={{
-                        accentColor: completedMissions.includes(mission.id)
-                          ? "green"
-                          : "red",
+                        accentColor: mission.completed ? "green" : "red",
                       }}
                     />
                     {mission.text}
