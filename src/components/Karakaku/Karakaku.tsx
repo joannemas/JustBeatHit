@@ -28,11 +28,11 @@ interface KarakakuProps {
   singer?: string;
   gameId: string;
   gameName: string;
+  mortSubite?: boolean; 
 }
 
-const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId, gameName }) => {
-  const [showModeModal, setShowModeModal] = useState(true);
-  const [mode, setMode] = useState<"normal" | "extreme">("normal");
+const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, gameId, gameName, mortSubite = false }) => {
+  const mode = mortSubite ? "extreme" : "normal";
   const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(0);
   const [userInput, setUserInput] = useState<string>('');
   const [isValidated, setIsValidated] = useState<boolean>(false);
@@ -611,37 +611,6 @@ const Karakaku: React.FC<KarakakuProps> = ({ songSrc, lyricSrc, title, singer, g
           />
           <span className={styles.highlight}>10&nbsp;</span>
           secondes
-        </div>
-      )}
-
-      {showModeModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Mode de jeu</h3>
-            <p className={styles.modalText}>Choisissez votre mode :</p>
-            <div className={styles.modalButtonRow}>
-              <button
-                className={styles.btnModeNormal}
-                onClick={() => {
-                  setMode("normal");
-                  setShowModeModal(false);
-                  setIsStarted(false);
-                  inputRef.current?.focus();
-                }}>
-                Normal
-              </button>
-              <button
-                className={styles.btnModeExtreme}
-                onClick={() => {
-                  setMode("extreme");
-                  setShowModeModal(false);
-                  setIsStarted(false);
-                  inputRef.current?.focus();
-                }}>
-                Extrême
-              </button>
-            </div>
-          </div>
         </div>
       )}
 

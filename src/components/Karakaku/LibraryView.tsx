@@ -9,15 +9,23 @@ import { Database } from "~/database.types";
 
 export default function LibraryView({ gameId }: { gameId?: string }) {
   const [selectedSong, setSelectedSong] = useState<Database["public"]["Tables"]["song"]["Row"] | LocalSong | null>(null);
+  const [mortSubite, setMortSubite] = useState(false);
 
-  return (
+ return (
     <div className={styles.mainRow}>
       <div className={styles.leftColumn}>
         <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
         <SongList gameId={gameId} onSelectSong={setSelectedSong} />
       </div>
       <div className={styles.rightColumn}>
-        {selectedSong && <SongDetailsPanel  gameId={gameId} song={selectedSong} />}
+        {selectedSong && (
+          <SongDetailsPanel
+            gameId={gameId}
+            song={selectedSong}
+            mortSubite={mortSubite}
+            setMortSubite={setMortSubite}
+          />
+        )}
       </div>
     </div>
   );
