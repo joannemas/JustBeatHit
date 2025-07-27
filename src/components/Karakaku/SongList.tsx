@@ -35,8 +35,7 @@ export default function SongList({
 
   useEffect(() => {
     const fetchSongs = async () => {
-      let query = supabase.from("song").select("*");
-
+      let query = supabase.from("song").select("*").neq("status", "Local");
       if (role !== "admin") {
         query = query.neq("status", "Draft");
       }
@@ -72,7 +71,7 @@ export default function SongList({
         setSongs(songs)
         return
       }
-      let query = supabase.from("song").select("*");
+      let query = supabase.from("song").select("*").neq("status", "Local");
 
       if (role !== "admin") {
         query = query.neq("status", "Draft");
