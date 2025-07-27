@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/server";
-import UpgradeButton from "@/components/UpgradeButton";
 import { generateDailyMissions } from "@/components/Daily/MissionGenerator";
 
 export default async function Page() {
@@ -12,27 +11,87 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("user", user);
-  const { data, error } = await supabase
+
+  if (!user) {
+    return (
+      <div className={styles.home}>
+        <Navbar />
+        <h1>Vous devez être connecté pour voir cette page.</h1>
+        <Link href="/auth/login">Se connecter</Link>
+      </div>
+    );
+  }
+
+  const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("user_id", user?.id!)
+    .eq("user_id", user.id)
     .single();
-  console.log("data", data);
-  console.log("error", error);
 
   const today = new Date().toISOString().slice(0, 10);
-  const missions = await generateDailyMissions();
-  const { data: dailyMissionRow } = await supabase
+  console.log("User ID:", user.id);
+  console.log("Today:", today);
+
+  let { data: dailyMissionRow, error: selectError } = await supabase
     .from("daily_missions")
-    .select("completed")
-    .eq("user_id", user?.id!)
+    .select("missions, completed")
+    .eq("user_id", user.id)
     .eq("date", today)
     .single();
 
-  const completedMissions: any[] = Array.isArray(dailyMissionRow?.completed)
-    ? dailyMissionRow.completed
+  console.log("Daily mission fetch:", dailyMissionRow, selectError);
+
+  if (!dailyMissionRow || !dailyMissionRow.missions) {
+    const missionsToInsert = await generateDailyMissions(supabase);
+    console.log("Generated missions:", missionsToInsert);
+
+    const { data: insertData, error: insertError } = await supabase
+      .from("daily_missions")
+      .insert([
+        {
+          user_id: user.id,
+          date: today,
+          missions: missionsToInsert,
+          completed: [],
+        },
+      ]);
+
+    if (insertError) {
+      console.error("Error inserting daily missions:", insertError);
+    } else {
+      console.log("Insert data:", insertData);
+    }
+
+    const { data: newRow, error: newFetchError } = await supabase
+      .from("daily_missions")
+      .select("missions, completed")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .single();
+
+    console.log("Fetched daily mission after insert:", newRow, newFetchError);
+    dailyMissionRow = newRow;
+  }
+
+  const missions = Array.isArray(dailyMissionRow?.missions)
+    ? dailyMissionRow.missions
     : [];
+  const completedMissions: string[] = Array.isArray(dailyMissionRow?.completed)
+    ? dailyMissionRow.completed.filter(
+        (item): item is string => typeof item === "string"
+      )
+    : [];
+
+  function getTimeUntilMidnight() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setHours(24, 0, 0, 0);
+    const diff = tomorrow.getTime() - now.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
 
   return (
     <div className={styles.home}>
@@ -48,8 +107,8 @@ export default async function Page() {
       </div>
 
       <div className={styles.homeContent}>
-        {data ? (
-          <h1>Content de te revoir {data.username} !</h1>
+        {profile ? (
+          <h1>Content de te revoir {profile.username} !</h1>
         ) : (
           <h1>
             Bienvenue sur Just Beat Hit,{" "}
@@ -116,21 +175,46 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className={styles.challengeWrapper}>
+          <div
+            className={styles.challengeWrapper}
+            style={{ position: "relative" }}
+          >
             <div className={styles.challengeList}>
               <h3>Défis journaliers</h3>
               <ul>
                 {missions.map((mission: any) => (
-                  <li key={mission.id}>
-                    {completedMissions.includes(mission.id) ? (
-                      <span style={{ color: "green", marginRight: 8 }}>✔️</span>
-                    ) : (
-                      <span style={{ color: "red", marginRight: 8 }}>❌</span>
-                    )}
+                  <li
+                    key={mission.id}
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={completedMissions.includes(mission.id)}
+                      readOnly
+                      style={{
+                        accentColor: completedMissions.includes(mission.id)
+                          ? "green"
+                          : "red",
+                      }}
+                    />
                     {mission.text}
                   </li>
                 ))}
               </ul>
+              <div
+                style={{
+                  position: "absolute",
+                  right: 16,
+                  bottom: 8,
+                  fontSize: "1.2em",
+                  color: "red",
+                  background: "rgba(255,255,255,0.7)",
+                  padding: "4px 12px",
+                  borderRadius: "12px",
+                }}
+              >
+                {getTimeUntilMidnight()}
+              </div>
             </div>
           </div>
         </div>
