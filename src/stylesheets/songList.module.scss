@@ -13,7 +13,7 @@
   background-attachment: fixed;
   background-position: center;
   background-size: cover;
-  margin-left: 20vw;
+  margin-left: 17vw;
 }
 
 .titleContainer {
@@ -382,14 +382,14 @@
 
 .premiumFilterButtons {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 1rem;
   flex-wrap: wrap;
   border-bottom: 3px solid rgba(255, 246, 241, 0.10);
 }
 
 .filterButton {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   text-transform: uppercase;
   font-style: italic;
   background-color: transparent;
@@ -402,6 +402,7 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  font-size: 0.8rem;
 
   &.active {
     border-bottom: 3px solid white;

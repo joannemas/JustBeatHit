@@ -56,7 +56,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    width: 20vw;
+    width: 17vw;
     position: fixed;
     overflow: hidden;
     top: 0;
@@ -137,8 +137,8 @@
 
     .decorationNavbar {
         position: absolute;
-        bottom: -140px;
-        left: -100px;
+        bottom: -170px;
+        left: -125px;
         width: 330px;
         height: 330px;
         background-color: $white;
