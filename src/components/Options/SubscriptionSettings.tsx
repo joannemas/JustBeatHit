@@ -1,11 +1,14 @@
-'use client'
-
 import styles from '@/stylesheets/options.module.scss'
 import Image from 'next/image'
-import useClaims from "@/lib/hooks/useClaims";
+import { getSessionWithClaims } from '@/lib/supabase/server';
+import { createSubscription } from '@/lib/stripe';
+import { headers } from 'next/headers';
 
-export default function SubscriptionOptions() {
-    const {userClaims: {plan}} = useClaims()
+export default async function SubscriptionOptions() {
+    const {claims} = await getSessionWithClaims()
+    const headersList = headers()
+    const host = headersList.get('host')
+    const protocol = headersList.get('x-forwarded-proto')
 
     return (
         <div className={styles.subscriptionWrapper}>
@@ -68,7 +71,7 @@ export default function SubscriptionOptions() {
                     </li>
                 </ul>
 
-                { plan !== 'Premium' ? (
+                { claims?.user_plan !== 'Premium' ? (
                     <button disabled={true} className={styles.currentPlanButton}>
                         Votre plan
                     </button>
@@ -133,12 +136,13 @@ export default function SubscriptionOptions() {
                     </li>
                 </ul>
 
-                { plan === 'Premium' ? (
+                { claims?.user_plan === 'Premium' ? (
                     <button disabled={true} className={styles.currentPlanButton}>
                         Votre plan
                     </button>
                 ) : (
-                    <button className={styles.upgradeButton}>
+                    <form>
+                        <button formAction={createSubscription.bind(null,process.env.STRIPE_PRODUCT_ID!, `${protocol}://${host}?payment=success`, `${protocol}://${host}/`)} className={styles.upgradeButton}>
                         <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="customGradient" gradientTransform="rotate(135)">
@@ -158,7 +162,8 @@ export default function SubscriptionOptions() {
                         </svg>
                         <span>S&apos;abonner</span>
                     </button>
-                )
+                    </form>
+                    )
                 }
             </div>
         </div>

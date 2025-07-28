@@ -3,24 +3,19 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/server";
-import UpgradeButton from "@/components/UpgradeButton";
-
 
 export default async function Page() {
-
   const supabase = createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("user", user);
+  
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user?.id!)
     .single();
-  console.log("data", data);
-  console.log("error", error);
 
   return (
     <div className={styles.home}>
