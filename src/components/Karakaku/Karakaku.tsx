@@ -193,7 +193,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
         setTotalLines
       );
     }
-  }, [fileSrc, charRefs]);
+  }, [fileSrc])
   useEffect(() => {
     const duration = audioPlayerRef.current?.audioEl.current?.duration;
     if (
