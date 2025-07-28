@@ -81,10 +81,10 @@ export default async function page({
     redirect(`/game/${game_name}`);
   }
 
+
   // If game is already started, that's mean user refresh the page, so create a new game and redirect to it
   if (data.status === "started") {
-    await replayGame(game_id);
-  }
+    await replayGame(game_id, mortSubite);  }
 
   // If no song found, redirect to songs page
   if (!data?.song_id) {
@@ -92,8 +92,7 @@ export default async function page({
   }
 
   if (data.status === "finished") {
-    return <GameResult gameId={game_id} />;
-  }
+    return <GameResult gameId={game_id} mortSubite={mortSubite} />;  }
 
   const {
     data: { ...song },
