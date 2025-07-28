@@ -68,7 +68,7 @@ export default function SubscriptionOptions() {
                     </li>
                 </ul>
 
-                { plan === 'Freenium' ? (
+                { plan !== 'Premium' ? (
                     <button disabled={true} className={styles.currentPlanButton}>
                         Votre plan
                     </button>
