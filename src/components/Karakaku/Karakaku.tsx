@@ -802,11 +802,10 @@ const handleAudioEnded = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isPausedMenuOpen]);
 
-  const handleResume = () => {
-    setIsPausedMenuOpen(false);
-    document
-      .querySelector(`.${styles.echapInfoText}`)
-      ?.setAttribute("style", "display: block;");
+const handleResume = () => {
+  setIsPausedMenuOpen(false);
+  document.querySelector(`.${styles.echapInfoText}`)?.setAttribute("style", "display: block;");
+  if (isStarted) {
     const audio = audioPlayerRef.current?.audioEl.current;
     if (audio) {
       const isMusicFinished = audio.ended;
@@ -815,7 +814,8 @@ const handleAudioEnded = () => {
       }
     }
     inputRef.current?.focus();
-  };
+  }
+};
 
   const handleEchapClick = () => {
     if (isMobileDevice()) {
