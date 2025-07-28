@@ -158,12 +158,19 @@ const Karakaku: React.FC<KarakakuProps> = ({
       }
     }
   };
-  const handleAudioEnded = () => {
-    if (lyrics.length > 0) {
-      setCurrentLyricIndex(lyrics.length - 1);
-    }
-    setIsMusicFinished(true);
+const handleAudioEnded = () => {
+  if (lyrics.length > 0) {
+    setCurrentLyricIndex(lyrics.length - 1);
+  }
+  setIsMusicFinished(true);
 
+  if (
+    currentLyricIndex === lyrics.length - 1 &&
+    !isValidated &&
+    !isCountdownActive
+  ) {
+    setIsCountdownActive(true);
+  } else {
     setTimeout(() => {
       if (!isGameOver) {
         setIsStarted(false);
@@ -171,7 +178,8 @@ const Karakaku: React.FC<KarakakuProps> = ({
         setIsValidated(true);
       }
     }, 300);
-  };
+  }
+};
   const isMobileDevice = () => {
     return /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
   };
