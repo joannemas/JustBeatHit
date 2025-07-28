@@ -84,7 +84,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
   const [multiplier, setMultiplier] = useState(1);
   const [isPausedMenuOpen, setIsPausedMenuOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [volume, setVolume] = useState<number>(0.8);
+  const [volume, setVolume] = useState<number>(0.5);
   const [linePoints, setLinePoints] = useState<number>(0);
   const [showLinePoints, setShowLinePoints] = useState<boolean>(false);
   const [fileSrc, setFileSrc] = useState<{
@@ -301,7 +301,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
     if (audioPlayerRef.current && audioPlayerRef.current.audioEl.current) {
       const currentTime = audioPlayerRef.current.audioEl.current.currentTime;
       const duration = audioPlayerRef.current.audioEl.current.duration;
-      setProgress((currentTime / duration) * 1000);
+      setProgress((currentTime / duration) * 100);
     }
   };
 
@@ -546,7 +546,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
           }
           return prev - 1;
         });
-      }, 100);
+      }, 1000);
     } else if (
       currentLyricIndex === lyrics.length - 1 &&
       isValidated &&
