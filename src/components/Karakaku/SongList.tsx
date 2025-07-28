@@ -10,6 +10,7 @@ import { listLocalSongs } from "@/lib/dexie/listLocalSongs";
 import { Database } from "~/database.types";
 import { LocalSong } from "@/lib/dexie/types";
 import useClaims from "@/lib/hooks/useClaims";
+import {sanitizeForBucketName} from "@/utils/sanitizeForBucketName";
 
 export default function SongList({
   gameId,
@@ -279,7 +280,7 @@ export default function SongList({
                   key={song.id}
                   song={song}
                   gameId={gameId}
-                  coverUrl={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
+                  coverUrl={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${sanitizeForBucketName(song.singer)} - ${sanitizeForBucketName(song.title)}`)}/cover.jpg`}
                   onSelect={() => onSelectSong?.(song)}
               />
           ))}

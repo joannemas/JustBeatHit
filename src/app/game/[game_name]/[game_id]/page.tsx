@@ -7,6 +7,7 @@ import GameResult from '@/components/GameResult/GameResult';
 import { headers } from "next/headers";
 import { Metadata } from 'next';
 import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { sanitizeForBucketName } from "@/utils/sanitizeForBucketName";
 
 export async function generateMetadata({ params: { game_name, game_id }, params }: { params: { game_name: string, game_id: string } }): Promise<Metadata | void> {
   const supabase = createClient()
@@ -74,9 +75,11 @@ export default async function page({ params: { game_name, game_id } }: { params:
     lyricsURL = `local-${song.id}`
     songURL = `local-${song.id}`
   }else{
+    const folderName = `${sanitizeForBucketName(song.singer)} - ${sanitizeForBucketName(song.title)}`;
+
     const songPromises = [
-      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/song.mp3`, 60 * 5),
-      supabase.storage.from('song').createSignedUrl(`${song.singer} - ${song.title.replaceAll("'", '')}/lyrics.lrc`, 60 * 5)
+      supabase.storage.from('song').createSignedUrl(`${folderName}/song.mp3`, 60 * 5),
+      supabase.storage.from('song').createSignedUrl(`${folderName}/lyrics.lrc`, 60 * 5),
     ]
     const [songFile, lyricFile] = await Promise.all(songPromises)
     lyricsURL = lyricFile.data?.signedUrl ?? null

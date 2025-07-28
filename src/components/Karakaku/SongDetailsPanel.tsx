@@ -11,6 +11,7 @@ import Image from "next/image";
 import { LocalSong } from "@/lib/dexie/types";
 import useClaims from "@/lib/hooks/useClaims";
 import { useRouter } from "next/navigation";
+import {sanitizeForBucketName} from "@/utils/sanitizeForBucketName";
 
 type Song = Database["public"]["Tables"]["song"]["Row"];
 type BestScore = Database["public"]["Tables"]["best_score"]["Row"];
@@ -113,7 +114,7 @@ export default function SongDetailsPanel({ song, gameId }: { song: Song | LocalS
   return (
       <div className={styles.drawer}>
           <img
-              src={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${song.singer} - ${song.title.replace(/'/g, "")}`)}/cover.jpg`}
+              src={"coverFile" in song ? URL.createObjectURL(song.coverFile) : `https://fyuftckbjismoywarotn.supabase.co/storage/v1/object/public/song/${encodeURIComponent(`${sanitizeForBucketName(song.singer)} - ${sanitizeForBucketName(song.title)}`)}/cover.jpg`}
               alt={song.title}
               className={styles.coverImage}
           />

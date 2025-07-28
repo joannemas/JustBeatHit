@@ -20,6 +20,7 @@ import { ACCEPTED_IMAGE_TYPES, difficultyLevels, musicStyles, statusOptions } fr
 import { uploadLocalSong } from '@/lib/dexie/uploadLocalSong';
 import useClaims from '@/lib/hooks/useClaims';
 import {supabase} from "@/lib/supabase/client";
+import {sanitizeForBucketName} from "@/utils/sanitizeForBucketName";
 
 type SongFormData = z.infer<typeof songSchema>;
 
@@ -186,7 +187,9 @@ export default function UploadSongPage() {
 
         console.debug('Status :', status)
         const updatedStatus = role !== 'admin' ? 'Local' : status;
-        const folderPath = `${singer} - ${title}`.trim();
+        const cleanSinger = sanitizeForBucketName(singer);
+        const cleanTitle = sanitizeForBucketName(title);
+        const folderPath = `${cleanSinger} - ${cleanTitle}`;
         const { startTime, endTime, duration } = getSmartTrimRange(rangeIndex, lyrics, audioDuration);
         const trimmedMp3Blob = await trimMp3(mp3File[0], startTime, duration);
         const trimmedLrcBlob = await trimLrc(lrcFile[0], startTime, endTime);
