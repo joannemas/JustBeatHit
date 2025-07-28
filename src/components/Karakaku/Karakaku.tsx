@@ -459,7 +459,7 @@ const Karakaku: React.FC<KarakakuProps> = ({
   ]);
 
   const handleReplay = () => {
-    replayGame(gameId);
+    replayGame(gameId, mortSubite);
     setIsPausedMenuOpen(false);
     setTimeout(() => {
       inputRef.current?.focus();
@@ -598,129 +598,129 @@ const Karakaku: React.FC<KarakakuProps> = ({
     }
   }, [isGameOver]);
   const renderLyrics = () => {
-  // Defensive: filter out any lines past the audio duration and empty lines
-  const audioDuration = audioPlayerRef.current?.audioEl.current?.duration ?? Infinity;
-  const BUFFER = 0.1; // 100ms buffer to handle float imprecision
+    // Defensive: filter out any lines past the audio duration and empty lines
+    const audioDuration = audioPlayerRef.current?.audioEl.current?.duration ?? Infinity;
+    const BUFFER = 0.1; // 100ms buffer to handle float imprecision
 
-  return lyrics
-    .filter(
-      (lyric) =>
-        (!lyric.time || lyric.time <= audioDuration - BUFFER) &&
-        lyric.text &&
-        lyric.text.trim().length > 0
-    )
-    .map((lyric, index) => {
-      const isFirstLine =
-        index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
-      const isLastLine =
-        index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
-      const isBeforeFirst =
-        index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
-      const isBeforeLast =
-        index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
+    return lyrics
+      .filter(
+        (lyric) =>
+          (!lyric.time || lyric.time <= audioDuration - BUFFER) &&
+          lyric.text &&
+          lyric.text.trim().length > 0
+      )
+      .map((lyric, index) => {
+        const isFirstLine =
+          index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 5);
+        const isLastLine =
+          index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 5);
+        const isBeforeFirst =
+          index !== currentLyricIndex && index === Math.max(0, currentLyricIndex - 4);
+        const isBeforeLast =
+          index !== currentLyricIndex && index === Math.min(lyrics.length - 1, currentLyricIndex + 4);
 
-      if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
-        return null;
-      }
+        if (index < currentLyricIndex - 5 || index > currentLyricIndex + 5) {
+          return null;
+        }
 
-      return (
-        <div
-          key={index}
-          className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ""}`}
-        >
-          {index < currentLyricIndex && (
-            <p
-              className={`${styles.previous} 
+        return (
+          <div
+            key={index}
+            className={`${styles.lyricLine} ${index === currentLyricIndex ? styles.current : ""}`}
+          >
+            {index < currentLyricIndex && (
+              <p
+                className={`${styles.previous} 
                 ${index === currentLyricIndex ? styles.current : ""}
                 ${isBeforeFirst ? styles["--before-line"] : ""}
                 ${isFirstLine ? styles["--first-line"] : ""}`}
-            >
-              {lyric.text}
-            </p>
-          )}
+              >
+                {lyric.text}
+              </p>
+            )}
 
-          {index === currentLyricIndex && (
-            <div
-              className={styles.currentLyricContainer}
-              ref={showTimerForTutorial ? currentLyricRef : undefined}
-              style={{ position: "relative", width: "100%" }}
-            >
-              <Image
-                priority
-                src="/assets/img/icon/arrow-right.svg"
-                alt="Music svg"
-                width={40}
-                height={40}
-                className={styles.arrowIcon}
-              />
-              {isCountdownActive && (
-                <div
-                  className={styles.countdown}
-                  data-tutorial="timer-info"
-                  style={{
-                    position: "absolute",
-                    right: isMobileDevice() ? "inherit" : "-70px",
-                    left: isMobileDevice() ? "-75px" : "revert-layer",
-                    top: "50%",
-                    transform: "translateY(-50%)",
+            {index === currentLyricIndex && (
+              <div
+                className={styles.currentLyricContainer}
+                ref={showTimerForTutorial ? currentLyricRef : undefined}
+                style={{ position: "relative", width: "100%" }}
+              >
+                <Image
+                  priority
+                  src="/assets/img/icon/arrow-right.svg"
+                  alt="Music svg"
+                  width={40}
+                  height={40}
+                  className={styles.arrowIcon}
+                />
+                {isCountdownActive && (
+                  <div
+                    className={styles.countdown}
+                    data-tutorial="timer-info"
+                    style={{
+                      position: "absolute",
+                      right: isMobileDevice() ? "inherit" : "-70px",
+                      left: isMobileDevice() ? "-75px" : "revert-layer",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <Image
+                      priority
+                      src="/assets/img/icon/timer.svg"
+                      alt="Music svg"
+                      width={40}
+                      height={40}
+                      className="countdown__icon"
+                    />
+                    <span className={styles.highlight}>{countdown}&nbsp;</span>
+                    {countdown === 1 ? "seconde" : "secondes"}
+                  </div>
+                )}
+
+                <p className={styles.currentLyric}>{getStyledText()}</p>
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={handleInputChange}
+                  onPaste={handlePaste}
+                  className={styles.textInput}
+                  autoFocus
+                  spellCheck={false}
+                  ref={inputRef}
+                  data-tutorial="input-field"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
+                  onContextMenu={(e) => e.preventDefault()}
+                  onKeyDown={(e) => {
+                    if (
+                      (e.ctrlKey || e.metaKey) &&
+                      ["c", "v", "x", "a"].includes(e.key.toLowerCase())
+                    ) {
+                      e.preventDefault();
+                    }
                   }}
-                >
-                  <Image
-                    priority
-                    src="/assets/img/icon/timer.svg"
-                    alt="Music svg"
-                    width={40}
-                    height={40}
-                    className="countdown__icon"
-                  />
-                  <span className={styles.highlight}>{countdown}&nbsp;</span>
-                  {countdown === 1 ? "seconde" : "secondes"}
-                </div>
-              )}
+                  disabled={isPausedMenuOpen}
+                />
+                <div ref={caretRef} className={styles.caret}></div>
+              </div>
+            )}
 
-              <p className={styles.currentLyric}>{getStyledText()}</p>
-              <input
-                type="text"
-                value={userInput}
-                onChange={handleInputChange}
-                onPaste={handlePaste}
-                className={styles.textInput}
-                autoFocus
-                spellCheck={false}
-                ref={inputRef}
-                data-tutorial="input-field"
-                autoComplete="off"
-                autoCorrect="off"
-                onCopy={(e) => e.preventDefault()}
-                onCut={(e) => e.preventDefault()}
-                onContextMenu={(e) => e.preventDefault()}
-                onKeyDown={(e) => {
-                  if (
-                    (e.ctrlKey || e.metaKey) &&
-                    ["c", "v", "x", "a"].includes(e.key.toLowerCase())
-                  ) {
-                    e.preventDefault();
-                  }
-                }}
-                disabled={isPausedMenuOpen}
-              />
-              <div ref={caretRef} className={styles.caret}></div>
-            </div>
-          )}
-
-          {index > currentLyricIndex && (
-            <p
-              className={`${styles.next}
+            {index > currentLyricIndex && (
+              <p
+                className={`${styles.next}
                 ${isLastLine ? styles["--last-line"] : ""}
                 ${isBeforeLast ? styles["--before-line"] : ""}`}
-            >
-              {lyric.text}
-            </p>
-          )}
-        </div>
-      );
-    });
-};
+              >
+                {lyric.text}
+              </p>
+            )}
+          </div>
+        );
+      });
+  };
 
   const speedClass =
     multiplier === 4
