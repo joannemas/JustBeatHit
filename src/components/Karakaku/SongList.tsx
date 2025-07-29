@@ -14,9 +14,13 @@ import useClaims from "@/lib/hooks/useClaims";
 export default function SongList({
   gameId,
   onSelectSong,
+  onAutoSelectSong,
+  isMobile,
 }: {
   gameId?: string;
   onSelectSong?: (song: any) => void;
+  onAutoSelectSong?: (song: any) => void;
+  isMobile?: boolean;
 }) {
   const {userClaims: {role, plan}} = useClaims()
 
@@ -33,89 +37,93 @@ export default function SongList({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const fetchSongs = async () => {
-      let query = supabase.from("song").select("*").neq("status", "Local");
-      if (role !== "admin") {
-        query = query.neq("status", "Draft");
+useEffect(() => {
+  const fetchSongs = async () => {
+    let query = supabase.from("song").select("*").neq("status", "Local");
+    if (role !== "admin") {
+      query = query.neq("status", "Draft");
+    }
+
+    if (search) {
+      query = query.ilike("title", `%${search}%`);
+    }
+
+    if (selectedStyles.length > 0) {
+      query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
+    }
+
+    const { data, error } = await query;
+    if (!error) {
+      setSongs(data || []);
+      // Sélection automatique uniquement en desktop
+      if (data?.length && onAutoSelectSong && !isMobile) {
+        onAutoSelectSong(data[0]);
       }
+    }
+  };
 
-      if (search) {
-        query = query.ilike("title", `%${search}%`);
+  fetchSongs();
+}, [search, selectedStyles, onAutoSelectSong, isMobile]);
+
+// 3. Modifier le deuxième useEffect principal (ligne ~50)
+useEffect(() => {
+  const fetchSongs = async () => {
+    if(premiumFilter === "local"){
+      const songs = await listLocalSongs()
+      console.debug("songs", songs)
+      // Sélection automatique uniquement en desktop
+      if (songs?.length && onAutoSelectSong && !isMobile) {
+        onAutoSelectSong(songs[0]);
       }
+      setSongs(songs)
+      return
+    }
+    let query = supabase.from("song").select("*").neq("status", "Local");
 
-      if (selectedStyles.length > 0) {
-        query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
+    if (role !== "admin") {
+      query = query.neq("status", "Draft");
+    }
+
+    if (search) {
+      query = query.ilike("title", `%${search}%`);
+    }
+
+    if (selectedStyles.length > 0) {
+      query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
+    }
+
+    if (premiumFilter === "premium") {
+      query = query.eq("is_premium", true);
+    } else if (premiumFilter === "free") {
+      query = query.eq("is_premium", false);
+    }
+
+    const { data, error } = await query;
+    if (!error) {
+      setSongs(data || []);
+      // Sélection automatique uniquement en desktop
+      if (data?.length && onAutoSelectSong && !isMobile) {
+        onAutoSelectSong(data[0]);
       }
+    }
 
-      const { data, error } = await query;
-      if (!error) {
-        setSongs(data || []);
-        if (data?.length && onSelectSong) {
-          onSelectSong(data[0]); // sélectionne automatiquement la première
-        }
-      }
-    };
+    // Compteurs pour premium et free avec filtre status pour non-admins
+    let premiumQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true);
+    let freeQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false);
 
-    fetchSongs();
-  }, [search, selectedStyles]);
+    if (role !== "admin") {
+      premiumQuery = premiumQuery.neq("status", "Draft");
+      freeQuery = freeQuery.neq("status", "Draft");
+    }
 
-  useEffect(() => {
-    const fetchSongs = async () => {
-      if(premiumFilter === "local"){
-        const songs = await listLocalSongs()
-        console.debug("songs", songs)
-        if (songs?.length && onSelectSong) {
-          onSelectSong(songs[0]);
-        }
-        setSongs(songs)
-        return
-      }
-      let query = supabase.from("song").select("*").neq("status", "Local");
+    const [premium, free] = await Promise.all([premiumQuery, freeQuery]);
 
-      if (role !== "admin") {
-        query = query.neq("status", "Draft");
-      }
+    if (!premium.error) setPremiumCount(premium.count || 0);
+    if (!free.error) setFreeCount(free.count || 0);
+  };
 
-      if (search) {
-        query = query.ilike("title", `%${search}%`);
-      }
-
-      if (selectedStyles.length > 0) {
-        query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
-      }
-
-      if (premiumFilter === "premium") {
-        query = query.eq("is_premium", true);
-      } else if (premiumFilter === "free") {
-        query = query.eq("is_premium", false);
-      }
-
-      const { data, error } = await query;
-      if (!error) {
-        setSongs(data || []);
-        if (data?.length && onSelectSong) {
-          onSelectSong(data[0]);
-        }
-      }
-
-      // Compteurs pour premium et free avec filtre status pour non-admins
-      let premiumQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true);
-      let freeQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false);
-
-      if (role !== "admin") {
-        premiumQuery = premiumQuery.neq("status", "Draft");
-        freeQuery = freeQuery.neq("status", "Draft");
-      }
-
-      const [premium, free] = await Promise.all([premiumQuery, freeQuery]);
-
-      if (!premium.error) setPremiumCount(premium.count || 0);
-      if (!free.error) setFreeCount(free.count || 0);
-    };
-
-    fetchSongs();
-  }, [search, selectedStyles, premiumFilter]);
+  fetchSongs();
+}, [search, selectedStyles, premiumFilter, onAutoSelectSong, isMobile]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
