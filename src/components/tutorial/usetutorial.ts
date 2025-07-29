@@ -41,6 +41,10 @@ export const useTutorial = (options: TutorialOptions = {}) => {
   const startTutorial = () => {
     if (!driverRef.current) return;
     if (options.onStart) options.onStart();
+    try {
+      driverRef.current.destroy();
+    } catch (e) { }
+    if (options.onStart) options.onStart();
 
     const steps = [
       {
