@@ -29,6 +29,14 @@
   &::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  @media (max-width: 768px){
+    width: calc(100% - 21vw);
+    padding: 0 2vw;
+    max-height: 100vh;
+    background: #1D1D1D;
+    display: none;
+  }
 }
 
 .playButton {
@@ -57,6 +65,13 @@
   object-fit: cover;
   object-position: top;
   margin: 1vw auto;
+
+  @media (max-width: 768px) {
+    margin: 0 auto;
+    width: 50%;
+    height: auto;
+    max-height: 200px;
+  }
 }
 
 .songTitle {

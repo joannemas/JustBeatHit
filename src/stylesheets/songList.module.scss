@@ -33,6 +33,7 @@
   color: #FFA540;
   font-size: 4rem;
   margin: 0;
+
 }
 
 .subtitle {
@@ -329,6 +330,10 @@
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 20px 0;
+  @media (max-width: 768px) {
+  flex-direction: column;
+}
+
 }
 
 .searchInputGroup {
@@ -386,6 +391,17 @@
   margin-top: 1rem;
   flex-wrap: wrap;
   border-bottom: 3px solid rgba(255, 246, 241, 0.10);
+
+  @media (max-width: 768px) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    //hidden scrollbar
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .filterButton {
