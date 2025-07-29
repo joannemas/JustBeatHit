@@ -7,7 +7,6 @@ import { generateDailyMissions } from "@/components/Daily/MissionGenerator";
 
 export default async function Page() {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -38,13 +37,11 @@ export default async function Page() {
 
   if (!missions || missions.length === 0) {
     await generateDailyMissions(supabase, user.id, today);
-
     const { data: newMissions, error: newFetchError } = await supabase
       .from("daily_missions")
       .select("*")
       .eq("user_id", user.id)
       .eq("date", today);
-
     missions = newMissions || [];
   }
 
@@ -62,7 +59,6 @@ export default async function Page() {
   return (
     <div className={styles.home}>
       <Navbar />
-
       <div className={styles.musicDecoration}>
         <Image
           src="/assets/img/MusicBar-gradient.svg"
@@ -72,7 +68,6 @@ export default async function Page() {
           className={styles.musicDecoration}
         />
       </div>
-
       <div className={styles.homeContent}>
         {profile ? (
           <h1>Content de te revoir {profile.username} !</h1>
@@ -85,7 +80,6 @@ export default async function Page() {
             pour jouer !
           </h1>
         )}
-
         <div className={styles.homeContentContainer}>
           <div className={styles.gameList}>
             <Link href="/game/karakaku" className={styles.gameCard}>
@@ -109,7 +103,6 @@ export default async function Page() {
                 <div className={`${styles.animatedSphere} ${styles["animatedSphere--yellow"]}`}></div>
               </div>
             </Link>
-
             <div className={styles.rowCards}>
               <Link href="/game/paroles-en-tete" className={styles.gameCard}>
                 <div>
@@ -133,7 +126,6 @@ export default async function Page() {
               </Link>
             </div>
           </div>
-
           <div className={styles.challengeWrapper} style={{ position: "relative" }}>
             <div className={styles.challengeList}>
               <h3>Défis journaliers</h3>
@@ -170,7 +162,6 @@ export default async function Page() {
           </div>
         </div>
       </div>
-
       <div className={styles.vinylDecoration}>
         <Image
           src="/assets/img/vinyl-jbh.svg"

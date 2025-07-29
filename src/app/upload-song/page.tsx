@@ -119,7 +119,7 @@ export default function UploadSongPage() {
 
         const smartEnd =
             endIndex < lyrics.length - 1
-                ? lyrics[endIndex + 1].time
+                ? lyrics[endIndex + 1].time - 0.01
                 : audioDuration;
 
         setAdjustedEndTime(smartEnd);

@@ -1,3 +1,5 @@
+import LayoutRefreshOnPayment from '@/components/LayoutRefreshOnPayment';
+import useRefreshOnPayment from '@/components/LayoutRefreshOnPayment';
 import '@/stylesheets/base.scss';
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
@@ -37,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable}`}>
+        <LayoutRefreshOnPayment />
         {children}
       </body>
     </html>

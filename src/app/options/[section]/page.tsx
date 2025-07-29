@@ -1,5 +1,3 @@
-'use client'
-
 import { notFound } from "next/navigation"
 import PageWrapper from "@/components/Options/PageWrapper"
 import PasswordSettings from "@/components/Options/PasswordSettings"
