@@ -89,17 +89,25 @@ useEffect(() => {
       }
     }
 
-    const premiumPromise = supabase
+    let premiumPromise = supabase
       .from("song")
       .select("*", { count: "exact", head: true })
       .eq("is_premium", true)
-      .neq(role !== "admin" ? "status" : "", role !== "admin" ? "Draft" : "");
+      .neq("status", "Local");
 
-    const freePromise = supabase
+      if(role !== "admin") {
+        premiumPromise = premiumPromise.neq("status", "Draft");
+      }
+
+    let freePromise = supabase
       .from("song")
       .select("*", { count: "exact", head: true })
       .eq("is_premium", false)
-      .neq(role !== "admin" ? "status" : "", role !== "admin" ? "Draft" : "");
+      .neq("status", "Local");
+
+      if(role !== "admin") {
+        freePromise = freePromise.neq("status", "Draft");
+      }
 
     const [premiumRes, freeRes] = await Promise.all([premiumPromise, freePromise]);
     if (isCancelled) return;
