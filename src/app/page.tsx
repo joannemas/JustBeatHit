@@ -11,6 +11,14 @@ export default async function Page() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  const today = new Date().toISOString().slice(0, 10);
+
   if (!user) {
     return (
       <div className={styles.home}>
@@ -20,15 +28,6 @@ export default async function Page() {
       </div>
     );
   }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  const today = new Date().toISOString().slice(0, 10);
-
   let { data: missions, error: selectError } = await supabase
     .from("daily_missions")
     .select("*")
@@ -37,11 +36,13 @@ export default async function Page() {
 
   if (!missions || missions.length === 0) {
     await generateDailyMissions(supabase, user.id, today);
+
     const { data: newMissions, error: newFetchError } = await supabase
       .from("daily_missions")
       .select("*")
       .eq("user_id", user.id)
       .eq("date", today);
+      
     missions = newMissions || [];
   }
 
@@ -69,8 +70,8 @@ export default async function Page() {
         />
       </div>
       <div className={styles.homeContent}>
-        {profile ? (
-          <h1>Content de te revoir {profile.username} !</h1>
+        {data ? (
+          <h1>Content de te revoir {data.username} !</h1>
         ) : (
           <h1>
             Bienvenue sur Just Beat Hit,{" "}
@@ -84,7 +85,9 @@ export default async function Page() {
           <div className={styles.gameList}>
             <Link href="/game/karakaku" className={styles.gameCard}>
               <div>
-                <span className={`${styles.badge} ${styles.badgeNew}`}>Nouveau</span>
+                <span className={`${styles.badge} ${styles.badgeNew}`}>
+                  Nouveau
+                </span>
                 <h2>Karakaku</h2>
                 <p>Le jeu qui met à l&apos;épreuve ta vitesse de frappe !</p>
               </div>
@@ -100,7 +103,9 @@ export default async function Page() {
                   }}
                   className={styles.gamePreview}
                 />
-                <div className={`${styles.animatedSphere} ${styles["animatedSphere--yellow"]}`}></div>
+                <div
+                  className={`${styles.animatedSphere} ${styles["animatedSphere--yellow"]}`}
+                ></div>
               </div>
             </Link>
             <div className={styles.rowCards}>
@@ -112,7 +117,9 @@ export default async function Page() {
                   <h2>Paroles en tête</h2>
                   <p>Le jeu qui met à l&apos;épreuve ta mémoire !</p>
                 </div>
-                <div className={`${styles.animatedSphere} ${styles["animatedSphere--purple"]}`}></div>
+                <div
+                  className={`${styles.animatedSphere} ${styles["animatedSphere--purple"]}`}
+                ></div>
               </Link>
               <Link href="/game/blind-test" className={styles.gameCard}>
                 <div>
@@ -122,7 +129,9 @@ export default async function Page() {
                   <h2>Blind test</h2>
                   <p>Le jeu qui met à l&apos;épreuve ta culture musicale !</p>
                 </div>
-                <div className={`${styles.animatedSphere} ${styles["animatedSphere--orange"]}`}></div>
+                <div
+                  className={`${styles.animatedSphere} ${styles["animatedSphere--orange"]}`}
+                ></div>
               </Link>
             </div>
           </div>
@@ -173,4 +182,4 @@ export default async function Page() {
       </div>
     </div>
   );
-}
+};
