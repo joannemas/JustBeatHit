@@ -253,7 +253,7 @@ const handlePlayClick = async (e: React.MouseEvent) => {
       <button className={styles.playButton} onClick={handlePlayClick}>
         <Image
           src="/assets/img/icon/arrow-right.svg"
-          alt="arrow icon"
+          alt=""
           width={25}
           height={25}
           aria-hidden="true"
