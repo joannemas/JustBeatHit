@@ -11,7 +11,7 @@ import { Database } from "~/database.types";
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -58,54 +58,59 @@ export default function LibraryView({ gameId }: { gameId?: string }) {
 
   if (isMobile) {
     return (
-      <div className={styles.mobileWrapper}>
-        {/* 1. Affiche la liste si pas de détail ouvert */}
-        {!showDetails && (
-          <>
-            <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
-            <SongList 
-              gameId={gameId} 
-              onSelectSong={handleSelectSong}
-              onAutoSelectSong={handleAutoSelectSong}
-              isMobile={isMobile}
-            />
-          </>
-        )}
-        {/* 2. Affiche le détail seulement si showDetails ET selectedSong */}
-        {showDetails && selectedSong && (
-          <div className={styles.detailsPanelMobile} style={{ position: "relative" }}>
-            <button
-              onClick={handleCloseDetails}
-              style={{
-                position: "absolute",
-                top: 16,
-                left: 16,
-                zIndex: 10,
-                background: "rgba(0,0,0,0.5)",
-                border: "none",
-                borderRadius: "50%",
-                width: 38,
-                height: 38,
-                color: "#fff",
-                fontSize: 24,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              aria-label="Fermer"
-            >
-              ✕
-            </button>
-            <SongDetailsPanel
-              gameId={gameId}
-              song={selectedSong}
-              mortSubite={mortSubite}
-              setMortSubite={setMortSubite}
-            />
-          </div>
-        )}
-      </div>
+      // Dans ton JSX pour l'affichage mobile
+
+<div className={styles.mobileWrapper}>
+  {!showDetails && (
+    <>
+      <h1 className={styles.title}>BIBLIOTHÈQUE</h1>
+      <SongList 
+        gameId={gameId} 
+        onSelectSong={handleSelectSong}
+        onAutoSelectSong={handleAutoSelectSong}
+        isMobile={isMobile}
+      />
+    </>
+  )}
+  
+  {/* Modification ici : ajoute une classe conditionnelle pour animation */}
+  <div className={`${styles.detailsPanelMobile} ${showDetails ? styles.open : ''}`}>
+    {showDetails && selectedSong && (
+      <>
+        <button
+          onClick={handleCloseDetails}
+          style={{
+            position: "absolute",
+            top: 16,
+            left: 16,
+            zIndex: 10,
+            background: "rgba(0,0,0,0.5)",
+            border: "none",
+            borderRadius: "50%",
+            width: 38,
+            height: 38,
+            color: "#fff",
+            fontSize: 24,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          aria-label="Fermer"
+        >
+          ✕
+        </button>
+        <SongDetailsPanel
+          gameId={gameId}
+          song={selectedSong}
+          mortSubite={mortSubite}
+          setMortSubite={setMortSubite}
+        />
+      </>
+    )}
+  </div>
+</div>
+
     );
   }
 

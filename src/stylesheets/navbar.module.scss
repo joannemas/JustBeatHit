@@ -36,7 +36,7 @@
         transform: rotate(-45deg) translate(6px, -6px);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
         display: flex;
     }
     }
@@ -145,7 +145,7 @@
         border-radius: 50%;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
         transform: translateX(-100%); // hidden
         transition: transform 0.3s ease-in-out;
         width: 70vw;

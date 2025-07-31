@@ -37,47 +37,26 @@ export default function SongList({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
 
-useEffect(() => {
-  const fetchSongs = async () => {
-    let query = supabase.from("song").select("*").neq("status", "Local");
-    if (role !== "admin") {
-      query = query.neq("status", "Draft");
-    }
-
-    if (search) {
-      query = query.ilike("title", `%${search}%`);
-    }
-
-    if (selectedStyles.length > 0) {
-      query = query.contains("music_style", selectedStyles.map((s) => s.toLowerCase()));
-    }
-
-    const { data, error } = await query;
-    if (!error) {
-      setSongs(data || []);
-      // Sélection automatique uniquement en desktop
-      if (data?.length && onAutoSelectSong && !isMobile) {
-        onAutoSelectSong(data[0]);
-      }
-    }
-  };
-
-  fetchSongs();
-}, [search, selectedStyles, onAutoSelectSong, isMobile]);
-
 // 3. Modifier le deuxième useEffect principal (ligne ~50)
 useEffect(() => {
+  let isCancelled = false;
+
   const fetchSongs = async () => {
-    if(premiumFilter === "local"){
-      const songs = await listLocalSongs()
-      console.debug("songs", songs)
-      // Sélection automatique uniquement en desktop
-      if (songs?.length && onAutoSelectSong && !isMobile) {
-        onAutoSelectSong(songs[0]);
+    if (premiumFilter === "local") {
+      const localSongs = await listLocalSongs();
+      if (isCancelled) return;
+
+      setSongs(localSongs);
+
+      if (!isMobile && onAutoSelectSong && localSongs?.length) {
+        onAutoSelectSong(localSongs[0]);
       }
-      setSongs(songs)
-      return
+
+      setPremiumCount(0);
+      setFreeCount(0);
+      return;
     }
+
     let query = supabase.from("song").select("*").neq("status", "Local");
 
     if (role !== "admin") {
@@ -99,31 +78,44 @@ useEffect(() => {
     }
 
     const { data, error } = await query;
+    if (isCancelled) return;
+
     if (!error) {
       setSongs(data || []);
-      // Sélection automatique uniquement en desktop
-      if (data?.length && onAutoSelectSong && !isMobile) {
-        onAutoSelectSong(data[0]);
+      
+      // IMPORTANT : ne pas écraser la sélection manuelle.
+      if (!isMobile && onAutoSelectSong && data?.length) {
+        onAutoSelectSong((prevSelectedSong: any) => prevSelectedSong ?? data[0]);
       }
     }
 
-    // Compteurs pour premium et free avec filtre status pour non-admins
-    let premiumQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", true);
-    let freeQuery = supabase.from("song").select("*", { count: "exact", head: true }).eq("is_premium", false);
+    const premiumPromise = supabase
+      .from("song")
+      .select("*", { count: "exact", head: true })
+      .eq("is_premium", true)
+      .neq(role !== "admin" ? "status" : "", role !== "admin" ? "Draft" : "");
 
-    if (role !== "admin") {
-      premiumQuery = premiumQuery.neq("status", "Draft");
-      freeQuery = freeQuery.neq("status", "Draft");
-    }
+    const freePromise = supabase
+      .from("song")
+      .select("*", { count: "exact", head: true })
+      .eq("is_premium", false)
+      .neq(role !== "admin" ? "status" : "", role !== "admin" ? "Draft" : "");
 
-    const [premium, free] = await Promise.all([premiumQuery, freeQuery]);
+    const [premiumRes, freeRes] = await Promise.all([premiumPromise, freePromise]);
+    if (isCancelled) return;
 
-    if (!premium.error) setPremiumCount(premium.count || 0);
-    if (!free.error) setFreeCount(free.count || 0);
+    if (!premiumRes.error) setPremiumCount(premiumRes.count || 0);
+    if (!freeRes.error) setFreeCount(freeRes.count || 0);
   };
 
   fetchSongs();
-}, [search, selectedStyles, premiumFilter, onAutoSelectSong, isMobile]);
+
+  return () => {
+    isCancelled = true;
+  };
+}, [search, selectedStyles, premiumFilter, isMobile, role, onAutoSelectSong]);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

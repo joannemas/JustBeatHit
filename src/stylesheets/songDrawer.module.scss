@@ -10,6 +10,7 @@
   text-align: start;
   font-family: 'GoiaDisplay', sans-serif;
 
+
    // Ajout du scroll
   height: 100%;
   max-height: 98vh;
@@ -30,11 +31,12 @@
     background: transparent;
   }
 
-  @media (max-width: 768px){
-    width: calc(100% - 21vw);
-    padding: 0 2vw;
+  @media (max-width: 1024px){
+    width: calc(100% - 37px);
+    padding: 0 16px;
     max-height: 100vh;
-    background: #1D1D1D;
+    background: #252525;
+    border-left: 1px solid #ffffff;
   }
 }
 
@@ -65,8 +67,8 @@
   object-position: top;
   margin: 1vw auto;
 
-  @media (max-width: 768px) {
-    margin: 0 auto;
+  @media (max-width: 1024px) {
+    margin: 30px auto 10px auto;
     width: 50%;
     height: auto;
     max-height: 200px;

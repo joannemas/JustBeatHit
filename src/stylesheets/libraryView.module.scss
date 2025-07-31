@@ -6,7 +6,7 @@
   padding: 0 20px;
   position: relative;
   z-index: 0;
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     padding: 0;
   }
 
@@ -20,7 +20,7 @@
     background-color: white;
     z-index: 1;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       display: none;
     }
   }
@@ -35,7 +35,7 @@
   z-index: 2;
   padding: 0 40px 0 20px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     padding: 0 20px; 
   }
   /* Scrollbar stylisée */
@@ -63,7 +63,7 @@
   position: relative;
   z-index: 2;
   
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
   position: absolute;
   width: 100%;
   padding: 0;
@@ -79,8 +79,26 @@
   margin: 2rem 0 1rem 0;
   text-align: left;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
   font-size: 30px;
+  text-align: center;
 }
 
+}
+
+.detailsPanelMobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #252525; // adapte cette couleur selon ton design
+  z-index: 2000; // au-dessus de tout
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.4s ease-in-out;
+
+  &.open {
+    transform: translateX(0);
+  }
 }
