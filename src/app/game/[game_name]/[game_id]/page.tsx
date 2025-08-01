@@ -9,8 +9,7 @@ import { Metadata } from "next";
 import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 
 export async function generateMetadata({
-  params: { game_name, game_id },
-  params,
+  params: { game_name, game_id }
 }: {
   params: { game_name: string; game_id: string };
 }): Promise<Metadata | void> {

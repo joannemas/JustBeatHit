@@ -21,6 +21,9 @@ export default async function Page() {
       </div>
     );
   }
+
+  await generateDailyMissions(supabase, user.id, today);
+
   let { data: missions, error: selectError } = await supabase
     .from("daily_missions")
     .select("*")
@@ -32,18 +35,6 @@ export default async function Page() {
     .select("*")
     .eq("user_id", user?.id)
     .single();
-
-  if (!missions || missions.length === 0) {
-    await generateDailyMissions(supabase, user.id, today);
-
-    const { data: newMissions, error: newFetchError } = await supabase
-      .from("daily_missions")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("date", today);
-      
-    missions = newMissions || [];
-  }
 
   function getTimeUntilMidnight() {
     const now = new Date();
@@ -138,7 +129,7 @@ export default async function Page() {
             <div className={styles.challengeList}>
               <h3>Défis journaliers</h3>
               <ul>
-                {missions.map((mission) => (
+                {missions?.map((mission) => (
                   <li key={mission.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <input
                       type="checkbox"
