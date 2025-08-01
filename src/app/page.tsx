@@ -10,13 +10,6 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
   const today = new Date().toISOString().slice(0, 10);
 
   if (!user) {
@@ -33,6 +26,12 @@ export default async function Page() {
     .select("*")
     .eq("user_id", user.id)
     .eq("date", today);
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user?.id)
+    .single();
 
   if (!missions || missions.length === 0) {
     await generateDailyMissions(supabase, user.id, today);
