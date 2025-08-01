@@ -26,9 +26,9 @@ export default function Navbar() {
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Ouvrir le menu"
         >
-        <span></span>
-        <span></span>
-        <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </button>
         <div className={`${styles.navbar} ${menuOpen ? styles.open : ''}`}>
         <div className={styles.logoNavbar}>

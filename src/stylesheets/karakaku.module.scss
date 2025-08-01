@@ -940,7 +940,7 @@
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
     .btnContainer {
         flex-direction: column;
     }
@@ -992,7 +992,7 @@
     }
 
     .arrowIcon {
-        top : 30%;
+        top : 0%;
         width: 30px;
         height: 30px;
         right: calc(100% + 0.1rem);
