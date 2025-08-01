@@ -14,6 +14,11 @@
   background-position: center;
   background-size: cover;
   margin-left: 17vw;
+
+  @media (max-width: 1024px) {
+    background-color: #252525;
+    margin-left: 0;
+  }
 }
 
 .titleContainer {
@@ -33,6 +38,7 @@
   color: #FFA540;
   font-size: 4rem;
   margin: 0;
+
 }
 
 .subtitle {
@@ -48,6 +54,10 @@
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
   padding: 20px 0;
+
+  @media (max-width: 1024px) {
+    padding: 20px 1rem;
+  }
 }
 
 .songCard {
@@ -226,6 +236,9 @@
   gap: 0.75rem;
   position: relative;
   padding: 20px 0;
+  @media (max-width: 1024px) {
+   justify-content: center;
+  }
 }
 
 .dropdownWrapper {
@@ -329,6 +342,10 @@
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 20px 0;
+  @media (max-width: 1024px) {
+  flex-direction: column;
+}
+
 }
 
 .searchInputGroup {
@@ -386,6 +403,17 @@
   margin-top: 1rem;
   flex-wrap: wrap;
   border-bottom: 3px solid rgba(255, 246, 241, 0.10);
+
+  @media (max-width: 1024px) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 1rem;
+    //hidden scrollbar
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .filterButton {

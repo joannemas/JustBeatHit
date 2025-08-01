@@ -607,6 +607,7 @@ const handleAudioEnded = () => {
   }, [isGameOver]);
   const renderLyrics = () => {
     // Defensive: filter out any lines past the audio duration and empty lines
+
     const audioDuration = audioPlayerRef.current?.audioEl.current?.duration || Infinity;
     const BUFFER = 0.1; // 100ms buffer to handle float imprecision
 

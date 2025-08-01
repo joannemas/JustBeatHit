@@ -7,18 +7,11 @@ import { generateDailyMissions } from "@/components/Daily/MissionGenerator";
 
 export default async function Page() {
   const supabase = createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", user?.id!)
-    .single();
-
   const today = new Date().toISOString().slice(0, 10);
+
   if (!user) {
     return (
       <div className={styles.home}>
@@ -34,6 +27,12 @@ export default async function Page() {
     .eq("user_id", user.id)
     .eq("date", today);
 
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user?.id)
+    .single();
+
   if (!missions || missions.length === 0) {
     await generateDailyMissions(supabase, user.id, today);
 
@@ -42,7 +41,7 @@ export default async function Page() {
       .select("*")
       .eq("user_id", user.id)
       .eq("date", today);
-
+      
     missions = newMissions || [];
   }
 
@@ -69,7 +68,6 @@ export default async function Page() {
           className={styles.musicDecoration}
         />
       </div>
-
       <div className={styles.homeContent}>
         {data ? (
           <h1>Content de te revoir {data.username} !</h1>
@@ -109,7 +107,6 @@ export default async function Page() {
                 ></div>
               </div>
             </Link>
-
             <div className={styles.rowCards}>
               <Link href="/game/paroles-en-tete" className={styles.gameCard}>
                 <div>
@@ -123,7 +120,6 @@ export default async function Page() {
                   className={`${styles.animatedSphere} ${styles["animatedSphere--purple"]}`}
                 ></div>
               </Link>
-
               <Link href="/game/blind-test" className={styles.gameCard}>
                 <div>
                   <span className={`${styles.badge} ${styles.badgeSoon}`}>
@@ -138,7 +134,6 @@ export default async function Page() {
               </Link>
             </div>
           </div>
-
           <div className={styles.challengeWrapper} style={{ position: "relative" }}>
             <div className={styles.challengeList}>
               <h3>Défis journaliers</h3>
@@ -175,7 +170,6 @@ export default async function Page() {
           </div>
         </div>
       </div>
-
       <div className={styles.vinylDecoration}>
         <Image
           src="/assets/img/vinyl-jbh.svg"
