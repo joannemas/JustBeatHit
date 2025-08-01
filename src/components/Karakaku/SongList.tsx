@@ -52,8 +52,8 @@ useEffect(() => {
         onAutoSelectSong(localSongs[0]);
       }
 
-      setPremiumCount(0);
-      setFreeCount(0);
+      setPremiumCount((currentValue) => currentValue || 0);
+      setFreeCount((currentValue) => currentValue || 0);
       return;
     }
 
