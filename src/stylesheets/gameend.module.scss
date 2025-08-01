@@ -462,3 +462,29 @@
     }
 
 }
+
+@media screen and (max-width: 768px) {
+    .score {
+        position: unset;
+        margin: 30px;
+    }
+
+    .gameResult {
+        overflow-y: auto;
+        height: max-content;
+    }
+
+    .finalScore {
+        height: fit-content;
+    }
+    
+    .animatedBackground, .vinylPlayer, .gameInfos {
+        display: none;
+    }
+
+    .btnList {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+}

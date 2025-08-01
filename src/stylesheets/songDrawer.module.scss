@@ -407,3 +407,11 @@
     color: $red-ribbon;
   }
 }
+
+
+@media screen and (max-width: 768px) {
+  .playButton{
+    margin-bottom: 100px;
+  }
+  
+}
